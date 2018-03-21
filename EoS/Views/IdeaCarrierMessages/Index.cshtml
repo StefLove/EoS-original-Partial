@@ -1,0 +1,45 @@
+﻿@model IEnumerable<EoS.Models.Admin.IdeaCarrierMessage>
+
+@*@{
+    Layout = null;
+}*@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Idea Carrier Messages</title>
+</head>
+<body>
+    @if (!Model.Any())
+    {
+        <p>
+            @Html.ActionLink("Create new Idea Carrier message", "Create")
+        </p>
+    }
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Text)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @*@Html.DisplayFor(modelItem => item.Text)*@
+                    <div style="border-style:solid; border-width:1px" title="HTML">@Html.Raw(item.Text)</div>
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @style = "color:red" })
+                </td>
+            </tr>
+        }
+
+    </table>
+</body>
+</html>

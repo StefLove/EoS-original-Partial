@@ -1,0 +1,118 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select{
+    max-width: 280px;
+}
+
+textarea {
+    max-width: 100%;
+    width: 100%;
+}
+
+/* Added by Stefan*/
+
+a[disabled="disabled"] {
+    color: #000;
+    text-decoration: none !important;
+}
+
+.row {
+    margin-right: 0;
+    margin-left: -15px;
+}
+
+.table {
+    border-top: 2px solid #0e51a4;
+    border-bottom: 2px solid #0e51a4;
+}
+
+th, tr, td {
+    border-bottom: 1px solid #0e51a4;
+    padding: 8px !important;
+}
+
+.list-group a {
+    background-color: black;
+    font-size: 20px;
+    color: white;
+}
+
+.list-group a:hover {
+    color: #fac115;
+    background-color: black;
+
+}
+
+.list-group a.active, .list-group a.active:hover {
+    background-color: #d60000;
+}
+
+.table thead > tr > th,
+.table tbody > tr > th,
+.table tfoot > tr > th,
+.table thead > tr > td,
+.table tbody > tr > td,
+.table tfoot > tr > td {
+    padding: 8px;
+    line-height: 1.428571429;
+    vertical-align: top;
+    border-top: 1px solid #222222;
+    border-bottom: 1px solid #222222;
+}
+
+hr {
+    border-color: #0e51a4;
+}
+/*************************/
+/* Make placeholders disappear*/
+input:focus::-webkit-input-placeholder {
+    color: transparent;
+}
+
+input:focus:-moz-placeholder {
+    color: transparent;
+}
+/* Firefox 18- */
+input:focus::-moz-placeholder {
+    color: transparent;
+}
+/* Firefox 19+ */
+input:focus:-ms-input-placeholder {
+    color: transparent;
+}
+
+textarea:focus::-webkit-input-placeholder {
+    color: transparent;
+}
+
+textarea:focus:-moz-placeholder {
+    color: transparent;
+}
+/* Firefox 18- */
+textarea:focus::-moz-placeholder {
+    color: transparent;
+}
+/* Firefox 19+ */
+textarea:focus:-ms-input-placeholder {
+    color: transparent;
+}/* oldIE ;) */
+
+/* end Stefan's additions*/

@@ -1,0 +1,132 @@
+http://www.enablers.se
+
+Så här kör man systemet (när allt funkar):
+
+Som admin:
+Logga in på det adminkontot mmm@enablersofsweden.com (det kontot måste alltid finnas)
+Då kommer man till "Manage the accounts"
+Gå till "Other Admin Accounts"
+Där kan man registrera ett personligt Adminkonto (det har jag gjort),
+länken uppe till vänster "Register new Admin account".
+
+Som investerare:
+För att registrera ett Investerarkonto: logga ut från adminkontot,
+klicka på "Log in", "Register as a new user", välj "Investor",
+fyll i Email och Password, tryck på knappen "Register".
+Då får man börja direkt med att lägga till den första investeringsprofilen
+(sidan AddInvestment). När man fyllt i uppgifterna där, kan man börja på
+formuläret (InvestmentForm), som inte behöver besvaras omedelbart, man kan vänta
+ett par dagar, sedan riskerar man dock att få en påminnelse från en admin
+(företrädesvis från  mmm@enablersofsweden.com).
+När man besvarat alla frågor i formuläret, så trycker man på knappen "Submit & lock the form",
+då blir formuläret låst och man kan inte ändra på svaren, vill man det får man skicka
+en begäran via kontaktformuläret i menyn "Contact".
+Nu ska kunna en admin granska och godkänna formulärsvaren och sedan
+klicka på knappen "Approved" som finns i profillistan (menyn "Investment Profiles").
+Profilen är nu matchningsbar mot matchningsbara projekt.
+
+Som idébärare:
+På samma sätt som investerare: välj "Idea Carrier" och fyll i alla uppgifter!
+Namnuppgifter sparas inte utan skickas med email till adminkontoinnhavarna.
+
+------------------------------------------------------
+Denna version är ju redan lite gammal (från dec 2017), (men skulle duga för testning tyckte jag)
+Det uppstår då (förstås!) en del småproblem som kommer att bli åtgärdade i senare versioner,
+en del av dem beror på att viewmodels inte har använts:
+
+-Vid inloggningen kan det komma en felutsktift som säger
+ "Anti forgery key could not be decrypted".
+ Då är det bara att rensa cacheminnet genom att gå tillbaka till
+ inloggingssidan, ladda om den och logga in på nytt igen, då ska det funka.
+ Det här händer när inloggningssidan stått och varit inaktiv ett tag.
+
+-När man kommer till formulärets startflik hakar animeringen upp sig (ibland i andra flikar),
+ men det är ingen större fara (profilens eller projektets tabell är redan sparad),
+ stoppas med att trycka på knappen "Save your answers before returning later"
+ (den ligger bakom animeringen). Åtgärdas med viewmodel och partial view.
+
+-"Skills of the team" i fliken "Team" vill inte funka i denna version.
+ Det betyder att man inte kan matcha "Team skills" i Match Making Motor (så kryssa inte för den rutan).
+
+-När man är inloggad som investerare blir rubrikerna förskjutna (utskrift av "Profile name" fattas)
+ om man går till startsidan för sina profiler (åtgärdat i senare version).
+
+-"Deadline date" i ProjectForm, flik Project går bara att sätta till dagens datum (så låt bli det!).
+ (Kan bero på att JQuery-versionen i Visual Studio är lite för ny för datumskriptet)
+
+-Alla bakåtlänkar funkar inte p.g.a. av att jag har ändrat på namnen (åtgärdat i senare version).
+
+-Angående knappen "Submit & lock your form" i formulären så funkar det inte överallt för profilerna,
+ men plötsligt så funkar det. Idébäraren kan inte att låsa ett projektformulär (ProjectForm) med den,
+ men det går bra att spara det (Koden är Abdullahs, det saknas bl.a. en ititiering).
+
+-Projektformulär går inte att godkänna (har nog med låsningen att göra).
+
+-I Match Making Motor visas bara matchningsbara profiler inte matchningsbara projekt (det har funkat).
+
+-------------------------------------------------------------------
+Jag har nu lagt in 3 egna konton: admin, investerare och idébärare, alla med riktiga emailadresser.
+
+Gör så här: Logga in på adminkontot mmm@enablersofsweden.se och skapa ett eget personligt adminkonto,
+sedan kan du titta på vilka andra konton som finns (mina just nu), profiler, projekt 
+och köra Match Making Motor. Det är bara att testa menyerna (alla funkar!).
+Jag tycker att det är tillräckligt att få en känsla för systemet.
+
+Om du vill skapa egna investerar- och idébärarkonton med tiilhörande profiler och projekt,
+så går det till största delen, men det är en del som inte funkar i denna version.
+Använd bara knappen "Save your answers before returning later" i formulären.
+Knappen "Submit & lock your form" funkar inte riktigt bra (Abdullahs kod), så undvik den.
+
+-"Deadline date" i ProjectForm, fliken Project går bara att sätta till dagens datum.
+ (Kan bero på att JQuery-versionen i Visual Studio är lite för ny för datumskriptet)
+
+När man kör "Match Making Motor" står det "The profiles and projects failed to be matched 0 times".
+Inget att bry sig om. Klicka på "To Result list" i stället. Här ser man resultaten av matchningarna.
+Man kan titta på detaljerna också. Koden blev inte riktigt rätt, men man ser principen.
+
+Jag vill inte lägga mer tid på den här versionen, utan jag har en bättre på gång.
+
+--------------------------------
+-Man kan bli autoutloggad plötsligt när man håller på med formulären (så se upp för det).
+ideacarrier1@enablersofsweden.se
+pW@EoS#123
+-------------------------------------------
+20180305
+Jag har nu lagt in 3 egna konton: admin, investerare och idébärare, alla med riktiga emailadresser.
+
+Gör så här:
+Logga in på adminkontot mmm@enablersofsweden.se och skapa ett eget personligt adminkonto,
+sedan kan ni titta på vilka andra konton som finns (mina just nu), profiler, projekt 
+och köra Match Making Motor. Det är bara att testa menyerna (alla funkar!).
+
+Om ni vill skapa egna investerar- och idébärarkonton med tillhörande profiler och projekt,
+så går det till största delen, men det är en del som inte funkar i denna version.
+Använd bara knappen "Save your answers before returning later" i formulären.
+Knappen "Submit & lock your form" funkar inte riktigt bra i profilformuläret och inte alls i projektformuläret
+(Abdullahs kod), så undvik den, tyvärr kan man inte köra MMM då, men ni kan titta på mina matchningar.
+Det är också svårt att ta bort ett formulär som man på börjat, beroende på alla beroenden.
+För att få det hela att funka för min del har jag fuskat genom att ändra i databasen för hand.
+Att fylla i själva formulären dock funkar mycket bra!
+(utom i profilformuläret, i fliken "Team" "Skills of the team", resultatet vill inte sparas)
+
+"Deadline date" i ProjectForm, fliken Project går bara att sätta till dagens datum.
+ (Kan bero på att JQuery-versionen i Visual Studio är lite för ny för datumskriptet)
+
+När man kör "Match Making Motor" står det "The profiles and projects failed to be matched 0 times".
+Inget att bry sig om. Klicka på "To Result list" i stället. Här ser man resultaten av matchningarna.
+Man kan titta på detaljerna också. Koden blev inte riktigt rätt, men man ser principen.
+
+Några länkar är fel beroende på att jag har ändrat på en del namn.
+
+Jag har en  en bättre version på gång (med viewmodels och partial views).
+I den kommer alla problem att vara fixade, så att systemet ska funka perfekt.
+
+Om man kör denna version så får man trots en känsla för systemet.
+
+Hälsar
+Stefan
+-------------------------------------------
+I fall ofullständig ifyllt projektformulär:
+The DELETE statement conflicted with the REFERENCE constraint "FK_dbo.FundingDivisionStartups_dbo.Startups_StartupID". 
+The conflict occurred in database "2001647-mmm", table "dbo.FundingDivisionStartups", column 'StartupID'.
+The statement has been terminated.

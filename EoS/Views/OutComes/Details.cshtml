@@ -1,0 +1,26 @@
+﻿@model EoS.Models.Shared.Outcome
+
+@{
+    ViewBag.Title = "Outcome details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>OutCome</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.OutcomeName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OutcomeName)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.OutcomeID }) |
+    @Html.ActionLink("Back to Outcome list", "Index")
+</p>

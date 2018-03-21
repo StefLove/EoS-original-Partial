@@ -1,0 +1,41 @@
+﻿@model EoS.Models.IdeaCarrier.FundingDivisionStartup
+
+@{
+    ViewBag.Title = "Funding Division Startup Details";
+}
+
+<h3>@ViewBag.Title</h3>
+
+<div>
+    @*<h3>Funding Division Startup Details</h3>*@
+    <hr />
+
+    <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FundingDivision.FundingDivisionName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FundingDivision.FundingDivisionName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Startup.UserID)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Startup.UserID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Percentage)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Percentage)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

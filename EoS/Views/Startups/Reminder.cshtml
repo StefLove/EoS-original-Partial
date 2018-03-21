@@ -1,0 +1,100 @@
+﻿@model EoS.Models.IdeaCarrier.ReminderStartupViewModel
+
+@{
+    ViewBag.Title = "Reminder";
+}
+
+<h3>@ViewBag.Title</h3>
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+@*@if (!string.IsNullOrEmpty(ViewBag.ReturnMessage))
+{
+    <span class="text-danger" style="font-size:22px">@ViewBag.ReturnMessage</span>
+    <br /><text>&nbsp;</text><br />
+}*@
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @*<h4>ReminderViewModel</h4>*@
+        <hr />
+
+        @Html.HiddenFor(model => model.StartupId)
+        <div class="form-group">
+            @Html.LabelFor(model => model.StartupId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*@Html.TextBoxFor(model => model.StartupId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.StartupId, "", new { @class = "text-danger" })*@
+                @Html.Raw("<h5>" + Model.StartupId + "</h5>")
+            </div>
+        </div>
+
+        @Html.HiddenFor(model => model.StartupName)
+        <div class="form-group">
+            @Html.LabelFor(model => model.StartupName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*@Html.TextBoxFor(model => model.StartupId, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.StartupId, "", new { @class = "text-danger" })*@
+                @Html.Raw("<h5>" + Model.StartupName + "</h5>")
+            </div>
+        </div>
+
+        @Html.HiddenFor(model => model.IdeaCarrierEmail)
+        <div class="form-group">
+            @Html.LabelFor(model => model.IdeaCarrierEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*@Html.TextBoxFor(model => model.InvestorEmail, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.InvestorEmail, "", new { @class = "text-danger" })*@
+                @Html.Raw("<h5>" + Model.IdeaCarrierEmail + "</h5>")
+            </div>
+        </div>
+
+        <div class="form-group">
+            @*@Html.LabelFor(model => model.Subject, new { @class = "col-md-2 control-label" })*@
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Subject, new { @class = "form-control", @title = "Subject" })
+                @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @*@Html.LabelFor(model => model.Message, new { @class = "col-md-2 control-label" })*@
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Message, new { @class = "form-control", @title = "Message (plain text)", @rows = "15" })
+                @Html.ValidationMessageFor(model => model.Message, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group hidden-print">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="reset" value="Reset" class="btn btn-default" />
+                <input type="submit" value="Send Reminder" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+
+<div class="hidden-print">
+    @if (string.IsNullOrEmpty(Model.Redirect))
+    {
+        @Html.ActionLink("Back to Startup Projects", "Index")
+    }
+    else
+    {
+        if (Model.Redirect == "IndexUser")
+        {
+            @Html.ActionLink("Back to Startup Projects by " + Model.IdeaCarrierEmail, "Index", new { id = Model.IdeaCarrierId })
+        }
+        else if (Model.Redirect == "Details")
+        {
+            @Html.ActionLink("Back to Details", "Details", new { id = Model.StartupId })
+        }
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,33 @@
+﻿@model EoS.Models.Shared.Country
+
+@{
+    ViewBag.Title = "Country Details";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div>
+    <h4>Country</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CountryName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CountryName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CountryAbbreviation)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CountryAbbreviation)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.CountryID }) |
+    @Html.ActionLink("Back to Country list", "Index")
+</p>

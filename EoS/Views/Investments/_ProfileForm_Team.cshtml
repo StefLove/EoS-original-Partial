@@ -1,0 +1,52 @@
+﻿@model EoS.Models.Investor.Investment
+
+<div class="form-group">
+    @Html.LabelFor(model => model.TeamMemberSizeMoreThanOne, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+    <div class="col-md-9">
+        <div class="checkbox col-md-10">
+            @Html.EditorFor(model => model.TeamMemberSizeMoreThanOne)
+            @Html.ValidationMessageFor(model => model.TeamMemberSizeMoreThanOne, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(model => model.TeamHasExperience, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+    <div class="col-md-9">
+        <div class="checkbox col-md-10">
+            @Html.EditorFor(model => model.TeamHasExperience)
+            @Html.ValidationMessageFor(model => model.TeamHasExperience, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(model => model.ActiveInvestor, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+    <div class="col-md-9">
+        <div class="checkbox col-md-10">
+            @Html.EditorFor(model => model.ActiveInvestor)
+            @Html.ValidationMessageFor(model => model.ActiveInvestor, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-md-2" style="text-align:left">Skills of the team</label>
+    <div class="col-md-offset-2 col-md-10" style="margin-left:0">
+        <table class="borderless">
+            <tr>
+                @{ List<EoS.Models.Investor.TeamSkillViewModel> skills = ViewBag.SkillsViewModel;
+                    foreach (var skill in skills)
+                    {
+                        @:<td><input type="checkbox" name="selectedSkills" value="@skill.SkillID" @(Html.Raw(skill.Assigned ? "checked=\"checked\"" : "")) /> @skill.SkillName</td>
+                        @:</tr><tr>
+                    }
+                }
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="col-md-offset-4">
+    <input type="submit" value="Save your answers before returning later" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
+</div>

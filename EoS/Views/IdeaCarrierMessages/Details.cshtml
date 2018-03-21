@@ -1,0 +1,34 @@
+﻿@model EoS.Models.Admin.IdeaCarrierMessage
+
+@*@{
+    Layout = null;
+}*@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Idea Carrier Message Details</title>
+</head>
+<body>
+    <div>
+        <h4>Idea Carrier Message Details</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Text)
+            </dt>
+    
+            <dd>
+                @*@Html.DisplayFor(model => model.Text)*@
+                <div style="border-style:solid; border-width:1px" title="HTML">@Html.Raw(Model.Text)</div>
+            </dd>  
+        </dl>
+    </div>
+    <p>
+        @Html.ActionLink("Back to Idea Carrier Message List", "Index")
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id })  |
+        @Html.ActionLink("Delete", "Delete", new { id = Model.Id }, new { @style = "color:red" })
+    </p>
+</body>
+</html>

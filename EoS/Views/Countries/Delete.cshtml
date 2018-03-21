@@ -1,0 +1,37 @@
+﻿@model EoS.Models.Shared.Country
+
+@{
+    ViewBag.Title = "Remove Country";
+}
+
+<h3>@ViewBag.Title</h3>
+
+<h3>Are you sure you want to remove this Country?</h3>
+<div>
+    @*<h4>Country</h4>*@
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CountryName)
+        </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.CountryAbbreviation)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CountryName)
+        </dd>
+        <dd>
+            @Html.DisplayFor(model => model.CountryAbbreviation)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to Country List", "Index")
+        </div>
+    }
+</div>

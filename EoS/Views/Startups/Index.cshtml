@@ -1,0 +1,245 @@
+@model IEnumerable<EoS.Models.IdeaCarrier.Startup>
+
+@if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && ViewBag.Matchable != null)
+{
+    if (ViewBag.Matchable)
+    {
+        ViewBag.Title = "Matchable Startup projects" + (string.IsNullOrEmpty(ViewBag.IdeaCarrierUserName) ? "" : " by " + ViewBag.IdeaCarrierUserName);
+    }
+    else if (!ViewBag.Matchable)
+    {
+        ViewBag.Title = "Unmatchable Startup projects" + (string.IsNullOrEmpty(ViewBag.IdeaCarrierUserName) ? "" : " by " + ViewBag.IdeaCarrierUserName);
+    }
+}
+else if (!string.IsNullOrEmpty(ViewBag.IdeaCarrierUserName))
+{
+    ViewBag.Title = "Startup projects by " + ViewBag.IdeaCarrierUserName;
+}
+else
+{
+    ViewBag.Title = (string.IsNullOrEmpty(ViewBag.IdeaCarrierUserName) ? "Startup projects" : "Your Startup projects");
+}
+
+<h3>@ViewBag.Title</h3>
+
+@if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+{
+    <p class="hidden-print">
+        @if (ViewBag.Matchable == null)
+        {
+            @Html.ActionLink("Show matchable", "Index", new { id = ViewBag.IdeaCarrierId, matchable = true }, new { @class = "btn btn-success" })
+        }
+        else if (ViewBag.Matchable)
+        {
+            @Html.ActionLink("Show unmatchable", "Index", new { id = ViewBag.IdeaCarrierId, matchable = false }, new { @class = "btn btn-danger" })
+        }
+        else if (!ViewBag.Matchable)
+        {
+            @Html.ActionLink("Show all", "Index", new { id = ViewBag.IdeaCarrierId }, new { @class = "btn btn-primary" })
+        }
+    </p>
+}
+@if (ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString())
+{
+    <p class="hidden-print">
+        @Html.ActionLink("Add a new Startup project", "AddNewProject")
+    </p>
+}
+
+<table class="table">
+    <tr>
+        @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && string.IsNullOrEmpty(ViewBag.IdeaCarrierUserName))
+        {
+            <th>
+                @*@Html.Raw("Idea Carrier User Name")*@
+                @Html.ActionLink("Idea Carrier User Name", "Index", new { orderBy = "UserName" }, htmlAttributes: new { title = "Order by User name" })
+            </th>
+        }
+        <th>
+            @*@Html.DisplayNameFor(model => model.StartupID)*@
+            @Html.ActionLink(Html.DisplayNameFor(model => model.StartupID).ToString(), "Index", new { orderBy = "StartupID" }, htmlAttributes: new { title = "Order by Startup project id" })
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.StartupName)*@
+            @Html.ActionLink(Html.DisplayNameFor(model => model.StartupName).ToString(), "Index", new { orderBy = "StartupName" }, htmlAttributes: new { title = "Order by Startup project name" })
+        </th>
+        @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+        {
+            <th>
+                @*@Html.DisplayNameFor(model => model.CountryID)*@
+                @Html.ActionLink(Html.DisplayNameFor(model => model.CountryID).ToString(), "Index", new { orderBy = "Country" }, htmlAttributes: new { title = "Order by Country" })
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.SwedishRegionID)*@
+                @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayNameFor(model => model.SwedishRegion).ToString()), "Index", new { orderBy = "SwedishRegion" }, htmlAttributes: new { title = "Order by Swedish region (län)" })
+            </th>
+        }
+        <th>
+            @*@Html.DisplayNameFor(model => model.ProjectDomainID)*@
+            @Html.ActionLink(Html.DisplayNameFor(model => model.ProjectDomainID).ToString(), "Index", new { orderBy = "ProjectDomainName" }, htmlAttributes: new { title = "Order by Project domain" })
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.FundingAmountID)*@
+            @Html.ActionLink(Html.DisplayNameFor(model => model.FundingAmountID).ToString(), "Index", new { orderBy = "FundingAmountValue" }, htmlAttributes: new { title = "Order by Funding need" })
+        </th>
+        <th>
+            @*@Html.Raw("Matches")*@
+            @Html.ActionLink("Matches", "Index", new { orderBy = "MatchMakingCount" }, htmlAttributes: new { title = "Order by Match making count" })
+        </th>
+        <th>
+            @*@Html.Raw("Project form")*@
+            @Html.ActionLink("Project form", "Index", new { orderBy = "LastSavedDate" }, htmlAttributes: new { title = "Order by Last saved date" })
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.DeadlineDate)*@
+            @Html.ActionLink(Html.DisplayNameFor(model => model.DeadlineDate).ToString(), "Index", new { orderBy = "DeadlineDate" }, htmlAttributes: new { title = "Order by Deadline date" })
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.CreatedDate)*@
+            @Html.ActionLink(Html.DisplayNameFor(model => model.CreatedDate).ToString(), "Index", new { orderBy = "CreatedDate" }, htmlAttributes: new { title = "Order by Created date" })
+        </th>
+        <th class="hidden-print">
+            @Html.Raw("Documents")
+        </th>
+        <th class="hidden-print"></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && string.IsNullOrEmpty(ViewBag.IdeaCarrierUserName))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.UserName)
+                </td>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.StartupID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartupName)
+            </td>
+            @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Country.CountryAbbreviation)
+                </td>
+                <td>
+                    @if (item.SwedishRegionID.HasValue)
+                    {
+                        @Html.DisplayFor(modelItem => item.SwedishRegion.RegionName)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectDomain.ProjectDomainName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FundingAmount.FundingAmountValue)
+                </td>
+                <td>
+                    @item.MatchMakings.Count()
+                </td>
+                <td>
+                    @if (item.Locked) //Form
+                    {
+                        @Html.ActionLink("Unlock it", "Unlock", new { id = item.StartupID }, new { @class = "btn btn-success" })
+                    }
+                    else
+                    {
+                        @*@Html.Raw(DateTime.Now.Date.Subtract(item.LastSavedDate.Date).Days);
+                            @Html.Raw(" days since last saved");*@
+
+                        int daysSinceLastSaved = DateTime.Now.Date.Subtract(item.LastSavedDate.Date).Days;
+                        string message = daysSinceLastSaved + (daysSinceLastSaved == 1 ? " day" : " days") + " since last saved";
+                        @Html.Raw(message);
+
+                        <span class="hidden-print">
+                            @if (daysSinceLastSaved >= 1)
+                            {
+                                <text>&nbsp;&nbsp;</text>
+                                @Html.ActionLink("Remind", "Reminder", new { id = item.StartupID, subject = "Finish Project form " + item.StartupID, message = message, redirect = (string.IsNullOrEmpty(ViewBag.IdeaCarrierUserName) ? "" : "IndexUser") }, new { @class = "btn btn-danger" })
+                            }
+                        </span>
+                    }
+                </td>
+            }
+            else if (ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString())
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectDomain.ProjectDomainName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FundingAmount.FundingAmountValue)
+                </td>
+                <td>
+                    @item.MatchMakings.Count()
+                </td>
+                <td>
+                    @if (!item.Locked)
+                    {
+                        @Html.ActionLink("Finish it!", "ProjectForm", new { id = item.StartupID }, new { @class = "btn btn-danger" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Unlock it", "Unlock", new { id = item.StartupID }, new { @class = "btn btn-success" })
+                    }
+                </td>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.DeadlineDate)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+
+            <td class="hidden-print">
+                @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+                {
+                    @Html.ActionLink("List", "DocumentList", new { id = item.StartupID }, new { @class = "btn btn-primary" })
+                }
+                else if (ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString())
+                {
+                    @Html.ActionLink("Upload", "UploadDocument", new { id = item.StartupID }, new { @class = "btn btn-primary" })
+                }
+            </td>
+
+            <td class="hidden-print">
+                @Html.ActionLink("Details", "ProjectDetails", new { id = item.StartupID })
+                @if (!item.Locked && ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString())
+                {
+                    @*<text>|</text>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.StartupID })
+                        <text>|</text>
+                        @Html.ActionLink("Edit it", "ProjectForm", new { id = item.StartupID })*@
+
+                    <text>|</text>
+                    @Html.ActionLink("Remove", "RemoveProject", new { id = item.StartupID }, new { @style = "color:red" })
+                    @*<text>|</text>
+                        <text>(</text>@Html.ActionLink("Remove", "RemoveProject", new { id = item.StartupID }, new { @style = "color:red" })<text>)</text>*@
+                }
+                else if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+                {
+                    <text>|</text>
+                    @Html.ActionLink("Edit", "EditAdmin", new { id = item.StartupID })
+                }
+                @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && item.Locked)
+                {
+                    <text>|</text>
+                    @Html.ActionLink("Case Preview", "GeneratePDF", new { id = item.StartupID }, new { target = "_blank" })
+
+                    if (item.Approved)
+                    {
+                        <text>|</text>
+                        @Html.ActionLink("Disapprove", "ChangeApproval", new { id = item.StartupID }, new { @class = "btn btn-danger" })
+                    }
+                    else
+                    {
+                        <text>|</text>
+                        @Html.ActionLink("Approve", "ChangeApproval", new { id = item.StartupID }, new { @class = "btn btn-success" })
+                    }
+                }
+            </td>
+        </tr>
+    }
+</table>

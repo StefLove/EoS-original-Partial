@@ -1,0 +1,43 @@
+﻿@model EoS.Models.IdeaCarrier.StartupEditAdminViewModel
+
+@{
+    ViewBag.Title = "Edit Startup Project " + Model.StartupID + " (Admin only)";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h3>@ViewBag.Title</h3>
+        <hr />
+
+        @Html.HiddenFor(model => model.StartupID)
+
+        @*<div class="form-group">
+            @Html.LabelFor(model => model.AllowSharingDisplayName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.AllowSharingDisplayName, 10, 150, new { htmlAttributes = new { @class = "form-control", @placeholder = "no HTML" } }) @*HTML not allowed*@
+                @*@Html.ValidationMessageFor(model => model.AllowSharingDisplayName, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ProjectSummary, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.ProjectSummary, 15, 150, new { htmlAttributes = new { @class = "form-control", @placeholder = "no HTML" } }) @*HTML not allowed*@
+                @Html.ValidationMessageFor(model => model.ProjectSummary, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group hidden-print">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+
+<div class="hidden-print">
+    @Html.ActionLink("Back to Startup Projects", "Index")
+</div>

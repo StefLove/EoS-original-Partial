@@ -1,0 +1,69 @@
+﻿@model EoS.Models.Investor.InvestmentAddProfileViewModel
+
+@{
+    ViewBag.Title = "Add new investment profile";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+         
+        <div class="form-group">
+           
+            <div class="col-md-10 col-md-offset-1">
+                @Html.TextArea("myTextArea", (String)ViewBag.InvestorMessage, 10, 50, new { @class = "form-control" })
+                
+            </div>
+        </div>
+
+      
+
+        <div class="form-group">
+            <div class="col-md-offset-1">
+                @Html.LabelFor(model => model.ProfileName, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.ProfileName, new { htmlAttributes = new { @class = "form-control", placeholder = "This is for you only" } })
+                    @Html.ValidationMessageFor(model => model.ProfileName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-offset-1">
+                @Html.LabelFor(model => model.CountryID, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">                               @*Model.Countries*@
+                    @Html.DropDownListFor(model => model.CountryID, (SelectList)ViewBag.CountryId, "Select:" , new { @class = "form-control", @onchange = "toggleDIvDisplay(this.value, " + @ViewBag.SwedishCountryId + ")" })
+                    @Html.ValidationMessageFor(model => model.CountryID, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            </div>
+
+        <div class="form-group col-md-offset-5" id="divtwo" style="display:none">
+            <div class="col-md-offset-2">
+                @Html.LabelFor(model => model.SwedishRegionID, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">                                               @*Model.SwedishRegions*@
+                    @Html.DropDownListFor(model => model.SwedishRegionID, (SelectList)ViewBag.RegionsId, "Select:", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SwedishRegionID, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>               
+
+        <div class="form-group">
+            <div class="col-md-offset-5 col-md-10">
+                <input type="submit" value="Start profile form" class="btn btn-primary" name="submitCommand" /> @*<------"Proceed to the Profle Form"*@
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to your Investment profiles", "Index")
+</div>

@@ -1,0 +1,182 @@
+﻿@model EoS.Models.MMM.RunMMMViewModel
+
+@{
+    ViewBag.Title = "Match Making Motor";
+}
+
+<h3>@ViewBag.Title</h3>
+
+@Html.ValidationSummary(true,"", new { @class = "text-danger" })
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @*if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        <div class="text-danger" style="font-size:22px">@Html.Raw(ViewBag.Message)</div>
+        <br /><text>&nbsp;</text><br />
+    }*@
+
+    <div class="form-horizontal">
+        @*<h4>MatchMaking</h4>*@
+        <hr />
+        @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.MatchMakingDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.MatchMakingDate, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.MatchMakingDate, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.Sent, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.Sent)
+                        @Html.ValidationMessageFor(model => model.Sent, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>*@
+
+        @if (Model.Investments.Any())
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.InvestmentId, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @if (Model.Investments.Count() > 1)
+                    {
+                        @Html.DropDownListFor(model => model.InvestmentId, (SelectList)Model.Investments, "All", new { @class = "form-control" }) @*"All"*@
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(model => model.InvestmentId, (SelectList)Model.Investments, new { @class = "form-control" })
+                    }
+                    @Html.ValidationMessageFor(model => model.InvestmentId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        else
+        {
+            @Html.Raw("<h4 class=\"text-danger\">There are no Investment profiles to be matched with.</h4>")
+        }
+
+        @if (Model.Startups.Any())
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.StartupId, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @if (Model.Startups.Count() > 1)
+                    {
+                        @Html.DropDownListFor(model => model.StartupId, (SelectList)Model.Startups, "All", new { @class = "form-control" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(model => model.StartupId, (SelectList)Model.Startups, new { @class = "form-control" })
+                    }
+                    @Html.ValidationMessageFor(model => model.StartupId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        else
+        {
+            @Html.Raw("<h4 class=\"text-danger\">There are no Startup projects to be matched with.</h4>")
+        }
+
+        <div class="form-group"> @*1*@
+            @Html.LabelFor(model => model.ProjectDomainSelected, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.CheckBoxFor(model => model.ProjectDomainSelected@*, new { @checked = "checked" }*@)
+                    @Html.ValidationMessageFor(model => model.ProjectDomainSelected, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group"> @*2*@
+            @Html.LabelFor(model => model.FundingPhaseSelected, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.CheckBoxFor(model => model.FundingPhaseSelected)
+                    @Html.ValidationMessageFor(model => model.FundingPhaseSelected, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group"> @*3*@
+            @Html.LabelFor(model => model.FundingAmountSelected, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.CheckBoxFor(model => model.FundingAmountSelected@*, new { @checked = "checked" }*@)
+                    @Html.ValidationMessageFor(model => model.FundingAmountSelected, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group"> @*4*@
+            @Html.LabelFor(model => model.EstimatedExitPlanSelected, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.CheckBoxFor(model => model.EstimatedExitPlanSelected)
+                    @Html.ValidationMessageFor(model => model.EstimatedExitPlanSelected, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group"> @*5*@
+            @Html.LabelFor(model => model.OutcomesSelected, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.CheckBoxFor(model => model.OutcomesSelected)
+                    @Html.ValidationMessageFor(model => model.OutcomesSelected, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group"> @*6*@
+            @Html.LabelFor(model => model.InnovationLevelSelected, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.CheckBoxFor(model => model.InnovationLevelSelected)
+                    @Html.ValidationMessageFor(model => model.InnovationLevelSelected, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group"> @*7*@
+            @Html.LabelFor(model => model.ScalabilitySelected, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.CheckBoxFor(model => model.ScalabilitySelected)
+                    @Html.ValidationMessageFor(model => model.ScalabilitySelected, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group"> @*8*@
+            @Html.LabelFor(model => model.TeamSkillsSelected, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.CheckBoxFor(model => model.TeamSkillsSelected)
+                    @Html.ValidationMessageFor(model => model.TeamSkillsSelected, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Investments.Any() && Model.Startups.Any())
+        {
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Run" class="btn btn-primary" />
+                </div>
+            </div>
+        }
+    </div>
+}
+<br />&nbsp;<br />
+<div class="hidden-print">
+    @Html.ActionLink("To Result list", "Results") |
+    @Html.ActionLink("To matchable Investment profiles", "Index", "Investments", new { matchable = true }, null)
+</div>

@@ -1,0 +1,26 @@
+﻿@model EoS.Models.Shared.FundingAmount
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>FundingAmount</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.FundingAmountValue)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FundingAmountValue)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.FundingAmountID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

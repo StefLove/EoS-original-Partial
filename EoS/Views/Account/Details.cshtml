@@ -1,0 +1,161 @@
+﻿@model EoS.Models.DisplayUserViewModel
+
+@{
+    ViewBag.Title = "Details about " + ((ViewBag.OwnAccount) ? "Your own " : "") + Model.Role + " account";
+}
+
+<h3>@ViewBag.Title</h3>
+
+<div>
+    @*<h4>@Model.Role account</h4>*@
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd>
+            <a href="mailto:@Model.Email" target="_top">@Model.Email</a>
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EmailConfirmed)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EmailConfirmed)
+        </dd>
+
+        @if (Model.Role == EoS.Models.Role.Admin.ToString())
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.UserFullName)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.UserFullName)
+            </dd>
+        }
+
+        <dt>
+            @Html.DisplayNameFor(model => model.StartDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.StartDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastLoginDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastLoginDate)
+        </dd>
+        
+        @if (Model.Role != EoS.Models.Role.Admin.ToString())
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.CountryName)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.CountryName)
+            </dd>
+        }
+
+        @*@if (Model.Role == EoS.Models.Role.IdeaCarrier.ToString())
+        {*@
+            <dt>
+                @Html.DisplayNameFor(model => model.ExpiryDate)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ExpiryDate)
+            </dd>
+        @*}*@
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LockoutEndDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LockoutEndDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LockoutEnabled)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LockoutEnabled)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AccessFailedCount)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AccessFailedCount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TwoFactorEnabled)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TwoFactorEnabled)
+        </dd>
+
+        @if (Model.Role == EoS.Models.Role.Admin.ToString())
+        {
+            <dt>
+                @{ string displayName = Html.DisplayNameFor(model => model.NumberOfBlogs).ToString(); }
+                @if (ViewBag.OwnAccount)
+                {
+                    @Html.ActionLink(displayName, "Index", "Blogs", null, new { title = "View Your own Blogs" });
+                }
+                else { @Html.ActionLink(displayName, "Index", "Blogs", new { id = Model.Id }, new { title = "View the Blogs of " + Model.UserFullName }); }
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NumberOfBlogs)
+            </dd>
+        }
+        else
+        {
+            <dt>
+                @{ string displayName = Html.DisplayNameFor(model => model.NumberOfBlogComments).ToString(); }
+                @Html.ActionLink(displayName, "Index", "BlogComments", new { id = Model.Id }, new { title = ((ViewBag.OwnAccount) ? "Your own Blog comments" : "View the Blog comments ") })
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NumberOfBlogComments)
+            </dd>
+        }
+    </dl>
+</div>
+<p class="hidden-print">
+    @*@{ string aT = Model.Role == EoS.Models.Role.Admin.ToString() ? Model.Role : ""; }
+    @Html.ActionLink("Back to List", "Index", new { accountType =  aT } ) |
+
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id, accountType = aT }) |
+    @Html.ActionLink("Delete", "Delete", new { id = Model.Id, accountType = aT })*@
+
+    @Html.ActionLink("Back to Account List", "Index", new { accountType = Model.Role }) |
+    @{
+        if (!ViewBag.OwnAccount)
+        {
+            string aT = Model.Role == EoS.Models.Role.Admin.ToString() ? EoS.Models.Role.Admin.ToString() : "";
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id, accountType = aT }); <text>|</text>
+            @Html.ActionLink("Delete", "Delete", new { id = Model.Id, accountType = aT }, new { @style = "color:red"});
+        }
+        else
+        {
+            @Html.ActionLink("Edit your own account", "Edit");
+        }
+
+    }
+</p>

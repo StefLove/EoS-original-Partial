@@ -1,0 +1,51 @@
+﻿@model EoS.Models.Investor.Investment
+
+<div class="form-group">
+    <label class="control-label col-md-2" style="text-align:left">Funding phase</label>
+    <div class=" col-md-offset-2 col-md-10" style="margin-left:0">
+        <table class="borderless">
+            <tr>
+                @{ List<EoS.Models.Investor.InvestorFundingPhaseViewModel> FundingPhases = ViewBag.fundingPhaseViewModel;
+                    foreach (var phase in FundingPhases)
+                    {
+                        @:<td><input type="checkbox" name="selectedFundingPhases" value="@phase.FundingPhaseID" @(Html.Raw(phase.Assigned ? "checked=\"checked\"" : "")) /> @phase.FundingPhaseName</td>
+                        @:</tr><tr>
+                    }
+                }
+            </tr>
+        </table>
+        @Html.ValidationMessageFor(model => model.FundingPhases, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-md-2" style="text-align:left">Funding amount (SEK)</label>
+    <div class=" col-md-offset-2 col-md-10" style="margin-left:0">
+        <table class="borderless">
+            <tr>
+                @{ List<EoS.Models.Investor.InvestorFundingAmountViewModel> FundingAmounts = ViewBag.FundingAmountViewModel;
+                    foreach (var amount in FundingAmounts)
+                    {
+                        @:<td><input type="checkbox" name="selectedFundingAmount" value="@amount.FundingAmountID" @(Html.Raw(amount.Assigned ? "checked=\"checked\"" : "")) /> @amount.FundingAmountValue</td>
+                        @:</tr><tr>
+                    }
+                }
+            </tr>
+        </table>
+        @Html.ValidationMessageFor(model => model.FundingAmounts, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(model => model.FutureFundingNeeded, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+    <div class="col-md-9">
+        <div class="checkbox col-md-10">
+            @Html.EditorFor(model => model.FutureFundingNeeded)
+            @Html.ValidationMessageFor(model => model.FutureFundingNeeded, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+
+<div class="col-md-offset-4">
+    <input type="submit" value="Save your answers before returning later" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
+</div>

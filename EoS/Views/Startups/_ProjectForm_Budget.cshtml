@@ -1,0 +1,59 @@
+﻿@model EoS.Models.IdeaCarrier.Startup
+
+<div class="form-group">
+    <label class="control-label col-md-2" style="text-align:left">How will funding be spent?<br />(100% max for all fields)</label>
+    <div class=" col-md-offset-0 col-md-9" style="margin-left:inherit">
+        @*@{*@
+        <table class="borderless">
+            <tr>
+                @{
+                    for (var j = 0; j < Model.ProjectFundingDivisions.Count(); j++)
+                    {
+                        <td>@Html.DisplayFor(model => model.ProjectFundingDivisions[j].FundingDivision.FundingDivisionName)</td>
+                        int percentage = Model.ProjectFundingDivisions[j].Percentage;
+                        <td>@Html.Raw((percentage < 10 ? "&nbsp;" : "") + percentage.ToString() + " %  ") </td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hidden-print">@Html.ActionLink("Change value", "Edit", "FundingDivisionStartups", new { id = Model.ProjectFundingDivisions[j].Id, fundingDivisionName = Model.ProjectFundingDivisions[j].FundingDivision.FundingDivisionName }, new { @class = "btn btn-success" })</span></td>
+                        @:</tr><tr>
+                    }
+                }
+            </tr>
+        </table>
+        @*}*@
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(model => model.EstimatedExitPlanID, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+    <div class="col-md-10">
+        @Html.DropDownListFor(model => model.EstimatedExitPlanID, (SelectList)ViewBag.EstimatedExitPlanIdEdit, "Please select an estimated exit plan", new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.EstimatedExitPlanID, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(model => model.EstimatedBreakEven, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+    <div class="col-md-10">
+        @Html.EditorFor(model => model.EstimatedBreakEven, new { htmlAttributes = new { @class = "form-control", @placeholder = "In term of #years" } })
+        @Html.ValidationMessageFor(model => model.EstimatedBreakEven, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(model => model.PossibleIncomeStreams, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+    <div class="col-md-10">
+        @Html.EditorFor(model => model.PossibleIncomeStreams, new { htmlAttributes = new { @class = "form-control", @placeholder = "10 equals to any number" } }) @*from 0 to 10*@
+        @Html.ValidationMessageFor(model => model.PossibleIncomeStreams, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(model => model.HavePayingCustomers, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" }) @*width:220px"*@
+    <div class="col-md-10">
+        <div class="checkbox">
+            @Html.EditorFor(model => model.HavePayingCustomers)
+            @Html.ValidationMessageFor(model => model.HavePayingCustomers, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+
+<br />&nbsp;<br />

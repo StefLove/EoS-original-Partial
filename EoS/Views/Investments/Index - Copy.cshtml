@@ -1,0 +1,262 @@
+﻿@model IEnumerable<EoS.Models.Investor.Investment>
+
+@*<h4>Your Id: @ViewBag.UserExternalId</h4>*@
+
+    @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && ViewBag.Matchable != null)
+    {
+        if (ViewBag.Matchable)
+        {
+            ViewBag.Title = "Matchable Investment Profiles" + (string.IsNullOrEmpty(ViewBag.InvestorUserName) ? "" : " by " + ViewBag.InvestorUserName);
+        }
+        else if (!ViewBag.Matchable)
+        {
+            ViewBag.Title = "Unmatchable Investment Profiles" + (string.IsNullOrEmpty(ViewBag.InvestorUserName) ? "" : " by " + ViewBag.InvestorUserName);
+        }
+    }
+    else
+    {
+        ViewBag.Title = "All Investment Profiles" + (string.IsNullOrEmpty(ViewBag.InvestorUserName) ? "" : " by " + ViewBag.InvestorUserName);
+    }
+
+<h3>@ViewBag.Title</h3>
+
+@if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+{
+    <p class="hidden-print">
+        @Html.ActionLink("Match all matchable profiles", "Motor", "MatchMakings", new { Id = ViewBag.InvestorId }, new { @class = "btn btn-primary" })
+        @*<text>&nbsp;</text>
+        @if (!string.IsNullOrEmpty(ViewBag.InvestorId))
+        {
+            @Html.ActionLink("Edit Due Date for all locked profiles", "EditAdmin", new { id = ViewBag.InvestorId }, new { @class = "btn btn-primary" })
+        }*@
+        <text>&nbsp;</text>
+        @if (ViewBag.Matchable == null)
+        {
+            @Html.ActionLink("Show matchable", "Index", new { id = ViewBag.InvestorId, matchable = true }, new { @class = "btn btn-success" })
+        }
+        else if (ViewBag.Matchable)
+        {
+            @Html.ActionLink("Show unmatchable", "Index", new { id = ViewBag.InvestorId, matchable = false }, new { @class = "btn btn-danger" })
+        }
+        else if (!ViewBag.Matchable)
+        {
+            @Html.ActionLink("Show all", "Index", new { id = ViewBag.InvestorId }, new { @class = "btn btn-primary" })
+        }
+    </p>
+}
+@if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
+{
+    <p class="hidden-print">
+        @Html.ActionLink("Add a new investment profile", "Create") |
+        @*@Html.ActionLink("Add a new investment profile", "AddProfile")*@
+    </p>
+}
+
+<table class="table">
+    <tr>
+        @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && string.IsNullOrEmpty(ViewBag.InvestorUserName))
+        {
+            <th>
+                @Html.Raw("Investor User Name")
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InvestmentID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CountryID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SwedishRegionID)
+            </th>
+        }
+        else //Investor
+        {
+            <th>
+                @Html.DisplayNameFor(model => model.InvestmentID)
+            </th>
+        }
+        <th>
+            @Html.DisplayNameFor(model => model.ProjectDomainID)
+        </th>
+        <th>
+            @Html.Raw("Matches")
+        </th>
+        @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+        {
+            <th>
+                @Html.Raw("Match Making")
+            </th>
+            @*<th>
+                @Html.Raw("Days since Last Saved")
+            </th>*@
+        }
+        <th>
+            @Html.DisplayNameFor(model => model.CreatedDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DueDate)
+        </th>
+        <th>
+            @Html.Raw("Form")
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Active)
+        </th>
+        <th class="hidden-print"></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && string.IsNullOrEmpty(ViewBag.InvestorUserName))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvestmentID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Country.CountryAbbreviation)
+                </td>
+                <td>
+                    @if (item.SwedishRegionID.HasValue)
+                    {
+                        @Html.DisplayFor(modelItem => item.SwedishRegion.RegionName)
+                    }
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvestmentID)
+                </td>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.ProjectDomain.ProjectDomainName)
+            </td>
+            <td>
+                @item.MatchMakings.Count()
+            </td>
+            @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+            {
+                <td>
+                    @if (item.Locked && item.Active && (!item.DueDate.HasValue || item.DueDate.HasValue && item.DueDate.Value.Date > DateTime.Now.Date))
+                    {
+                        @Html.ActionLink("Match", "Motor", "MatchMakings", new { id = item.InvestmentID }, new { @class = "btn btn-primary" })
+                    }
+                    else
+                    {
+                        @Html.Raw("None");
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @if (item.DueDate.HasValue && DateTime.Now.Date > item.DueDate.Value.Date)
+                    {
+                        @Html.ActionLink("Date passed", "EditAdmin", new { id = item.InvestmentID }, new { @class = "btn btn-danger" })
+                    }
+                    else if (item.DueDate.HasValue && DateTime.Now.Date == item.DueDate.Value.Date)
+                    {
+                        @Html.ActionLink("Today", "EditAdmin", new { id = item.InvestmentID }, new { @class = "btn btn-danger" })
+                    }
+                    else if (item.DueDate.HasValue)
+                    {
+                        int dueDays = item.DueDate.Value.Date.Subtract(DateTime.Now.Date).Days;
+                        @Html.Raw("In " + dueDays + (dueDays == 1 ? " day" : " days"));
+                        @*@Html.DisplayFor(modelItem => item.DueDate)*@
+                    }
+                    else
+                    {
+                        @Html.Raw("Never")
+                    }
+                </td>
+                <td>
+                    @if (item.Locked)
+                    {
+                        @Html.ActionLink("Unlock it", "Unlock", new { id = item.InvestmentID }, new { @class = "btn btn-success" })
+                    }
+                    else
+                    {
+                        int daysSincelastSaved = DateTime.Now.Date.Subtract(item.LastSavedDate.Date).Days;
+                        string message = daysSincelastSaved + (daysSincelastSaved == 1 ? " day" : " days") + " since last saved";
+                        @Html.Raw(message)                    ;
+
+                        <span class="hidden-print">
+                            @if (daysSincelastSaved >= 1)
+                            {
+                            <text>&nbsp;&nbsp;&nbsp;</text>
+                            @Html.ActionLink("Remind", "Reminder", new { id = item.InvestmentID, subject = "Finish Profile Form " + item.InvestmentID, message = message, redirect = (string.IsNullOrEmpty(ViewBag.InvestorUserName) ? "" : "IndexUser") }, new { @class = "btn btn-danger hidden-print" })
+                            }
+                        </span>
+
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Active)
+                </td>
+            }
+            else //Investor
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @if (item.DueDate.HasValue && DateTime.Now.Date > item.DueDate.Value.Date)
+                    {
+                        @Html.ActionLink("Pay", "Contact", "Home", new {subject = "Pay for " + item.InvestmentID }, new { @class = "btn btn-danger" })
+                    }
+                    else if (item.DueDate.HasValue)
+                    {
+                        int dueDays = item.DueDate.Value.Date.Subtract(DateTime.Now.Date).Days;
+                        @Html.Raw("In " + dueDays.ToString() + (dueDays == 1 ? " day" : " days"))
+                        @*@Html.DisplayFor(modelItem => item.DueDate)*@
+                    }
+                    else
+                    {
+                        @Html.Raw("Never")
+                    }
+                </td>
+                <td>
+                    @if (!item.Locked)
+                    {
+                        @Html.ActionLink("Finish it", "Edit", "Investments", new { id = item.InvestmentID }, new { @class = "btn btn-danger" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + item.InvestmentID }, new { @class = "btn btn-success" })
+                    }
+                </td>
+                <td>
+                    @if (item.Active)
+                    {
+                    @Html.ActionLink("Unactivate", "Activate", new { id = item.InvestmentID }, new { @class = "btn btn-success" })
+                    }
+                    else
+                    {
+                    @Html.ActionLink("Activate", "Activate", new { id = item.InvestmentID }, new { @class = "btn btn-primary" })
+                    }
+                </td>
+
+            }
+            <td class="hidden-print">
+                @Html.ActionLink("Details", "Details", new { id = item.InvestmentID })
+                @if (!item.Locked && ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
+                {
+                    <text>| </text>@Html.ActionLink("Edit", "Edit", new { id = item.InvestmentID })
+                    <text>| (</text>@Html.ActionLink("Edit Form", "ProfileForm", new { id = item.InvestmentID })
+
+                    <text>) | </text>@Html.ActionLink("Delete", "Delete", new { id = item.InvestmentID }, new { @style = "color:red" })
+                    <text>| (</text>@Html.ActionLink("Remove", "RemoveProfile", new { id = item.InvestmentID }, new { @style = "color:red" })<text>)</text>
+                }  @*&& item.DueDate.HasValue*@
+                @*else if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && item.DueDate.HasValue)
+                {
+                    <text>| </text>
+                    @Html.ActionLink("Edit", "EditAdmin", new { id = item.InvestmentID })
+                }*@
+            </td>
+        </tr>
+    }
+</table>

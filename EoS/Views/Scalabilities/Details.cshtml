@@ -1,0 +1,26 @@
+﻿@model EoS.Models.Shared.Scalability
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Scalability</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ScalabilityName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ScalabilityName)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ScalabilityID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

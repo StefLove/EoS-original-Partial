@@ -1,0 +1,39 @@
+﻿@model IEnumerable<EoS.Models.Home.HomeInfo>
+
+@{
+    ViewBag.Title = "Home Info Index";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p class="hidden-print">
+    @Html.ActionLink("Create new Home Info", "Create")
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Text)
+        </th>
+        <th class="hidden-print"></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @*@Html.DisplayFor(modelItem => item.Text)*@
+            <div style="border-style:solid; border-width:1px" title="HTML">@Html.Raw(item.Text)</div>
+        </td>
+        <td class="hidden-print">
+            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.Id }, new { @style = "color:red" })
+        </td>
+    </tr>
+}
+
+</table>
+
+@*<p class="hidden-print">
+    @Html.ActionLink("Manage the system", "Index", "Manage", null, null)
+</p>*@

@@ -1,0 +1,84 @@
+﻿@model IEnumerable<EoS.Models.MMM.MatchMaking>
+
+@{
+    ViewBag.Title = "Match Making Results";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p class="hidden-print">
+    @Html.ActionLink("Run MMM", "Motor")
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.MatchMakingDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.InvestmentId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StartupId)
+        </th>
+        @*<th>
+            @Html.DisplayNameFor(model => model.ProjectDomainMatched)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FundingAmountMatched)
+        </th>*@
+        <th>
+            @Html.DisplayNameFor(model => model.NoOfMatches)
+        </th>
+        @*<th>
+            @Html.DisplayNameFor(model => model.MaxNoOfMatches)
+        </th>*@
+        <th>
+            @Html.DisplayNameFor(model => model.Sent)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.MatchMakingDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.InvestmentId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.StartupId)
+        </td>
+        @*<td>
+            @Html.DisplayFor(modelItem => item.ProjectDomainMatched)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FundingAmountMatched)
+        </td>*@
+        <td>
+            @Html.DisplayFor(modelItem => item.NoOfMatches) (of @Html.DisplayNameFor(model => model.MaxNoOfMatches))
+        </td>
+        @*<th>
+            @Html.DisplayNameFor(model => model.MaxNoOfMatches)
+        </th>*@
+        <td>
+            @Html.DisplayFor(modelItem => item.Sent)
+        </td>
+
+        @if (!item.Sent)
+        {
+            <td>
+                @Html.ActionLink("Match", "Details", "MatchMakings", new { id = item.MatchMakingId, sendReport = true }, new { @class = "btn btn-primary" })
+            </td>
+        }
+
+        <td class="hidden-print">
+            @*@Html.ActionLink("Edit", "Edit", new { id=item.MatchMakingId }) |*@
+            @Html.ActionLink("Details", "Details", new { id=item.MatchMakingId }) @*|
+            @Html.ActionLink("Delete", "Delete", new { id=item.MatchMakingId })*@
+        </td>
+    </tr>
+}
+
+</table>

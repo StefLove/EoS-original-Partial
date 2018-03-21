@@ -1,0 +1,75 @@
+﻿@model EoS.Models.SMTP.SmtpClient
+
+@{
+    ViewBag.Title = "SMTP Setting";
+}
+
+<h3>@ViewBag.Title</h3>
+
+<div>
+    @*<h4>Settings</h4>*@
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.MailRecipient)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MailRecipient)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CredentialUserName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CredentialUserName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CredentialPassword)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CredentialPassword)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Host)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Host)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Port)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Port)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EnableSsl)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EnableSsl)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Active)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Active)
+        </dd>
+
+    </dl>
+</div>
+<p class="hidden-print">
+    @Html.ActionLink("Back to SMTP Settings", "Index") |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Delete", "Delete", new { id = Model.Id }, new { @style = "color:red"})
+</p>

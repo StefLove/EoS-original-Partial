@@ -1,0 +1,221 @@
+@model EoS.Models.IdeaCarrier.Startup 
+
+@{
+    ViewBag.Title = "Remove startup project";
+}
+
+@*<h2>@ViewBag.Title</h2>*@
+
+<h3>Are you sure you want to remove this?</h3>
+<div>
+    <h4>Startup Project</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.StartupName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StartupName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CountryID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Country.CountryName)
+        </dd>
+        @if (Model.SwedishRegionID != null)
+        {
+        <dt>
+            @Html.DisplayNameFor(model => model.SwedishRegionID)
+        </dt>
+        
+        <dd>
+            @Html.DisplayFor(model => model.SwedishRegion.RegionName)
+        </dd>
+        }
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ProjectDomainID)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ProjectDomain.ProjectDomainName)
+        </dd>
+
+        @*<dt>
+            @Html.DisplayNameFor(model => model.)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.)
+        </dd>*@
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ProjectSummary)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ProjectSummary)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FundingPhaseID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FundingPhase.FundingPhaseName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FundingAmountID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FundingAmount.FundingAmountValue)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FutureFundingNeeded)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FutureFundingNeeded)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EstimatedExitPlanID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EstimatedExitPlan.EstimatedExitPlanName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EstimatedBreakEven)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EstimatedBreakEven)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TeamMemberSize)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TeamMemberSize)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.GoalTeamSize)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.GoalTeamSize)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TeamExperince)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TeamExperince)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TeamVisionShared)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TeamVisionShared)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HaveFixedRoles)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HaveFixedRoles)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PossibleIncomeStreams)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PossibleIncomeStreams)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.InnovationLevelID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.InnovationLevel.InnovationLevelName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ScalabilityID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Scalability.ScalabilityName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LookingForActiveInvestors)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LookingForActiveInvestors)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DeadlineDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DeadlineDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastSavedDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastSavedDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Locked)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Locked)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Approved)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Approved)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Remove Project" class="btn btn-danger" /> |
+            @Html.ActionLink("Back to Startup Projects", "Index")
+        </div>
+    }
+</div>

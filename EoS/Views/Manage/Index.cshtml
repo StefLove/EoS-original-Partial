@@ -1,0 +1,173 @@
+﻿@model EoS.Models.IndexViewModel
+@{
+    ViewBag.Title = (ViewBag.UserRole == EoS.Models.Role.Admin.ToString()) ? "Manage the accounts" : "Your account settings";
+}
+
+<div class="form-group">
+    <div class="col-md-offset-2 col-md-10">
+        <noscript class="text-danger" style="font-size:20px"><br />Don't block JavaScript!!<br /><text>&nbsp;</text><br /></noscript>
+    </div>
+</div>
+
+<p class="text-success">@ViewBag.StatusMessage</p>
+<div style="align-content:center">
+
+    <div class="o-col" style="text-align:center">
+
+        @if (ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString())
+        {
+            @Html.ActionLink("Your Start Page, Idea Carrier", "Index", "StartUps", null, new { style = "font-size:24px" });
+            //return RedirectToAction("Index", "StartUps");
+        }
+        else if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
+        {
+            @Html.ActionLink("Your Start Page, Investor", "Index", "Investments", null, new { style = "font-size:24px" });
+            //return RedirectToAction("Index", "Investments");
+        }
+    </div>
+
+    <h3>@ViewBag.Title.</h3>
+
+    <hr />
+    <dl class="dl-horizontal">
+            @if (Model.HasPassword)
+            {
+                <dt></dt>
+
+                @*if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+                {
+                    <dd>@Html.ActionLink("Startups", "Index", "Startups") (@ViewBag.NoOfStartups)</dd>
+                    <dd>@Html.ActionLink("Investments", "Index", "Investments") (@ViewBag.NoOfInvestments)</dd>
+
+                    <dd>------------------------------------------------------</dd>
+                }*@
+                
+                if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+                    {
+                        <dd>
+                            @Html.ActionLink("All the accounts", "Index", "Account", null, null) (@ViewBag.NoOfAccounts)
+                            @Html.Raw("<br />&nbsp;<br />")
+
+                            @Html.ActionLink("Your own Admin account", "Details", "Account", null, null) [@Html.ActionLink("Change your password", "ChangePassword")]
+                        </dd>
+                }
+                else
+                {
+                    <dd>[@Html.ActionLink("Change your password", "ChangePassword")]</dd>
+                }
+
+                if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+                {
+                     <dd>
+                        @Html.ActionLink("Other Admin accounts", "Index", "Account", new { accountType = EoS.Models.Role.Admin.ToString() }, null) (@ViewBag.NoOfOtherAdminAccounts)<br />&nbsp;<br />
+                        
+                        @Html.ActionLink("Idea Carrier accounts", "Index", "Account", new { accountType = EoS.Models.Role.IdeaCarrier.ToString() }, null) (@ViewBag.NoOfIdeaCarrierAccounts)<br />
+                        @Html.ActionLink("Investor accounts", "Index", "Account", new { accountType = EoS.Models.Role.Investor.ToString() }, null) (@ViewBag.NoOfInvestorAccounts)
+                    </dd>
+
+                    <dd>------------------------------------------------------</dd>
+
+                    <dd>
+                        @Html.ActionLink("Your blogs", "Index", "Blogs", null, null) (@ViewBag.NoOfBlogs)<br />&nbsp;<br />
+
+                        @*@Html.ActionLink("SmtpClient settings", "Index", "SmtpClients") (@ViewBag.NoOfSmtpClients)<br />
+                        @Html.ActionLink("Home info", "Index", "HomeInfos")*@
+
+                        @*<dd>@Html.ActionLink("Startup info", "Index", "StartupInfo")</dd>
+                        <dd>@Html.ActionLink("Investor info", "Index", "InvestorInfo")</dd>*@
+                    </dd>
+
+                    @*<dd>------------------------------------------------------</dd>
+
+                    <dd>@Html.ActionLink("Countries", "Index", "Countries") (@ViewBag.NoOfCountries)</dd>
+                    <dd>@Html.ActionLink("Swedish regions (län)", "Index", "SwedishRegions")</dd>*@
+
+                    @*<dd>------------------------------------------------------</dd>
+
+                    <dd>@Html.ActionLink("Project domains", "Index", "ProjectDomains")</dd>
+
+                    <dd>@Html.ActionLink("Funding amounts", "Index", "FundingAmounts")</dd>
+
+                    <dd>@Html.ActionLink("Funding divisions", "Index", "FundingDivisions")</dd>
+
+                    <dd>@Html.ActionLink("Funding phases", "Index", "FundingPhases")</dd>
+
+                    <dd>@Html.ActionLink("Estimated exit plans", "Index", "EstimatedExitPlans")</dd>
+
+                    <dd>@Html.ActionLink("Innovation levels", "Index", "InnovationLevels")</dd>
+
+                    <dd>@Html.ActionLink("Outcomes", "Index", "OutComes")</dd>
+
+                    <dd>@Html.ActionLink("Scalabilities", "Index", "Scalabilities")</dd>*@
+                }
+            }
+            else
+            {
+                <dt></dt>
+                <dd>
+                    @Html.ActionLink("Create password", "SetPassword")]
+                </dd>
+            }
+
+
+        @*
+        <dt>External Logins:</dt>
+        <dd>
+            @Model.Logins.Count [
+            @Html.ActionLink("Manage", "ManageLogins") ]
+        </dd<
+            Phone Numbers can used as a second factor of verification in a two-factor authentication system.
+             
+             See <a href="https://go.microsoft.com/fwlink/?LinkId=403804">this article</a>
+                for details on setting up this ASP.NET application to support two-factor authentication using SMS.
+             
+             Uncomment the following block after you have set up two-factor authentication
+        *@
+        @*  
+            <dt>Phone Number:</dt>
+            <dd>
+                @(Model.PhoneNumber ?? "None")
+                @if (Model.PhoneNumber != null)
+                {
+                    <br />
+                    <text>[&nbsp;&nbsp;@Html.ActionLink("Change", "AddPhoneNumber")&nbsp;&nbsp;]</text>
+                    using (Html.BeginForm("RemovePhoneNumber", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <text>[<input type="submit" value="Remove" class="btn-link" />]</text>
+                    }
+                }
+                else
+                {
+                    <text>[&nbsp;&nbsp;@Html.ActionLink("Add", "AddPhoneNumber")
+                }
+            </dd>
+        <dt>Two-Factor Authentication:</dt>
+        <dd>
+            <p>
+                There are no two-factor authentication providers configured. See <a href="https://go.microsoft.com/fwlink/?LinkId=403804">this article</a>
+                for details on setting up this ASP.NET application to support two-factor authentication.
+            </p>
+            @if (Model.TwoFactor)
+                {
+                    using (Html.BeginForm("DisableTwoFactorAuthentication", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <text>Enabled
+                        <input type="submit" value="Disable" class="btn btn-link" />
+                        </text>
+                    }
+                }
+                else
+                {
+                    using (Html.BeginForm("EnableTwoFactorAuthentication", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <text>Disabled
+                        <input type="submit" value="Enable" class="btn btn-link" />
+                        </text>
+                    }
+                }
+        </dd>*@
+    </dl>
+</div>

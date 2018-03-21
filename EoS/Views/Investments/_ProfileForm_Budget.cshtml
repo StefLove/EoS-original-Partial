@@ -1,0 +1,39 @@
+﻿@model EoS.Models.Investor.Investment
+
+<div class="form-group">
+    <label class="control-label col-md-2" style="text-align:left">Estimated exit plan</label>
+    <div class=" col-md-offset-2 col-md-10" style="margin-left:0">
+        <table class="borderless">
+            <tr>
+                @{ List<EoS.Models.Investor.InvestorEstimatedExitPlanVíewModel> ExitPlans = ViewBag.estimatedExitPlanVMViewModel;
+                    foreach (var plan in ExitPlans)
+                    {
+                        @:<td><input type="checkbox" name="selectedEstimatedExitPlans" value="@plan.EstimatedExitPlanID" @(Html.Raw(plan.Assigned ? "checked=\"checked\"" : "")) /> @plan.EstimatedExitPlanName  </td>
+                        @:</tr><tr>
+                    }
+                }
+            </tr>
+        </table>
+        @Html.ValidationMessageFor(model => model.EstimatedExitPlans, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(model => model.EstimatedBreakEven, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+    <div class="col-md-10">
+        @Html.EditorFor(model => model.EstimatedBreakEven, new { htmlAttributes = new { @class = "form-control", @placeholder = "In term of years, 10 equals to any number" } })
+        @Html.ValidationMessageFor(model => model.EstimatedBreakEven, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group">
+    @Html.LabelFor(model => model.PossibleIncomeStreams, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+    <div class="col-md-10">
+        @Html.EditorFor(model => model.PossibleIncomeStreams, new { htmlAttributes = new { @class = "form-control", @placeholder = "10 equals to any number" } })
+        @Html.ValidationMessageFor(model => model.PossibleIncomeStreams, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="col-md-offset-4">
+    <input type="submit" value="Save your answers before returning later" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
+</div>

@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EoS", "EoS\EoS.csproj", "{E8C9D9CF-AA1F-462D-863F-20DA205BBE92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EoS.Tests", "EoS.Tests\EoS.Tests.csproj", "{76EC7DC3-D385-4139-9FD5-062A69B8DC81}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E8C9D9CF-AA1F-462D-863F-20DA205BBE92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8C9D9CF-AA1F-462D-863F-20DA205BBE92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8C9D9CF-AA1F-462D-863F-20DA205BBE92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8C9D9CF-AA1F-462D-863F-20DA205BBE92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76EC7DC3-D385-4139-9FD5-062A69B8DC81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76EC7DC3-D385-4139-9FD5-062A69B8DC81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76EC7DC3-D385-4139-9FD5-062A69B8DC81}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {04380A34-8674-4469-865C-21C08910F41B}
+	EndGlobalSection
+EndGlobal

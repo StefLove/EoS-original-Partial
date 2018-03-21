@@ -1,0 +1,28 @@
+﻿@model EoS.Models.Home.HomeInfo
+
+@{
+    ViewBag.Title = "Home Info Details";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div>
+    @*<h4>HomeInfo</h4>*@
+    <hr />
+    <dl>
+        <dt> @*class="dl-horizontal"*@
+            @Html.DisplayNameFor(model => model.Text)
+        </dt>
+
+        <dd>
+            @*@Html.DisplayFor(model => model.Text)*@
+           <div style="border-style:solid; border-width:1px" title="HTML">@Html.Raw(Model.Text)</div>
+        </dd>
+
+    </dl>
+</div>
+<p class="hidden-print">
+    @Html.ActionLink("Back to Home Info List", "Index") |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Delete", "Delete", new { id = Model.Id }, new { @style = "color:red"} ) |
+</p>

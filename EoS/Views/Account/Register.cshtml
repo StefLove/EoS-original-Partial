@@ -1,0 +1,272 @@
+﻿@model EoS.Models.RegisterViewModel
+
+@{
+    ViewBag.Title = "Register a new " + ViewBag.AccountType + " account";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@{ if (!string.IsNullOrEmpty(ViewBag.Error)) //Use ValidationMessage
+    {
+        <h3 class="warning">
+            @Html.Raw(ViewBag.Error)
+        </h3>
+    }
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @*@Html.ValidationSummary(false, "", new { @class = "text-danger" })*@
+
+        @{ string hidden = ""; }
+
+        @if (ViewBag.AccountType != EoS.Models.Role.Admin.ToString())
+        {
+            <div class="form-group">
+                @{ hidden = "hidden"; }
+                @Html.LabelFor(model => model.Role, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.Role, EnumHelper.GetSelectList(typeof(EoS.Models.RegisterRole)), "Select:", new { @class = "form-control", @onchange = "showOrHideElements()", @id = "RoleSelection" })
+                    @Html.ValidationMessageFor(model => model.Role, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+
+        <div class="@hidden">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.UserFirstName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.UserFirstName, new { htmlAttributes = new { @class = "form-control", @onfocus = "OnFocus(this)", @onblur = "OnBlur(this)" } })
+                    <span id="ValidationUserFirstName">@Html.ValidationMessageFor(model => model.UserFirstName, "", new { @class = "text-danger" })</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.UserLastName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.UserLastName, new { htmlAttributes = new { @class = "form-control", @onfocus = "OnFocus(this)", @onblur = "OnBlur(this)" } })
+                    <span id="ValidationUserLastName">@Html.ValidationMessageFor(model => model.UserLastName, "", new { @class = "text-danger" })</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            @if (ViewBag.AccountType == EoS.Models.Role.Admin.ToString())
+            {
+                @Html.HiddenFor(model => model.CountryId)
+            }
+            else
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PhoneNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control", placeholder = "0", @value = "0", @onfocus = "OnFocus(this)", @onblur = "OnBlur(this)" } })
+                        @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CountryId, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">                              @*Model.Countries*@
+                        @Html.DropDownListFor(model => model.CountryId, (SelectList)ViewBag.CountryId, new { @class = "form-control" }) @*"Select:",*@
+                        @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            }
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Organisation, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Organisation, new { htmlAttributes = new { @class = "form-control", @onfocus = "OnFocus(this)", @onblur = "OnBlur(this)" } })
+                    <span id="ValidationOrganisation">@Html.ValidationMessageFor(model => model.Organisation, "", new { @class = "text-danger" })</span>
+                </div>
+            </div>
+            
+        @if (ViewBag.AccountType == EoS.Models.Role.IdeaCarrier.ToString())
+        {
+            <div class="form-group @hidden" id="ExpiryDateDiv">
+                @Html.LabelFor(model => model.ExpiryDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.ExpiryDate, new { htmlAttributes = new { @class = "form-control date-picker"@*, @onkeydown = "return false", @onpaste = "return false"*@ } })
+                    @Html.ValidationMessageFor(model => model.ExpiryDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ConfirmPassword, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Register" class="btn btn-primary" @*onsubmit="checkPassword()"*@ />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <noscript class="text-danger" style="font-size:20px">You can't register if you block JavaScript!!</noscript>
+            </div>
+        </div>
+
+    </div>
+}
+
+<div>
+    @if (ViewBag.AccountType == EoS.Models.Role.Admin.ToString())
+    {
+        @Html.ActionLink("Manage the system", "Index", "Manage"); <text>|</text>
+        @Html.ActionLink("Back to the Accounts", "Index", "Account", new { accountType = ViewBag.AccountType }, null);
+    }
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script type="text/javascript">
+
+    function init() {
+        var ideaCarrier = "0";
+        var investor = "1";
+
+        if (document.getElementById('RoleSelection').value == ideaCarrier || document.getElementById('RoleSelection').value == investor) {
+            var hiddenElements = document.getElementsByClassName('hidden');
+
+            for (var i = 0; i < hiddenElements.length; i++) {
+                hiddenElements[i].classList.remove('hidden');
+            }
+
+            if (document.getElementById('RoleSelection').value == ideaCarrier) {
+
+                document.getElementById('ValidationUserFirstName').classList.remove('hidden');
+                document.getElementById('ValidationUserLastName').classList.remove('hidden');
+                document.getElementById('ValidationOrganisation').classList.remove('hidden');
+
+                //document.getElementById('UserFirstName').value = ""; //<----
+                //document.getElementById('UserLastName').value = "";  //<----
+
+                //document.getElementById('Organisation').value = ""; //<----
+                document.getElementById('ExpiryDateDiv').classList.remove('hidden');
+            }
+            else if (document.getElementById('RoleSelection').value == investor) {
+
+                document.getElementById('ValidationUserFirstName').classList.add('hidden');
+                document.getElementById('ValidationUserLastName').classList.add('hidden');
+                document.getElementById('ValidationOrganisation').classList.add('hidden');
+
+                document.getElementById('UserFirstName').value = "anonymous";
+                document.getElementById('UserLastName').value = "anonymous";
+
+                document.getElementById('Organisation').value = "anonymous";
+                document.getElementById('ExpiryDateDiv').classList.add('hidden');
+            }
+        }
+    }
+
+    function showOrHideElements() {
+        var notSelected = "";
+        var ideaCarrier = "0";
+        var investor = "1";
+
+        var hiddenElements = document.getElementsByClassName('hidden');
+
+        for (var i = 0; i < hiddenElements.length; i++) {
+            hiddenElements[i].classList.remove('hidden');
+        }
+
+        if (document.getElementById('RoleSelection').value == ideaCarrier) {
+
+            document.getElementById('ValidationUserFirstName').classList.remove('hidden');
+            document.getElementById('ValidationUserLastName').classList.remove('hidden');
+            document.getElementById('ValidationOrganisation').classList.remove('hidden');
+
+            document.getElementById('UserFirstName').value = "";
+            document.getElementById('UserLastName').value = "";
+
+            document.getElementById('Organisation').value = "";
+            document.getElementById('ExpiryDateDiv').classList.remove('hidden');
+        }
+        else if (document.getElementById('RoleSelection').value == investor) {
+
+            document.getElementById('ValidationUserFirstName').classList.add('hidden');
+            document.getElementById('ValidationUserLastName').classList.add('hidden');
+            document.getElementById('ValidationOrganisation').classList.add('hidden');
+
+            document.getElementById('UserFirstName').value = "anonymous";
+            document.getElementById('UserLastName').value = "anonymous";
+
+            document.getElementById('Organisation').value = "anonymous";
+            document.getElementById('ExpiryDateDiv').classList.add('hidden');
+        }
+        else if (document.getElementById('RoleSelection').value == notSelected) {
+            location.reload(true);
+        }
+    }
+
+    function OnFocus(element) {
+
+        //var ideaCarrier = "0";
+
+        if (document.getElementById('RoleSelection') == null) element.value = "";
+        else element.value = "";
+    }
+
+    function OnBlur(element) {
+        var ideaCarrier = "0";
+
+        if (document.getElementById('RoleSelection') == null && element.value == "") element.value = "anonymous";
+        else if (element.value == "") {
+            if (element.id == "PhoneNumber") element.value = "0";
+            else if (element.id == "UserFirstName" || element.id == "UserLastName" || element.id == "Organisation") {
+                if (document.getElementById('RoleSelection').value == ideaCarrier)
+                    element.value = "";
+                else element.value = "anonymous";
+            }
+            else element.value = "anonymous";
+        }
+    }
+
+    //checkPassword() { var document.getElementById('Password')).value; ... alert('Too weak password');}
+
+    if (document.getElementById('RoleSelection') == null) {
+        document.getElementById('UserFirstName').value = "anonymous";
+        document.getElementById('UserLastName').value = "anonymous";
+
+        document.getElementById('Organisation').value = "anonymous";
+        document.getElementById('CountryId').value = "1";
+
+        document.getElementById('ValidationUserFirstName').classList.add('hidden');
+        document.getElementById('ValidationUserLastName').classList.add('hidden');
+        document.getElementById('ValidationOrganisation').classList.add('hidden');
+        document.getElementById('LockoutEndDateDiv').classList.add('hidden');
+    }
+    else {
+        init();
+    }
+
+</script>

@@ -1,0 +1,91 @@
+﻿@model EoS.Models.Investor.Investment
+@{
+    ViewBag.Title = "Remove investment profile";
+}
+@*<h2>@ViewBag.Title</h2>*@
+<h3>Are you sure you want to remove this?</h3>
+<div>
+    <h4>Investment Profile</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.InvestmentID)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.InvestmentID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CountryID)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Country.CountryName)
+        </dd>
+
+        @if (Model.SwedishRegionID.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.SwedishRegionID)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.SwedishRegion.RegionName)
+            </dd>
+        }
+        
+        <dt>
+            @Html.DisplayNameFor(model => model.TeamMemberSizeMoreThanOne)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TeamMemberSizeMoreThanOne)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TeamHasExperience)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TeamHasExperience)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreatedDate)
+        </dd>
+
+        @if (Model.DueDate.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.DueDate)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.DueDate)
+            </dd>
+        }
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Locked)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Locked)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Active)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Active)
+        </dd>
+
+    </dl>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Remove Profile" class="btn btn-danger" /> |
+            @Html.ActionLink("Back to Investment Profiles", "Index")
+        </div>
+    }
+</div>

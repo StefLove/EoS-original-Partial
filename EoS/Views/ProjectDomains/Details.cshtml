@@ -1,0 +1,26 @@
+﻿@model EoS.Models.Shared.ProjectDomain
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>ProjectDomain</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ProjectDomainName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ProjectDomainName)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ProjectDomainID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

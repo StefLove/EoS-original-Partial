@@ -1,0 +1,103 @@
+﻿@model IEnumerable<EoS.Models.SMTP.SmtpClient>
+
+@{
+    ViewBag.Title = "SMTP Settings";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("Add new", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.MailRecipient)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CredentialUserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CredentialPassword)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Host)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Port)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EnableSsl)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Active)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.MailRecipient)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CredentialUserName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CredentialPassword)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Host)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Port)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EnableSsl)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Active)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @style = "color:red" })
+        </td>
+    </tr>
+}
+
+</table>
+
+<table class="table-bordered">
+    <thead>Settings</thead>
+    <tr>
+        <th>Server provider</th>
+        <th>Host</th>
+        <th>Port</th>
+        <th>SSL</th>
+    </tr>
+    <tr>
+        <td>Crystone</td>
+        <td>smtp01.crystone.se</td>
+        <td>587 (25)</td>
+        <td>yes</td>
+    </tr>
+    <tr>
+        <td>Yahoo!</td>
+        <td>smtp.mail.yahoo.com</td>
+        <td>587</td>
+        <td>yes</td>
+    </tr>
+    <tr>
+        <td>Google Gmail</td>
+        <td>smtp.gmail.com</td>
+        <td>587</td>
+        <td>yes</td>
+    </tr>
+    <tr>
+        <td>Outlook (Hotmail Livemail)</td>
+        <td>smtp.live.com</td>
+        <td>587 (25)</td>
+        <td>yes</td>
+    </tr>
+</table>

@@ -1,0 +1,67 @@
+﻿@model EoS.Models.IdeaCarrier.Startup
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TeamMemberSize, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.TeamMemberSize, new { htmlAttributes = new { @class = "form-control", @placeholder = "1 to 10" } })
+            @Html.ValidationMessageFor(model => model.TeamMemberSize, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TeamExperience, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.TeamExperience, new { htmlAttributes = new { @class = "form-control", @placeholder = "Collective yearly knowledge, #years ", Title = "Collective yearly knowledge benefiting project, #years " } })
+            @Html.ValidationMessageFor(model => model.TeamExperience, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <br />
+    <div class="form-group">
+        @Html.LabelFor(model => model.TeamVisionShared, htmlAttributes: new { @class = "control-label col-md-4", @style = "text-align:left" })
+        <div class="col-md-4 col-md-offset-0">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.TeamVisionShared)
+                @Html.ValidationMessageFor(model => model.TeamVisionShared, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.HaveFixedRoles, htmlAttributes: new { @class = "control-label col-md-4", @style = "text-align:left" })
+        <div class="col-md-5 col-md-offset-0">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.HaveFixedRoles)
+                @Html.ValidationMessageFor(model => model.HaveFixedRoles, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-4" style="text-align: left">Weaknesses of the Team:</label>
+        <div class="col-md-8" style="margin-left:inherit">
+            <table class="borderless">
+                <tr>
+                    @{ List<EoS.Models.IdeaCarrier.TeamWeaknessesViewModel> weaknesses = ViewBag.weaknessesViewModel;
+                        foreach (var weakness in weaknesses)
+                        {
+                            @:<td><input type="checkbox" name="selectedWeaknesses" value="@weakness.WeaknessID" @(Html.Raw(weakness.Assigned ? "checked=\"checked\"" : "")) /> @weakness.WeaknessName</td>
+                            @:</tr><tr>
+                        }
+                    }
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.LookingForActiveInvestors, htmlAttributes: new { @class = "control-label col-md-4", @style = "text-align:left" })
+        <div class="col-md-5 col-md-offset-0">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.LookingForActiveInvestors)
+                @Html.ValidationMessageFor(model => model.LookingForActiveInvestors, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+<br />&nbsp;<br />

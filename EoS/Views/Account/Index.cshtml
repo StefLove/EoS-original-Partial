@@ -1,0 +1,188 @@
+﻿@model IEnumerable<EoS.Models.DisplayUserViewModel>
+
+@{
+    ViewBag.Title = "Account List";
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.AccountType))
+{
+    <h3>@ViewBag.AccountType accounts</h3>
+}
+else
+{
+    <h3>User accounts</h3>
+}
+
+@if (ViewBag.AccountType == EoS.Models.Role.Admin.ToString())
+{
+    <p class="hidden-print">
+        @Html.ActionLink("Register new Admin account", "Register", "Account", null, null) @*new { accountType = EoS.Models.Role.Admin.ToString() }*@
+    </p>
+}
+else 
+{
+    @*<p class="hidden-print">
+        @Html.ActionLink("Register new IdeaCarrier or Investor account", "Register", "Account", null, null)
+    </p>*@
+}
+<table class="table">
+    <tr>
+        @if (string.IsNullOrEmpty(ViewBag.AccountType) || ViewBag.AccountType == EoS.Models.Role.IdeaCarrier.ToString() || ViewBag.AccountType == EoS.Models.Role.Investor.ToString())
+        {
+            if (string.IsNullOrEmpty(ViewBag.AccountType))
+            {
+            <th>
+                @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayNameFor(model => model.Role).ToString()), "Index", new { orderBy = "Role" }, htmlAttributes: new { title = "Order by Role" })
+                @*@Html.DisplayNameFor(model => model.Role)*@
+            </th>
+            }
+            <th>
+                @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayNameFor(model => model.UserName).ToString()), "Index", new { accountType = ViewBag.AccountType, orderBy = "UserName" }, htmlAttributes: new { title = "Order by User Name" })
+                @*@Html.DisplayNameFor(model => model.UserName)*@
+            </th>
+
+            <th>
+                @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayNameFor(model => model.StartDate).ToString()), "Index", new { accountType = ViewBag.AccountType, orderBy = "StartDate" }, htmlAttributes: new { title = "Order by Start Date" })
+                @*@Html.DisplayNameFor(model => model.StartDate)*@
+            </th>
+
+            <th >
+                @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayNameFor(model => model.ExpiryDate).ToString()), "Index", new { accountType = ViewBag.AccountType, orderBy = "ExpiryDate" }, htmlAttributes: new { title = "Order by Expiry Date" })
+                @*@Html.DisplayNameFor(model => model.LastLoginDate)*@
+            </th>
+
+            <th>
+                @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayNameFor(model => model.LastLoginDate).ToString()), "Index", new { accountType = ViewBag.AccountType, orderBy = "LastLoginDate" }, htmlAttributes: new { title = "Order by Last Login Date" })
+                @*@Html.DisplayNameFor(model => model.LastLoginDate)*@
+            </th>
+
+            <th>
+                @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayNameFor(model => model.CountryName).ToString()), "Index", new { accountType = ViewBag.AccountType, orderBy = "CountryName" }, htmlAttributes: new { title = "Order by Country" })
+                @*@Html.DisplayNameFor(model => model.CountryName)*@
+            </th>
+
+        }
+        else if (ViewBag.AccountType == EoS.Models.Role.Admin.ToString())
+        {
+            <th>
+                @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayNameFor(model => model.UserName).ToString()), "Index", new { accountType = ViewBag.AccountType, orderBy = "UserFullName" }, htmlAttributes: new { title = "Order by User Full Name" })
+                @*@Html.DisplayNameFor(model => model.UserFullName)*@
+            </th>
+
+            <th>
+                @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayNameFor(model => model.UserName).ToString()), "Index", new { accountType = ViewBag.AccountType, orderBy = "UserName" }, htmlAttributes: new { title = "Order by User Name" })
+                @*@Html.DisplayNameFor(model => model.UserName)*@
+            </th>   
+        }
+
+        @*@if (ViewBag.AccountType == EoS.Models.Role.Admin.ToString())
+        {
+            <th>
+                Blogs
+            </th>
+        }
+        else
+        {
+            <th>
+                Blog Comments
+            </th>
+        }*@
+
+        @if (string.IsNullOrEmpty(ViewBag.AccountType) && ViewBag.AccountType != EoS.Models.Role.IdeaCarrier.ToString())
+        {
+            <th>Start Page</th>
+        }
+        else if (ViewBag.AccountType == EoS.Models.Role.IdeaCarrier.ToString())
+        {
+            <th>Startup</th>
+        }
+        else if (ViewBag.AccountType == EoS.Models.Role.Investor.ToString())
+        {
+            <th>Investment</th>
+        }
+    </tr>
+
+
+@foreach (var item in Model)
+{
+    <tr>
+    @if (string.IsNullOrEmpty(ViewBag.AccountType) || ViewBag.AccountType == EoS.Models.Role.IdeaCarrier.ToString() || ViewBag.AccountType == EoS.Models.Role.Investor.ToString())
+    {
+        if (string.IsNullOrEmpty(ViewBag.AccountType))
+        {
+            <td>
+                @Html.DisplayFor(modelItem => item.Role)
+            </td>
+        }
+        <td>
+            @Html.ActionLink(item.UserName, "Details", new { id = item.Id }, new { title = "Details" })
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.StartDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ExpiryDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LastLoginDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CountryName)
+        </td>
+    }
+    else if (ViewBag.AccountType == EoS.Models.Role.Admin.ToString())
+    {
+        <td>
+            @Html.DisplayFor(modelItem => item.UserFullName)
+        </td>
+        <td>
+            @Html.ActionLink(item.UserName, "Details", new { id = item.Id }, new { title = "Details" })
+        </td>
+    }
+        
+        @if (item.Role == EoS.Models.Role.IdeaCarrier.ToString())
+        {
+            <td>
+                @Html.ActionLink("Projects", "Index", "StartUps", new { id = item.Id }, new {  title= "by " + item.UserName})
+            </td>
+        }
+        else if (item.Role == EoS.Models.Role.Investor.ToString())
+       {
+            <td>
+                @Html.ActionLink("Profiles", "Index", "Investments", new { id = item.Id }, new { title = "by " + item.UserName })
+            </td>
+       }
+    </tr>
+}
+
+</table>
+
+<p class="hidden-print">
+    @Html.ActionLink("Manage the accounts", "Index", "Manage", null, null) |
+    @Html.ActionLink("Your own Admin account", "Details", "Account", null, null) |
+
+    @if (ViewBag.AccountType == EoS.Models.Role.Admin.ToString())
+    {
+        @Html.ActionLink("Idea Carriers accounts", "Index", "Account", new { accountType = EoS.Models.Role.IdeaCarrier.ToString() }, null) <text>|</text>
+        @Html.ActionLink("Investor accounts", "Index", "Account", new { accountType = EoS.Models.Role.Investor.ToString() }, null) <text>|</text>
+        @Html.ActionLink("All the accounts", "Index", "Account")
+    }
+    else if (ViewBag.AccountType == EoS.Models.Role.IdeaCarrier.ToString())
+    {
+        @Html.ActionLink("Other Admin accounts", "Index", "Account", new { accountType = EoS.Models.Role.Admin.ToString() }, null) <text>|</text>
+        @Html.ActionLink("Investor accounts", "Index", "Account", new { accountType = EoS.Models.Role.Investor.ToString() }, null) <text>|</text>
+        @Html.ActionLink("All the accounts", "Index", "Account")
+    }
+    else if (ViewBag.AccountType == EoS.Models.Role.Investor.ToString())
+    {
+        @Html.ActionLink("Other Admin accounts", "Index", "Account", new { accountType = EoS.Models.Role.Admin.ToString() }, null) <text>|</text>
+        @Html.ActionLink("Idea Carriers accounts", "Index", "Account", new { accountType = EoS.Models.Role.IdeaCarrier.ToString() }, null) <text>|</text>
+        @Html.ActionLink("All the accounts", "Index", "Account")
+    }
+    else
+    {
+        @Html.ActionLink("Other Admin accounts", "Index", "Account", new { accountType = EoS.Models.Role.Admin.ToString() }, null) <text>|</text>
+        @Html.ActionLink("Idea Carriers accounts", "Index", "Account", new { accountType = EoS.Models.Role.IdeaCarrier.ToString() }, null) <text>|</text>
+        @Html.ActionLink("Investor accounts", "Index", "Account", new { accountType = EoS.Models.Role.Investor.ToString() }, null)
+}
+</p>

@@ -1,0 +1,31 @@
+﻿@if (ViewBag.Sent == null)
+{
+
+    ViewBag.Title = "No message sent";
+
+    <h3>
+        No message has been sent to us.
+    </h3><br />
+}
+else if (ViewBag.Sent)
+{
+
+    ViewBag.Title = "Message is sent";
+
+    <h3>
+        Your message has just been sent to us, we will contact you soon.
+    </h3><br />
+}
+else //Message not sent
+{
+
+    ViewBag.Title = "Message is not sent";
+
+    <h2>Error !</h2>
+    <h3>Your message could not be sent to us.</h3><br />
+}
+<h4>
+    Enablers of Sweden<br />
+    Stockholm
+</h4>
+

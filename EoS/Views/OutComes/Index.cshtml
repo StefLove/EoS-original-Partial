@@ -1,0 +1,33 @@
+﻿@model IEnumerable<EoS.Models.Shared.Outcome>
+
+@{
+    ViewBag.Title = "Outcome list";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("Create new", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.OutcomeName)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.OutcomeName)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.OutcomeID }) |
+            @Html.ActionLink("Details", "Details", new { id = item.OutcomeID }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.OutcomeID })
+        </td>
+    </tr>
+}
+
+</table>
