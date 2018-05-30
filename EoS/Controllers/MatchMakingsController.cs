@@ -38,7 +38,7 @@ namespace EoS.Controllers
             if (sent.HasValue)
             {
                 ViewBag.Sent = sent.Value;
-                matchMakings = matchMakings.Where(mm => mm.Sent == sent.Value).ToList();
+                matchMakings = matchMakings.Where(mm => mm.Sent == sent.Value).OrderByDescending(mm => mm.MatchMakingDate).OrderBy(mm => mm.NoOfMatches).ToList();
             }
 
             //if (sendReports.HasValue && reportSent.Value)
@@ -166,14 +166,13 @@ namespace EoS.Controllers
         public ActionResult Motor(string Id) // Id==investmentId or InvestorId
         {
             SelectList investments;
-            
+
             if (!string.IsNullOrEmpty(Id))
             {
                 if (Id.ToUpper().StartsWith("IV")) //InvestmentId
                 {
                     investments = new SelectList(db.Investments.Where(i => i.InvestmentID == Id && i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID");
                     //if (investments.Count() == 1) investments.FirstOrDefault().Selected = true;
-
                 }
                 else //InvestorId
                 {
@@ -224,99 +223,48 @@ namespace EoS.Controllers
                 //else
                 var investment = db.Investments.Where(i => i.InvestmentID == model.InvestmentId).FirstOrDefault(); //investment
 
-                    List<Models.IdeaCarrier.Startup> startups;
+                List<Models.IdeaCarrier.Startup> startups;
 
-                    if (string.IsNullOrEmpty(model.StartupId))
+                if (string.IsNullOrEmpty(model.StartupId))
+                {
+                    startups = db.Startups.Where(s => s.Locked && s.Approved && (!s.DeadlineDate.HasValue || s.DeadlineDate.HasValue && DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID).ToList(); //All startups selected
+                }
+                else
+                {
+                    startups = db.Startups.Where(s => s.StartupID == model.StartupId).ToList();
+                }
+
+                DateTime matchedDateTime = DateTime.Now; //default(DateTime);
+
+                //MMM
+
+                //foreach (Investment investment in investments) matchMaking.InvestmentId = investment.InvestmentID;
+
+                foreach (Models.IdeaCarrier.Startup startup in startups)
+                {
+                    //var existingMatchMaking s= investment.MatchMakings.Where(mm => mm.StartupId == startup.StartupID).ToList();
+
+                    if (!investment.MatchMakings.Where(mm => mm.StartupId == startup.StartupID).Any()) //already matched
                     {
-                        startups = db.Startups.Where(s => s.Locked  && s.Approved && (!s.DeadlineDate.HasValue || s.DeadlineDate.HasValue && DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID).ToList(); //All startups selected
-                    }
-                    else
-                    {
-                        startups = db.Startups.Where(s => s.StartupID == model.StartupId).ToList();
-                    }
+                        matchMaking.StartupId = startup.StartupID;
+                        matchMaking.InvestmentId = investment.InvestmentID;
 
-                    DateTime matchedDateTime = DateTime.Now; //default(DateTime);
-
-                    //MMM
-
-                    //foreach (Investment investment in investments)
-
-                    foreach (Models.IdeaCarrier.Startup startup in startups)
-                    {
-                        //var existingMatchMaking s= investment.MatchMakings.Where(mm => mm.StartupId == startup.StartupID).ToList();
-
-                        if (!investment.MatchMakings.Where(mm => mm.StartupId == startup.StartupID).Any()) //already matched
+                        if (model.ProjectDomainSelected)
                         {
-                            if (model.ProjectDomainSelected)
+                            if (investment.ProjectDomain.ProjectDomainName == startup.ProjectDomain.ProjectDomainName) //investment.ExtraProjectDomains (of type string)
                             {
-                                if (investment.ProjectDomain == startup.ProjectDomain) //investment.ExtraProjectDomains (of type string)
-                                {
-                                    matchMaking.ProjectDomainMatched = true;
-                                    matchMaking.NoOfMatches++;
+                                matchMaking.ProjectDomainMatched = true;
+                                matchMaking.NoOfMatches++;
 
-                                    if (model.FundingAmountSelected)
-                                    {
-                                        if (investment.FundingAmounts.Contains(startup.FundingAmount))
-                                        {
-                                            matchMaking.FundingAmountMatched = true;
-                                            matchMaking.NoOfMatches++;
-
-                                            //if (!investment.DueDate.HasValue) investment.DueDate = DateTime.Now;
-
-                                            Match(investment, startup, ref matchMaking, ref NoOfFailures); //Match the rest
-
-                                            matchMaking.MatchMakingDate = matchedDateTime;
-
-                                            db.MatchMakings.Add(matchMaking);
-                                            db.SaveChanges();
-                                        }
-                                        else
-                                        {
-                                            NoOfFailures++;
-                                            ViewBag.Message += "Project Domains match, but not Funding Amounts.<br />"; //<---remove
-                                            ModelState.AddModelError("", "Project Domains match, but not Funding Amounts.");
-                                        }
-                                    }
-                                }
-                                else //ProjectDomain does not matched
-                                {
-                                    //model.ProjectDomainSelected = true;
-                                    //model.FundingAmountSelected = true;
-                                    //model.Investments = new SelectList(db.Investments.Where(i => i.Locked && i.Active), "InvestmentID", "InvestmentID");
-                                    //model.Startups = new SelectList(db.Startups.Where(s => s.Locked && s.Active && s.Approved), "StartupID", "StartupID");
-                                    NoOfFailures++;
-                                    ViewBag.Message += "Project Domains do not match.<br />"; //<----where
-                                    //return View(model);
-                                }
-
-                            }
-                            else if (model.FundingAmountSelected)
-                            {
-                                if (investment.FundingAmounts.Contains(startup.FundingAmount))
+                                if (model.FundingAmountSelected && investment.FundingAmounts.Contains(startup.FundingAmount))
                                 {
                                     matchMaking.FundingAmountMatched = true;
                                     matchMaking.NoOfMatches++;
 
                                     //if (!investment.DueDate.HasValue) investment.DueDate = DateTime.Now;
 
-                                    Match(investment, startup, ref matchMaking, ref NoOfFailures); //Match the rest
+                                    Match(investment, startup, ref matchMaking, ref NoOfFailures, model); //Match the rest
 
-                                    matchMaking.MatchMakingDate = matchedDateTime;
-
-                                    db.MatchMakings.Add(matchMaking);
-                                    db.SaveChanges();
-
-                                }
-                                else
-                                {
-                                    ViewBag.Message += "Funding amounts do not match.<br />"; //<---where += "<br />..."
-                                    ModelState.AddModelError("", "Funding amounts do not match.");
-                                }
-                            }
-                            else
-                            {
-                                if (Match(investment, startup, ref matchMaking, ref NoOfFailures)) //Match the rest
-                                {
                                     matchMaking.MatchMakingDate = matchedDateTime;
 
                                     db.MatchMakings.Add(matchMaking);
@@ -326,38 +274,95 @@ namespace EoS.Controllers
                                 }
                                 else
                                 {
-                                    ViewBag.Message += "No matches found.<br />"; //for which investment?
-                                    ModelState.AddModelError("", "No matches found.");
+                                    NoOfFailures++;
+                                    ViewBag.Message += "Project Domains match, but not Funding Amounts.<br />"; //<---remove
+                                    ModelState.AddModelError("", "Project Domains match, but not Funding Amounts.");
                                 }
+
+                            }
+                            else //ProjectDomain does not matched
+                            {
+                                //model.ProjectDomainSelected = true;
+                                //model.FundingAmountSelected = true;
+                                //model.Investments = new SelectList(db.Investments.Where(i => i.Locked && i.Active), "InvestmentID", "InvestmentID");
+                                //model.Startups = new SelectList(db.Startups.Where(s => s.Locked && s.Active && s.Approved), "StartupID", "StartupID");
+                                NoOfFailures++;
+                                ViewBag.Message += "Project Domains do not match.<br />"; //<----where
+                                ModelState.AddModelError("", "Project Domains do not match.< br />");
+                                //return View(model);
                             }
                         }
-                        else //already matched
+                        else if (model.FundingAmountSelected)
                         {
-                            //model.ProjectDomainSelected = true;
-                            //model.FundingAmountSelected = true;
-                            //model.Investments = new SelectList(db.Investments.Where(i => i.Locked && i.Active), "InvestmentID", "InvestmentID");
-                            //model.Startups = new SelectList(db.Startups.Where(s => s.Locked && s.Active && s.Approved), "StartupID", "StartupID");
-                            //ViewBag.Message = "Investment " + investment.InvestmentID + " and Startup " + startup.StartupID + " has already been matched, delete the post from MatchMakings if you want to redo it !";
-                            int startupIndex = db.MatchMakings.ToList().FindIndex(mm => mm.StartupId == startup.StartupID);
-                            ViewBag.Message += "<a href=\"~MatcMakings/Details\"" + startupIndex + "/>Investment " + investment.InvestmentID + " and Startup " + startup.StartupID + "</a> is already matched, delete the record from the MatchMakings if you want to redo it !<br />";
-                            ModelState.AddModelError("", "No list of Startups exists. There is nothing to be matched.");
-                            //return View(model);
+                            if (investment.FundingAmounts.Contains(startup.FundingAmount))
+                            {
+                                matchMaking.FundingAmountMatched = true;
+                                matchMaking.NoOfMatches++;
+
+                                //if (!investment.DueDate.HasValue) investment.DueDate = DateTime.Now;
+
+                                Match(investment, startup, ref matchMaking, ref NoOfFailures, model); //Match the rest
+
+                                matchMaking.MatchMakingDate = matchedDateTime;
+
+                                db.MatchMakings.Add(matchMaking);
+                                db.SaveChanges();
+
+                                return RedirectToAction("Results", new { matchedDate = matchedDateTime });
+                            }
+                            else
+                            {
+                                ViewBag.Message += "Funding amounts do not match.<br />"; //<---where += "<br />..."
+                                ModelState.AddModelError("", "Funding amounts do not match.");
+                            }
+                        }
+                        else
+                        {
+                            if (Match(investment, startup, ref matchMaking, ref NoOfFailures, model)) //Match the rest <---------------model saknas
+                            {
+                                matchMaking.MatchMakingDate = matchedDateTime;
+
+                                db.MatchMakings.Add(matchMaking);
+                                db.SaveChanges();
+
+                                return RedirectToAction("Results", new { matchedDate = matchedDateTime });
+                            }
+                            else
+                            {
+                                ViewBag.Message += "No matches found.<br />"; //for which investment?
+                                ModelState.AddModelError("", "No matches found.");
+                            }
                         }
                     }
-                    if (startups.Any())
+                    else //already matched
                     {
-                        ViewBag.Message += " The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.<br />";
-                        ModelState.AddModelError("", "The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.");
-                        //return RedirectToAction("Results", new { matchedDate = matchedDateTime }); //Matches done
+                        //model.ProjectDomainSelected = true;
+                        //model.FundingAmountSelected = true;
+                        //model.Investments = new SelectList(db.Investments.Where(i => i.Locked && i.Active), "InvestmentID", "InvestmentID");
+                        //model.Startups = new SelectList(db.Startups.Where(s => s.Locked && s.Active && s.Approved), "StartupID", "StartupID");
+                        //ViewBag.Message = "Investment " + investment.InvestmentID + " and Startup " + startup.StartupID + " has already been matched, delete the post from MatchMakings if you want to redo it !";
+                        int startupIndex = db.MatchMakings.ToList().FindIndex(mm => mm.StartupId == startup.StartupID);
+                        ViewBag.Message += "<a href=\"~MatcMakings/Details\"" + startupIndex + "/>Investment " + investment.InvestmentID + " and Startup " + startup.StartupID + "</a> is already matched, delete the record from the MatchMakings if you want to redo it !<br />";
+                        ModelState.AddModelError("", "No list of Startups exists. There is nothing to be matched.");
+                        //return View(model);
                     }
-                    else
-                    {
-                        ViewBag.Message += "No list of Startups exists. There is nothing to be matched.<br />";
-                        ModelState.AddModelError("", "No list of Startups exists. There is nothing to be matched with.");
-                    }
+                }
+
+                if (startups.Any())
+                {
+                    ViewBag.Message += " The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.<br />";
+                    ModelState.AddModelError("", "The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.");
+                    //return RedirectToAction("Results", new { matchedDate = matchedDateTime }); //Matches done
+                }
+                else
+                {
+                    ViewBag.Message += "No list of Startups exists. There is nothing to be matched.<br />";
+                    ModelState.AddModelError("", "No list of Startups exists. There is nothing to be matched.>");
+                }
             }
-            else
+            else //Model state not valid
             {
+                ViewBag.Message += "No list of Startups exists. There is nothing to be matched.<br />";
                 ModelState.AddModelError("", "Model state is not valid.");
             }
 
@@ -369,11 +374,11 @@ namespace EoS.Controllers
             return View(model);
         }
 
-        private bool Match(Investment investment, Models.IdeaCarrier.Startup startup, ref MatchMaking matchMaking, ref int  NoOfFailures)
+        private bool Match(Investment investment, Models.IdeaCarrier.Startup startup, ref MatchMaking matchMaking, ref int NoOfFailures, RunMMMViewModel model)
         {
             bool matchFound = false;
 
-            if (investment.FundingPhases.Contains(startup.FundingPhase))
+            if (model.FundingPhaseSelected && investment.FundingPhases.Contains(startup.FundingPhase))
             {
                 matchMaking.FundingPhaseMatched = true;
                 matchMaking.NoOfMatches++;
@@ -381,7 +386,7 @@ namespace EoS.Controllers
             }
             else NoOfFailures++;
 
-            if (investment.EstimatedExitPlans.Contains(startup.EstimatedExitPlan))
+            if (model.EstimatedExitPlanSelected && investment.EstimatedExitPlans.Contains(startup.EstimatedExitPlan))
             {
                 matchMaking.EstimatedExitPlanMatched = true;
                 matchMaking.NoOfMatches++;
@@ -390,7 +395,7 @@ namespace EoS.Controllers
             else NoOfFailures++;
 
             bool outcomesMatch = false;
-            if (investment.Outcomes.Count() > startup.Outcomes.Count())
+            if (model.OutcomesSelected && investment.Outcomes.Count() > startup.Outcomes.Count())
             {
                 foreach (var startupOutcome in startup.Outcomes)
                 {
@@ -408,7 +413,7 @@ namespace EoS.Controllers
             }
             matchMaking.OutcomesMatched = outcomesMatch;
 
-            if (investment.InnovationLevels.Contains(startup.InnovationLevel))
+            if (model.InnovationLevelSelected && investment.InnovationLevels.Contains(startup.InnovationLevel))
             {
                 matchMaking.InnovationLevelMatched = true;
                 matchMaking.NoOfMatches++;
@@ -416,7 +421,7 @@ namespace EoS.Controllers
             }
             else NoOfFailures++;
 
-            if (investment.Scalabilities.Contains(startup.Scalability))
+            if (model.ScalabilitySelected && investment.Scalabilities.Contains(startup.Scalability))
             {
                 matchMaking.ScalabilityMatched = true;
                 matchMaking.NoOfMatches++;

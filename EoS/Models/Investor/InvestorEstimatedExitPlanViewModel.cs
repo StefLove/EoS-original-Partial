@@ -5,7 +5,7 @@ using System.Web;
 
 namespace EoS.Models.Investor
 {
-    public class InvestorEstimatedExitPlanVíewModel
+    public class InvestorEstimatedExitPlanViewModel
     {
         public int EstimatedExitPlanID { get; set; }
 

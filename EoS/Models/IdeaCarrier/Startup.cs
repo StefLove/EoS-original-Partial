@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace EoS.Models.IdeaCarrier
 {
@@ -16,7 +17,7 @@ namespace EoS.Models.IdeaCarrier
         public string StartupID { get; set; }
 
         [ForeignKey("User")]
-        [Display(Name = "Idea Carrier id")]
+        [Display(Name = "Idea Carrier")]
         public string UserID { get; set; }
         public virtual ApplicationUser User { get; set; }
 
@@ -25,7 +26,7 @@ namespace EoS.Models.IdeaCarrier
         public int CountryID { get; set; }
         public virtual Shared.Country Country { get; set; }
 
-        [ForeignKey("SwedishRegion")]
+        //[ForeignKey("SwedishRegion")]
         [Display(Name = "Swedish region (Län)")]
         public int? SwedishRegionID { get; set; }
         public virtual Shared.SwedishRegion SwedishRegion { get; set; }
@@ -51,6 +52,7 @@ namespace EoS.Models.IdeaCarrier
         //[Required]
         [MaxLength(1500)]
         [Display(Name = "Project summary (max 1500 characters)")]
+        [AllowHtml] //<-----------------------------------------------------------------------------------
         [RegularExpression("^[^0-9@]+$", ErrorMessage = "No numbers or special characters")]
         public string ProjectSummary { get; set; }
 
@@ -58,7 +60,7 @@ namespace EoS.Models.IdeaCarrier
         [Display(Name = "We allow Enablers of Sweden to share this project information given, to at least one type of investor mention below")]
         public bool AllowSharing { get; set; }
 
-        public string AllowSharingDisplayName { get; set; }
+        //public string AllowSharingDisplayName { get; set; }
 
         [Display(Name = "Allowed investors")]
         public virtual ICollection<Models.IdeaCarrier.AllowedInvestor> AllowedInvestors { get; set; }
@@ -96,6 +98,7 @@ namespace EoS.Models.IdeaCarrier
 
         //Budget-----------------------------------------------------------
 
+        //[Required]
         [Display(Name = "Project funding divisions")]
         public virtual List<FundingDivisionStartup> ProjectFundingDivisions { get; set; }
         //public virtual ICollection<Models.Shared.FundingDivision> FundingDivisions { get; set; }
@@ -182,13 +185,13 @@ namespace EoS.Models.IdeaCarrier
         [Display(Name = "Approved")]
         public bool Approved { get; set; }
 
-        [ForeignKey("ApprovedBy")]
+        //[ForeignKey("ApprovedBy")]
         [Display(Name = "Approved by")]
         public string ApprovedByID { get; set; }
-        public virtual ApplicationUser ApprovedBy { get; set; } //string ApplicationUserId
+        //public virtual ApplicationUser ApprovedBy { get; set; }
 
         [Display(Name = "Matched Investment profiles")]
-        public virtual ICollection<MMM.MatchMaking> MatchMakings { get; set; }
+        public virtual ICollection<MMM.MatchMaking> MatchMakings { get; set; } //<----------------------
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

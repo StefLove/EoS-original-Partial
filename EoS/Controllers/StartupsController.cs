@@ -110,6 +110,7 @@ namespace EoS.Controllers
         public ActionResult ProjectDetails(string id)
         {
             ViewBag.UserRole = Role.IdeaCarrier.ToString();
+            ViewBag.ApprovedBy = "";
 
             if (id == null)
             {
@@ -126,6 +127,14 @@ namespace EoS.Controllers
             {
                 ViewBag.UserRole = Role.Admin.ToString();
                 ViewBag.IdeaCarrierUserName = startup.User.UserName;
+                if (!string.IsNullOrEmpty(startup.ApprovedByID))
+                {
+                    string approvedBy = db.Users.Where(u => u.Id == startup.ApprovedByID).FirstOrDefault().UserName;
+                    if (string.IsNullOrEmpty(approvedBy))
+                    {
+                        ViewBag.ApprovedBy = "a formal user";
+                    }
+                }
                 return View(startup);
             }
 
@@ -147,7 +156,7 @@ namespace EoS.Controllers
             ViewBag.IdeaCarrierMessage = db.IdeaCarrierMessages.Where(m => m.Id == 1).Select(m => m.Text).Single().ToString();
 
             ViewBag.CountryId = new SelectList(db.Countries, "CountryID", "CountryName");
-            ViewBag.RegionsId = new SelectList(db.SwedishRegions, "RegionID", "RegionName");
+            ViewBag.RegionsId = new SelectList(db.SwedishRegions, "RegionID", "RegionName"); //<----------
             ViewBag.SwedishCountryId = db.Countries.Where(c => c.CountryName == "Sweden").Select(u => u.CountryID).Single();
 
             return View();
@@ -161,13 +170,13 @@ namespace EoS.Controllers
         [Authorize(Roles = "IdeaCarrier")]
         public ActionResult AddNewProject([Bind(Include = "StartupID,UserId,StartupName,CountryID,SwedishRegionID,ProjectDomainID,ProjectSummary,FundingPhaseID,FundingAmountID,FutureFundingNeeded,EstimatedExitPlanID,EstimatedBreakEven,TeamMemberSize,GoalTeamSize,TeamExperience,TeamVisionShared,HaveFixedRoles,PossibleIncomeStreams,InnovationLevelID,ScalabilityID,DeadlineDate,LastSavedDate,CreatedDate,Locked,WillSpendOwnMoney,AlreadySpentMoney,AlreadySpentTime")] Models.IdeaCarrier.Startup model, string submitCommand)
         {
-            if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit"))
-            {   //if user submit the form, lock it for editable
+            //if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit"))
+            //{   //if user submit the form, lock it for editable
                 //this must be before ModelState.IsValid
-                model.Locked = true;
-                TryValidateModel(model);
+            //    model.Locked = true;
+            //    TryValidateModel(model);
                 //return Content(startup.Lock.ToString());
-            }
+            //}
 
             if (ModelState.IsValid)
             {
@@ -184,7 +193,8 @@ namespace EoS.Controllers
                 model.LastSavedDate = DateTime.Now;
                 db.Startups.Add(model);
                 db.SaveChanges();
-                if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Start")) //<-----------"Proceed to the Form"
+
+                if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Proceed")) //<-----------"Proceed to the Project form"
                 {
                     //return Content(startup.StartupID.ToString());
                     return RedirectToAction("ProjectForm", "Startups", new { id = model.StartupID });
@@ -211,7 +221,7 @@ namespace EoS.Controllers
 
         // GET: Startups/Edit/5
         //[HttpGet]
-        [Authorize(Roles = "Admin,IdeaCarrier")]
+        [Authorize(Roles = "IdeaCarrier")]
         public ActionResult ProjectForm(string id) //Edit
         {
             if (User.IsInRole(Role.Admin.ToString())) RedirectToAction("EditAdmin", new { id });
@@ -222,67 +232,51 @@ namespace EoS.Controllers
             }
 
             //These viewBags to handel the current values of the startup properies if exist and provide by other selections
-            Models.IdeaCarrier.Startup currentStartup = db.Startups.Find(id);
-            ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", currentStartup.ProjectDomainID != null ? currentStartup.ProjectDomainID : null);
-            ViewBag.FundingPhaseIdEdit = new SelectList(db.FundingPhases, "FundingPhaseID", "FundingPhaseName", currentStartup.FundingPhaseID != null ? currentStartup.FundingPhaseID : null);
-            ViewBag.FundingNeedIdEdit = new SelectList(db.FundingAmounts, "FundingAmountID", "FundingAmountValue", currentStartup.FundingAmountID != null ? currentStartup.FundingAmountID : null);
-            ViewBag.EstimatedExitPlanIdEdit = new SelectList(db.EstimatedExitPlans, "EstimatedExitPlanID", "EstimatedExitPlanName", currentStartup.EstimatedExitPlanID != null ? currentStartup.EstimatedExitPlanID : null);
-            ViewBag.InnovationLevelIdEdit = new SelectList(db.InnovationLevels, "InnovationLevelID", "InnovationLevelName", currentStartup.InnovationLevelID != null ? currentStartup.InnovationLevelID : null);
-            ViewBag.ScalabilityIdEdit = new SelectList(db.Scalabilities, "ScalabilityID", "ScalabilityName", currentStartup.ScalabilityID != null ? currentStartup.ScalabilityID : null);
+            //Models.IdeaCarrier.Startup currentStartup = db.Startups.Find(id);
+            //ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", currentStartup.ProjectDomainID != null ? currentStartup.ProjectDomainID : null);
+            //ViewBag.FundingPhaseIdEdit = new SelectList(db.FundingPhases, "FundingPhaseID", "FundingPhaseName", currentStartup.FundingPhaseID != null ? currentStartup.FundingPhaseID : null);
+            //ViewBag.FundingNeedIdEdit = new SelectList(db.FundingAmounts, "FundingAmountID", "FundingAmountValue", currentStartup.FundingAmountID != null ? currentStartup.FundingAmountID : null);
+            //ViewBag.EstimatedExitPlanIdEdit = new SelectList(db.EstimatedExitPlans, "EstimatedExitPlanID", "EstimatedExitPlanName", currentStartup.EstimatedExitPlanID != null ? currentStartup.EstimatedExitPlanID : null);
+            //ViewBag.InnovationLevelIdEdit = new SelectList(db.InnovationLevels, "InnovationLevelID", "InnovationLevelName", currentStartup.InnovationLevelID != null ? currentStartup.InnovationLevelID : null);
+            //ViewBag.ScalabilityIdEdit = new SelectList(db.Scalabilities, "ScalabilityID", "ScalabilityName", currentStartup.ScalabilityID != null ? currentStartup.ScalabilityID : null);
 
             //Get the uploaded files size
             //ViewBag.AllowedToUploadMore = AllowedToUploadMore(id);
 
             Models.IdeaCarrier.Startup startup = db.Startups.Find(id);
-            //this query has been modified to hnadle weaknesses checked boxes
             if (startup == null)
             {
                 return HttpNotFound();
             }
 
             //PopulateAssignedWeaknessesData(startup);
-            PopulateAssignedCheckBoxsData(startup);            
+            //this query has been modified to handle weaknesses checked boxes
+            PopulateAssignedCheckBoxsData(startup);
+
+            ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", startup.ProjectDomainID != null ? startup.ProjectDomainID : null);
+            ViewBag.FundingPhaseIdEdit = new SelectList(db.FundingPhases, "FundingPhaseID", "FundingPhaseName", startup.FundingPhaseID != null ? startup.FundingPhaseID : null);
+            ViewBag.FundingNeedIdEdit = new SelectList(db.FundingAmounts, "FundingAmountID", "FundingAmountValue", startup.FundingAmountID != null ? startup.FundingAmountID : null);
+            ViewBag.EstimatedExitPlanIdEdit = new SelectList(db.EstimatedExitPlans, "EstimatedExitPlanID", "EstimatedExitPlanName", startup.EstimatedExitPlanID != null ? startup.EstimatedExitPlanID : null);
+            ViewBag.InnovationLevelIdEdit = new SelectList(db.InnovationLevels, "InnovationLevelID", "InnovationLevelName", startup.InnovationLevelID != null ? startup.InnovationLevelID : null);
+            ViewBag.ScalabilityIdEdit = new SelectList(db.Scalabilities, "ScalabilityID", "ScalabilityName", startup.ScalabilityID != null ? startup.ScalabilityID : null);
 
             return View(startup);
         }
-        
-        private Boolean AllowedToUploadMore(string id)
-        {
-            var documents = db.Documents.Where(d => d.StartupID == id);
-            long maxDocumentLSize = 1133800; // in bytes, This equal 3 Megabyte 3000000
-            long filesSize = 0;
-            bool permission = false;
-            foreach (var document in documents)
-            {
-                var FileVirtualPath = "/Upload/" + document.DocURL;
-                FileInfo File = new FileInfo(Server.MapPath(FileVirtualPath));
-                filesSize += File.Length;
-            }
 
-            if (filesSize < maxDocumentLSize)
-            {
-                permission = true;
-            }
-            else
-            {
-                permission = false;
-            }
-
-            return permission;
-        }
-
-        // POST: Startups/Edit/5
+        // POST: Startups/ProjectForm/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         //[ValidateInput(false)]
-        [Authorize(Roles = "Admin, IdeaCarrier")]
+        [Authorize(Roles = "IdeaCarrier")]
         //TeamWeaknesses -------->ProjectFundingDivisions<----------  ,AllowSharingDisplayName,CountryID,SwedishRegionID,DeadlineDate,CreatedDate  StartupID,UserId,StartupName,ProjectDomainID,ProjectSummary,AllowSharing,FundingPhaseID,FundingAmountID,FutureFundingNeeded,AlreadySpentTime,AlreadySpentMoney,WillSpendOwnMoney,EstimatedExitPlanID,EstimatedBreakEven,PossibleIncomeStreams,HavePayingCustomers,TeamMemberSize,TeamExperience,TeamVision,HaveFixedRoles,LookingForActiveInvestors,InnovationLevelID,ScalabilityID,Locked,LastSavedDate
         public ActionResult ProjectForm([Bind(Include = "StartupID,UserId,CountryID,SwedishRegionID,StartupName,ProjectDomainID,DeadlineDate,ProjectSummary,AllowSharing,FundingPhaseID,FundingAmountID,EstimatedExitPlanID,FutureFundingNeeded,AlreadySpentTime,AlreadySpentMoney,WillSpendOwnMoney,EstimatedBreakEven,PossibleIncomeStreams,HavePayingCustomers,TeamMemberSize,TeamExperience,TeamVisionShared,HaveFixedRoles,LookingForActiveInvestors,InnovationLevelID,ScalabilityID,LastSavedDate,CreatedDate,Locked")] Models.IdeaCarrier.Startup model, string[] selectedSharedToInvestors, string[] selectedWeaknesses, string[] selectedOutcomes, string activeTab, string submitCommand)
         {
+            //if (model.Locked) return RedirectToAction("ProjectDetails", new { id = model.StartupID }); //<----------
+
             if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit"))
-            {   //if user submit the form, lock it for editable
+            {   //if user submits the form, lock it in order to be editable
                 //this must be before ModelState.IsValid
                 model.Locked = true; //<----------------------IsBeeingSubmitted
                 if (selectedOutcomes == null)
@@ -307,12 +301,15 @@ namespace EoS.Controllers
                 UpdateStartupCheckBoxsData(selectedWeaknesses, selectedOutcomes, selectedSharedToInvestors, model);
 
                 db.SaveChanges();
-                
+
                 //if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Upload"))
-                //{   //save the data of the form before upload the file to prevent lost of data
+                //{   //save the data of the form before upload the file to prevent loss of data
                 //    return RedirectToAction("UploadFile", "Startups", new { StartupID = model.StartupID });  
                 //}
-                    return RedirectToAction("Index");
+
+                if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit")) return RedirectToAction("ProjectDetails", new { id = model.StartupID });
+                                                                                              //return RedirectToAction("Index");
+
                 //}
                 //else ModelState.AddModelError("Locked", "Form locked, not possible to change anything in it, please contact Admin by the contact form.");
             }
@@ -320,6 +317,7 @@ namespace EoS.Controllers
 
             //In Case of validation error, reload the existing selected options if any, and provide by new selection options
             Models.IdeaCarrier.Startup currentStartup = db.Startups.Find(model.StartupID);
+
             ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", currentStartup.ProjectDomainID != null ? currentStartup.ProjectDomainID : null);
             ViewBag.FundingPhaseIdEdit = new SelectList(db.FundingPhases, "FundingPhaseID", "FundingPhaseName", currentStartup.FundingPhaseID != null ? currentStartup.FundingPhaseID : null);
             ViewBag.FundingNeedIdEdit = new SelectList(db.FundingAmounts, "FundingAmountID", "FundingAmountValue", currentStartup.FundingAmountID != null ? currentStartup.FundingAmountID : null);
@@ -377,7 +375,7 @@ namespace EoS.Controllers
             StartupEditAdminViewModel model = new StartupEditAdminViewModel
             {
                 StartupID = startup.StartupID, //==id
-                AllowSharingDisplayName = startup.AllowSharingDisplayName,
+                //AllowSharingDisplayName = startup.AllowSharingDisplayName,
                 ProjectSummary = startup.ProjectSummary,
             };
 
@@ -387,7 +385,7 @@ namespace EoS.Controllers
         // POST: Startups/EditAdmin/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ValidateInput(false)] //<-------------------------------------------------------------------------Will not crash because of HTML tags!
+        //[ValidateInput(false)] //<-------------------------------------------------------------------------Will not crash because of HTML tags!
         [Authorize(Roles = "Admin")] /*[Bind(Include = "StartupID,ProjectSummary,Locked,Approved")]*/
         public ActionResult EditAdmin(StartupEditAdminViewModel model)
         {
@@ -399,12 +397,12 @@ namespace EoS.Controllers
                     return HttpNotFound();
                 }
 
-                startup.AllowSharingDisplayName = model.AllowSharingDisplayName;
+                //startup.AllowSharingDisplayName = model.AllowSharingDisplayName;
                 startup.ProjectSummary = model.ProjectSummary;
                  
                 db.Entry(startup).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Details", new { id = startup.StartupID });
+                return RedirectToAction("ProjectDetails", new { id = startup.StartupID });
             }
             return View(model);
         }
@@ -441,6 +439,25 @@ namespace EoS.Controllers
                 DeleteDocument(document.DocId, document.DocURL, null);
             }
 
+            //db.AllowedInvestors
+            //db.EstimatedExitPlans
+            //db.FundingAmounts
+            //db.FundingDivisions
+
+            //Delete FundingDivisionStartups <--------------------------------------------
+            //var fundigDivisions = db.FundingDivisions.Where(fd => fd...).ToList();
+            var fundingDivisionStartups = db.FundingDivisionStartups.Where(fds => fds.StartupID == id).ToList(); //<------------------------
+            foreach (var fundingDivisionStartup in fundingDivisionStartups)
+            {
+                db.FundingDivisionStartups.Remove(fundingDivisionStartup);
+            }
+
+            //db.FundingPhases
+            //db.InnovationLevels?
+            //db.TeamWeaknesses?
+            //db.Outcomes?
+            //db.Scalabilities
+
             db.Startups.Remove(startup);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -459,11 +476,11 @@ namespace EoS.Controllers
             }
         }
 
+        //--------------------------------------------------------------
         // for Uploading single files:
-
         // GET:
         [HttpGet]
-        [Authorize(Roles = "Admin, IdeaCarrier")]
+        [Authorize(Roles = "Admin, IdeaCarrier")] //UploadDocumentFile(
         public ActionResult UploadDocument(string id) //id==startupID
         {
             ViewBag.StartupID = id;
@@ -516,7 +533,12 @@ namespace EoS.Controllers
         {          
             ViewBag.locked = db.Startups.Find(id).Locked;
             var documents = db.Documents.Where(d => d.StartupID == id);
-   
+
+            if (documents == null)
+            {
+                return HttpNotFound("No documents found."); //<--------------------------added
+            }
+
             return PartialView(documents.ToList());
         }
 
@@ -524,7 +546,6 @@ namespace EoS.Controllers
         [Authorize(Roles = "Admin, IdeaCarrier")]
         public FileResult DownloadDocument(string docLink, string name)
         {
-
             var FileVirtualPath = "/Upload/" + docLink;
             return File(FileVirtualPath, "application/force-download", name);
         }
@@ -544,6 +565,31 @@ namespace EoS.Controllers
             return Redirect(redirectString);
         }
 
+        private Boolean AllowedToUploadMore(string id)
+        {
+            var documents = db.Documents.Where(d => d.StartupID == id);
+            long maxDocumentLSize = 1133800; // in bytes, This equal 3 Megabyte 3000000
+            long filesSize = 0;
+            bool permission = false;
+            foreach (var document in documents)
+            {
+                var FileVirtualPath = "/Upload/" + document.DocURL;
+                FileInfo File = new FileInfo(Server.MapPath(FileVirtualPath));
+                filesSize += File.Length;
+            }
+
+            if (filesSize < maxDocumentLSize)
+            {
+                permission = true;
+            }
+            else
+            {
+                permission = false;
+            }
+
+            return permission;
+        }
+        //-----------------------------------------------------------------
         private void UpdateStartupCheckBoxsData(string[] selectedWeaknesses, string[] selectedOutcomes, string[] selectedSharedToInvestors, Models.IdeaCarrier.Startup startup)
         {
             //********************************************************************************//
@@ -811,7 +857,7 @@ namespace EoS.Controllers
         /************************************************************************/
         // GET:
         [HttpGet]  
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")] //<--------------------
         public ActionResult CasePreview(string id)
         {
             if (id == null)
@@ -826,11 +872,18 @@ namespace EoS.Controllers
             return View(startup);
         }
 
-        [Authorize(Roles = "Admin,Investor")]
+        [Authorize(Roles = "Admin")] //,Investor
         public ActionResult GeneratePDF(string id)
         {
             //return new Rotativa.ActionAsPdf("CasePreview/"+id); ViewAsPdf
-            return new Rotativa.ActionAsPdf("CasePreview", new { id });
+            try //<-----------------------------------------------------------------------
+            {
+                return new Rotativa.ActionAsPdf("CasePreview", new { id });
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("CasePreview", new { id });
+            }
         }
 
         [Authorize(Roles = "Admin")]
@@ -848,15 +901,16 @@ namespace EoS.Controllers
                 return HttpNotFound();
             }
 
-            startup.Approved = !startup.Approved;
-            startup.ApprovedByID = User.Identity.GetUserId();
-            
+            startup.Approved = !(startup.Approved);
+            if (startup.Approved) startup.ApprovedByID = User.Identity.GetUserId(); //<-------------------------
+            else startup.ApprovedByID = "";
+
             db.Entry(startup).State = EntityState.Modified;
             db.SaveChanges();
 
             if (!string.IsNullOrWhiteSpace(redirect))
             {
-                if (redirect == "Details") return RedirectToAction("Details", new { id });
+                if (redirect == "Details") return RedirectToAction("ProjectDetails", new { id });
             }
 
             return RedirectToAction("Index");
@@ -886,7 +940,7 @@ namespace EoS.Controllers
 
             if (!string.IsNullOrWhiteSpace(redirect))
             {
-                if (redirect == "Details") return RedirectToAction("Details", new { id });
+                if (redirect == "Details") return RedirectToAction("ProjectDetails", new { id });
             }
 
             return RedirectToAction("Index");

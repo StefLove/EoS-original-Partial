@@ -9,11 +9,11 @@ namespace EoS.Models.Shared
         public int CountryID { get; set; }
 
         [Required]
-        [Display(Name = "Country Name")]
+        [Display(Name = "Country name")]
         public string CountryName { get; set; }
 
         [Required]
-        [Display(Name = "Country Abbreviation")]
+        [Display(Name = "Country abbreviation")]
         public string CountryAbbreviation { get; set; }
     }
 }

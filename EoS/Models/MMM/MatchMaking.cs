@@ -11,7 +11,7 @@ namespace EoS.Models.MMM
     {
         public MatchMaking()
         {
-            MaxNoOfMatches = this.GetType().GetMembers().Count() - 7;
+            MaxNoOfMatches = this.GetType().GetMembers().Count() - 7; //<-------------
         }
 
         [Key]
@@ -29,28 +29,28 @@ namespace EoS.Models.MMM
         public virtual IdeaCarrier.Startup Startup { get; set; }
 
         [Display(Name = "Project domain")] //1
-        public bool ProjectDomainMatched { get; set; }
+        public bool? ProjectDomainMatched { get; set; }
 
         [Display(Name = "Funding phase")] //2
-        public bool FundingPhaseMatched { get; set; }
+        public bool? FundingPhaseMatched { get; set; }
 
         [Display(Name = "Funding amount")] //3
-        public bool FundingAmountMatched { get; set; }
+        public bool? FundingAmountMatched { get; set; }
 
         [Display(Name = "Estimated exit plan")] //4
-        public bool EstimatedExitPlanMatched { get; set; }
+        public bool? EstimatedExitPlanMatched { get; set; }
 
         [Display(Name = "Outcomes")] //5
-        public bool OutcomesMatched { get; set; }
+        public bool? OutcomesMatched { get; set; }
 
         [Display(Name = "Level of innovation")] //6
-        public bool InnovationLevelMatched { get; set; }
+        public bool? InnovationLevelMatched { get; set; }
 
         [Display(Name = "Required scalability")] //7
-        public bool ScalabilityMatched { get; set; }
+        public bool? ScalabilityMatched { get; set; }
 
         [Display(Name = "Team skills")] //8
-        public bool TeamSkillsMatched { get; set; }
+        public bool? TeamSkillsMatched { get; set; }
 
         [Display(Name = "Number of matches")]
         public int NoOfMatches { get; internal set; }

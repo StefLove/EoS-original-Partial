@@ -8,8 +8,7 @@
                 @{ List<EoS.Models.IdeaCarrier.StartupOutcomeViewModel> Outcomes = ViewBag.outcomesViewModel;
                     foreach (var outcome in Outcomes)
                     {
-                        @:
-                        <td><input type="checkbox" name="selectedOutcomes" value="@outcome.OutcomeID" @(Html.Raw(outcome.Assigned ? "checked=\"checked\"" : "")) /> @outcome.OutcomeName</td>
+                        @:<td><input type="checkbox" name="selectedOutcomes" value="@outcome.OutcomeID" @(Html.Raw(outcome.Assigned ? "checked=\"checked\"" : "")) /> @outcome.OutcomeName</td>
                         @:</tr><tr>
                     }
                 }

@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<EoS.Models.MMM.MatchMaking>
 
 @{
-    ViewBag.Title = "Match Making Results";
+    ViewBag.Title = "Match making results";
 }
 
 <h2>@ViewBag.Title</h2>
@@ -68,16 +68,15 @@
 
         @if (!item.Sent)
         {
-            <td>
-                @Html.ActionLink("Match", "Details", "MatchMakings", new { id = item.MatchMakingId, sendReport = true }, new { @class = "btn btn-primary" })
+            <td class="hidden-print">
+                @Html.ActionLink("Send", "Details", "MatchMakings", new { id = item.MatchMakingId, sendReport = true }, new { @class = "btn btn-primary" })
             </td>
         }
 
-        <td class="hidden-print">
-            @*@Html.ActionLink("Edit", "Edit", new { id=item.MatchMakingId }) |*@
-            @Html.ActionLink("Details", "Details", new { id=item.MatchMakingId }) @*|
-            @Html.ActionLink("Delete", "Delete", new { id=item.MatchMakingId })*@
-        </td>
+            <td class="hidden-print">
+                @Html.ActionLink("Details", "Details", new { id = item.MatchMakingId }) @*|
+                @Html.ActionLink("Delete", "Delete", new { id=item.MatchMakingId }, new { @style = "color:red" })*@
+            </td>
     </tr>
 }
 

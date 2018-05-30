@@ -89,7 +89,7 @@ namespace EoS.Controllers
         // POST: Home/Contact
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ValidateInput(false)]
+        //[ValidateInput(false)] <----------------------
         [Authorize]
         public async Task<ActionResult> Contact(Models.Home.ContactEmailFormViewModel model)
         {

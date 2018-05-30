@@ -20,7 +20,7 @@
                     LoadingElementId = "Progress",
                     InsertionMode = InsertionMode.Replace, /*Confirm = "...",*/
                     //AllowCache = false
-                }, new { @id = "StartUp_ProjectForm" }))
+                }, new { @id = "StartUpProjectForm" }))
 {
     @Html.AntiForgeryToken()
 
@@ -46,15 +46,16 @@
             <input type="hidden" name="activeTab" id="activeTab" value="all_tabs" />
 
             @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
-    {
-        <div class="alert alert-danger">
-            <a href="#" class="close" data-dismiss="alert">×</a>
-            <h4>Validation Errors</h4>
-            @Html.ValidationSummary()
-        </div>
-}
+            {
+                <div class="alert alert-danger">
+                <a href="#" class="close" data-dismiss="alert">×</a>
+                <h4>Validation Errors</h4>
+                @Html.ValidationSummary()
+                </div>
+            }
 
             <!-- Tabstrip -->
+
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="active" id="tab_Project">
                     <a href="#Project" role="tab" data-toggle="tab" onclick="SaveData()">Project</a>
@@ -89,7 +90,6 @@
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="Funding">
-
                     @{
                 Html.RenderPartial("_ProjectForm_Funding");
                     }
@@ -170,22 +170,23 @@
 
         function SaveData() {
 
-                activateTab($('.active')[0].id);
+            activateTab($('.active')[0].id);
+
         //$("input[name='activeTab']")[0].value = ;
 
         //alert($('.active')[0].id);
         //alert($("input[name='activeTab']")[0].value);
 
-        $('#StartUp_ProjectForm').submit();
+        $('#StartUpProjectForm').submit();
         }
 
-            function OnSuccess(response) {
-        $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.<br />');
-            }
+        function OnSuccess(response) {
+            $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.<br />');
+        }
 
-            function OnFailure(response) {
-        $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' could not be saved! <br />' + response.responseText);
-            }
+        function OnFailure(response) {
+            $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' could not be saved! <br />' + response.responseText);
+        }
 
             //function OnSuccess(response) { //(data, textStatus, jqXHR)
             //    //document.getElementById("Message").innerHTML = "Data saved and updated";
@@ -201,8 +202,8 @@
             //    else $('#Message').html('');
             //}
 
-            function activateTab(activeTabName) {
-                $("input[name='activeTab']")[0].value = activeTabName;
-            }
+        function activateTab(activeTabId) {
+            $("input[name='activeTab']")[0].value = activeTabId;
+        }
 
 </script>

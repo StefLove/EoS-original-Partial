@@ -64,7 +64,8 @@
                 @Html.DisplayNameFor(model => model.SwedishRegionID)
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.SwedishRegion.RegionName)
+                @ViewBag.SwedishRegionName
+                @*@Html.DisplayFor(model => model.SwedishRegion.RegionName)*@
             </dd>
         }
 
@@ -354,16 +355,16 @@
             if (Model.Locked)
             {
                 <dt>
-                    @Html.Raw("Profile Form")
+                    @Html.Raw("Profile form")
                 </dt>
                 <dd>
-                    @Html.ActionLink("Unlock", "Unlock", new { id = Model.InvestmentID, redirect = "Details" }, new { @class = "btn btn-primary" })
+                    @Html.ActionLink("Unlock", "Unlock", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-primary" })
                 </dd>
             }
             else if (!Model.Locked)
             {
                 <dt>
-                    @Html.Raw("Form")
+                    @Html.Raw("Profile form")
                 </dt>
                 <dd>
                     @*@Html.Raw(DateTime.Now.Subtract(Model.LastSavedDate).Days)
@@ -382,6 +383,7 @@
                     </span>
                 </dd>
             }
+
             @*if (!Model.Locked && DateTime.Now.Subtract(Model.LastSavedDate).Days >= 1)
             {
                 <dt class="hidden-print">
@@ -406,46 +408,44 @@
                 }
             </dd>*@
             
-
-            }
-                else //if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
+        }
+        else //if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
             {
             <dt>
-                @Html.Raw("Form")
+                @Html.Raw("Profile form")
             </dt>
             <dd>
                 @if (Model.Locked)
                 {
-                    @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + Model.InvestmentID }, new { @class = "btn btn-success" })
+                    @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + Model.InvestmentID }, new { @class = "btn btn-primary" })
                 }
                 else
                 {
                     @Html.ActionLink("Finish it", "ProfileForm", new { id = Model.InvestmentID }, new { @class = "btn btn-danger" })
                 }
-                @Html.DisplayFor(model => model.Locked)
+                @*@Html.DisplayFor(model => model.Locked)*@
             </dd>
         }
         <dt>
             @Html.DisplayNameFor(model => model.Active)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Active)
+            <div class="hidden-print">
+                @if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
+        {
+            if (Model.Active)
+            {
+                @Html.ActionLink("Unactive", "Activate", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-primary", @style = "width:120px" })
+    }
+    else
+    {
+        @Html.ActionLink("Activate", "Activate", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-success", @style = "width:120px" })
+}
+}
+            </div>
+            @*@Html.DisplayFor(model => model.Active)*@
         </dd>
     </dl>
-</div>
-
-<div class="hidden-print">
-    @if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
-    {
-        if (Model.Active)
-        {
-            @Html.ActionLink("Unactive", "Activate", new { id = Model.InvestmentID, redirect = "Details" }, new { @class = "btn btn-success", @style = "width:120px" })
-        }
-        else
-        {
-            @Html.ActionLink("Activate", "Activate", new { id = Model.InvestmentID, redirect = "Details" }, new { @class = "btn btn-danger", @style = "width:120px" })
-        }
-    }
 </div>
 
 <p class="hidden-print">

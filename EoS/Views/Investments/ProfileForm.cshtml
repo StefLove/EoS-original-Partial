@@ -10,34 +10,41 @@
                 new AjaxOptions
                 {
                     HttpMethod = "POST",
-                    //UpdateTargetId = "InvestmentProfileForm",
-                    OnSuccess = "OnSuccess", 
+        //UpdateTargetId = "InvestmentProfileForm",
+        OnSuccess = "OnSuccess",
                     OnFailure = "OnFailure",
                     LoadingElementId = "Progress",
-                    InsertionMode = InsertionMode.Replace, /*Confirm = "...",*/
-                    //AllowCache = false
-                }, new { @id = "InvestmentProfileForm" }))
+                    InsertionMode = InsertionMode.Replace,
+        //OnComplete = "OnComplete",
+        //AllowCache = false
+    }, new { @id = "InvestmentProfileForm" }))
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
         <div id="wizard">
 
-            <div id="Message" class="text-danger">Your answers are automatically saved when navigating (on reloading only in Project tab), but the form is not submitted.</div>
-            <hr />
+            @if (Model.Locked)
+            {
+                <div id="Formlocked" class="text-danger">The form is locked.</div>
+                <hr />
+            }
+            else
+            {
+                <div id="Message" class="text-danger">Your answers are automatically saved when navigating (on reloading only in Project tab), but the form is not submitted.</div>
+                <hr />
+            }
 
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
 
-            @Html.HiddenFor(model => model.InvestmentID)
-
-            @*unnecessary---*@
             @Html.HiddenFor(model => model.UserId)
-
-            @Html.HiddenFor(model => model.CountryID, new { htmlAttributes = new { @class = "form-control" } }) @*---unnecessary*@
-            @Html.HiddenFor(model => model.SwedishRegionID, new { htmlAttributes = new { @class = "form-control" } }) @*---unnecessary*@
-            @Html.HiddenFor(model => model.CreatedDate) @*---unnecessary*@
-            @*@Html.HiddenFor(model => model.DueDate)*@
-            @Html.HiddenFor(model => model.Locked) @*---unnecessary*@
+            @Html.HiddenFor(model => model.InvestmentID)
+            @Html.HiddenFor(model => model.CreatedDate)
+            @Html.HiddenFor(model => model.DueDate)
+            @Html.HiddenFor(model => model.CountryID)
+            @Html.HiddenFor(model => model.SwedishRegionID)
+            @Html.HiddenFor(model => model.Active)
+            @*@Html.HiddenFor(model => model.Locked)*@
 
             <input type="hidden" name="activeTab" id="activeTab" value="all_tabs" />
 
@@ -46,26 +53,28 @@
                 <div class="alert alert-danger">
                     <a href="#" class="close" data-dismiss="alert">×</a>
                     <h4>Validation Errors</h4>
-                    @Html.ValidationSummary()
+                    @*@Html.ValidationSummary()*@
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 </div>
             }
 
             <!-- Tabstrip -->
+
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="active" id="tab_Profile">
-                    | <a href="#Profile" role="tab" data-toggle="tab" onclick="SaveData()">Profile</a>
+                    <a href="#Profile" role="tab" data-toggle="tab" onclick="SaveData()">Profile</a>
                 </li>
                 <li role="presentation" id="tab_Funding">
-                    | <a href="#Funding" role="tab" data-toggle="tab" onclick="SaveData()">Funding</a>
+                    <a href="#Funding" role="tab" data-toggle="tab" onclick="SaveData()">Funding</a>
                 </li>
                 <li role="presentation" id="tab_Budget">
-                    | <a href="#Budget" role="tab" data-toggle="tab" onclick="SaveData()">Budget</a>
+                    <a href="#Budget" role="tab" data-toggle="tab" onclick="SaveData()">Budget</a>
                 </li>
                 <li role="presentation" id="tab_Team">
-                    | <a href="#Team" role="tab" data-toggle="tab" onclick="SaveData()">Team</a>
+                    <a href="#Team" role="tab" data-toggle="tab" onclick="SaveData()">Team</a>
                 </li>
                 <li role="presentation" id="tab_Outcome">
-                    | <a href="#Outcome" role="tab" data-toggle="tab" onclick="SaveData()">Outcome</a>
+                    <a href="#Outcome" role="tab" data-toggle="tab" onclick="SaveData()">Outcome</a>
                 </li>
             </ul>
 
@@ -110,17 +119,21 @@
             <div class="form-group hidden-print">
                 <div class="col-md-offset-0 col-md-10">
                     <div style="float:right">
-                        <input type="button" class="btn button-next btn-info" name="next" value="Next" onclick="SaveData()"/>
-                        <input type="button" class="btn button-last btn-info" name="last" value="Last" onclick="SaveData()"/>
+                        <input type="button" class="btn button-next btn-info" name="next" value="Next" onclick="SaveData()" />
+                        <input type="button" class="btn button-last btn-info" name="last" value="Last" onclick="SaveData()" />
                     </div>
                     <div style="float:left">
-                        <input type="button" class="btn button-first btn-info" name="first" value="First" onclick="SaveData()"/>
-                        <input type="button" class="btn button-previous btn-info" name="previous" value="Previous" onclick="SaveData()"/>
+                        <input type="button" class="btn button-first btn-info" name="first" value="First" onclick="SaveData()" />
+                        <input type="button" class="btn button-previous btn-info" name="previous" value="Previous" onclick="SaveData()" />
                     </div>
-                    <div class="col-md-offset-4">
-                        @*<input type="submit" value="Save your answers before returning later" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')"/>&nbsp;&nbsp;*@
-                        <input type="submit" value="Submit & lock the form" class="btn btn-primary" name="submitCommand" onclick="return confirm('Are you sure you wish to submit this form? (It will not be editable any more)');" />
-                    </div>
+                    @if (!Model.Locked)
+                    {
+                        <div class="col-md-offset-4">
+                            @*<input type="submit" value="Save your answers before returning later" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')"/>&nbsp;&nbsp;*@
+                            <input type="submit" value="Submit & lock the form" class="btn btn-primary" name="submitCommand" /> @*onclick="submitProfileForm()"*@
+                            @* location.href = '~Views/Investments/ProfileDetails/@Model.InvestmentID' "*@
+                        </div>
+                    }
                 </div>
             </div>
 
@@ -128,6 +141,8 @@
     </div>
 }
 
+@if (!Model.Locked)
+{
     <div id="Progress" class="modal text-danger text-center center-block hidden-print" style="width:100%; height:100%; left:50%; top:40%;">
         <div style="position:absolute;">
             @*style="background-color:black; width:300px; border-radius:25px; border: 10px solid red;*@
@@ -135,15 +150,29 @@
             <img src="~/img/ajax_loader.gif" />
         </div>
     </div>
+}
+    <div class="hidden-print">
+        @Html.ActionLink("Back to your Investment profiles", "Index") |
+        @Html.ActionLink("Details", "ProfileDetails", new { id = Model.InvestmentID })
+    </div>
 
-<div class="hidden-print">
-    @Html.ActionLink("Back to your Investment profiles", "Index")
-</div>
+    <script type="text/javascript">
 
-<script type="text/javascript">
+    //if (@Model.Locked) ==> lock all items in form
+
+    window.onload = function (evt) { //<---------------------!!!
+        SaveData();
+    }
 
     window.onbeforeunload = function (evt) {
         SaveData();
+    }
+
+    function submitProfileForm() {
+        if (confirm('Do you really wish to submit this form? (It will not be editable any more)') {
+            $('#InvestmentProfileForm').submit();
+            location.href = '/Investments/ProfileDetails/@Model.InvestmentID';
+        }
     }
 
     function SaveData() {
@@ -152,20 +181,24 @@
     }
 
     function OnSuccess(response) { //(data, textStatus, jqXHR)
-        if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
-            $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.');
-        else $('#Message').html('');
+        //if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
+        $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.');
+        //else $('#Message').html('');
     }
 
     function OnFailure(response) {
-        if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
-            $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' could not be saved!');
-        else $('#Message').html('');
+        //if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
+        $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' could not be saved!');
+        //else $('#Message').html('');
     }
+
+    @*function OnComplete() {
+        location.href = @Html.Action("ProfileDetails", new { id = Model.InvestmentID })
+    }*@
 
     function activateTab(activeTabName) {
         $("input[name='activeTab']")[0].value = activeTabName;
     }
 
-</script>
+    </script>
 

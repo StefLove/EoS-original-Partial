@@ -1,7 +1,7 @@
 ﻿@model EoS.Models.MMM.MatchMaking
 
 @{
-    ViewBag.Title = "Match Making Result Details";
+    ViewBag.Title = "Match making result details";
 }
 
 <h3>@ViewBag.Titles</h3>
@@ -12,7 +12,7 @@
 }
 
 <div>
-    @*<h4>MatchMaking</h4>*@
+    @*<h4>Match making</h4>*@
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -21,21 +21,18 @@
         <dd>
             @Html.DisplayFor(model => model.MatchMakingDate)
         </dd>
-
-        <dt>
+        @*<dt>
             @Html.DisplayNameFor(model => model.Sent)
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Sent)
-        </dd>
-
+        </dd>*@
         <dt>
             @Html.DisplayNameFor(model => model.InvestmentId)
         </dt>
         <dd>
             @Html.DisplayFor(model => model.InvestmentId)
         </dd>
-
         <dt>
             @Html.DisplayNameFor(model => model.StartupId)
         </dt>
@@ -43,75 +40,109 @@
             @Html.DisplayFor(model => model.StartupId)
         </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ProjectDomainMatched) @*1*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.ProjectDomainMatched)
-        </dd>
+        @if (Model.ProjectDomainMatched.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.ProjectDomainMatched) @*1*@
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ProjectDomainMatched)
+            </dd>
+        }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.FundingAmountMatched) @*3*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.FundingAmountMatched)
-        </dd>
+        @if (Model.FundingPhaseMatched.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.FundingPhaseMatched) @*2*@
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FundingPhaseMatched)
+            </dd>
+        }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.FundingPhaseMatched) @*2*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.FundingPhaseMatched)
-        </dd>
+        @if (Model.FundingAmountMatched.HasValue)
+        { //<-------------------------------------------------------
+            <dt>
+                @Html.DisplayNameFor(model => model.FundingAmountMatched) @*3*@
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FundingAmountMatched)
+            </dd>
+        }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.EstimatedExitPlanMatched) @*4*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.EstimatedExitPlanMatched)
-        </dd>
+        @if (Model.FundingAmountMatched.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.FundingAmountMatched) @*3*@
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FundingAmountMatched)
+            </dd>
+        }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.OutcomesMatched) @*5*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.OutcomesMatched)
-        </dd>
+        @if (Model.EstimatedExitPlanMatched.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.EstimatedExitPlanMatched) @*4*@
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.EstimatedExitPlanMatched)
+            </dd>
+        }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.InnovationLevelMatched) @*6*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.InnovationLevelMatched)
-        </dd>
+        @if (Model.OutcomesMatched.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.OutcomesMatched) @*5*@
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.OutcomesMatched)
+            </dd>
+        }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ScalabilityMatched) @*7*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.ScalabilityMatched)
-        </dd>
+        @if (Model.InnovationLevelMatched.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.InnovationLevelMatched) @*6*@
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.InnovationLevelMatched)
+            </dd>
+        }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.TeamSkillsMatched) @*8*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.TeamSkillsMatched)
-        </dd>
+        @if (Model.ScalabilityMatched.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.ScalabilityMatched) @*7*@
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ScalabilityMatched)
+            </dd>
+        }
 
-        @*<dt>
-            @Html.DisplayNameFor(model => model.TeamMemberSizeMatched)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.TeamMemberSizeMatched)
-        </dd>
+        @if (Model.TeamSkillsMatched.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.TeamSkillsMatched) @*8*@
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.TeamSkillsMatched)
+            </dd>
+        }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.TeamExperienceMatched)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.TeamExperienceMatched)
-        </dd>*@
+    @*<dt>
+        @Html.DisplayNameFor(model => model.TeamMemberSizeMatched)
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.TeamMemberSizeMatched)
+    </dd>
+
+    <dt>
+        @Html.DisplayNameFor(model => model.TeamExperienceMatched)
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.TeamExperienceMatched)
+    </dd>*@
 
         <dt>
             @Html.DisplayNameFor(model => model.NoOfMatches)
@@ -133,11 +164,12 @@
 @if (!Model.Sent)
 {
     <div>
-        @Html.ActionLink("Match", "Details", "MatchMakings", new { id = Model.MatchMakingId, sendReport = true }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Send report to Investor", "Details", "MatchMakings", new { id = Model.MatchMakingId, sendReport = true }, new { @class = "btn btn-primary" })
     </div>
 }
 
-<p class="hidden-print">
-    @Html.ActionLink("Back to List", "Index", new { matchDate = Model.MatchMakingDate })
-</p>
+    <p class="hidden-print">
+        @Html.ActionLink("Back to Result list", "Results", new { matchDate = Model.MatchMakingDate }) |
+        @Html.ActionLink("Delete", "Delete", new { id = Model.MatchMakingId }, new { @style = "color:red" })
+    </p>
 

@@ -34,15 +34,18 @@
 </div>
 
 <div class="form-group">
-    @if (string.IsNullOrWhiteSpace(Model.AllowSharingDisplayName))
-    {
-        @Html.LabelFor(model => model.AllowSharing, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" }) @*col-md-9  col-md-offset-2"*@
-    }
-    else
-    {
-        @*@Html.??(model => model.AllowSharingDisplayName, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align: left" })*@
-        @Html.Raw("<span class=\"control-label col-md-2\" style = \"text-align:left;font-weight:bold\">" + Model.AllowSharingDisplayName + "</span>");
-    }
+
+    @*if (string.IsNullOrWhiteSpace(Model.AllowSharingDisplayName))
+        {
+            Html.LabelFor(model => model.AllowSharing, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+        }
+        else
+        {
+            Html.DisplayFor(model => model.AllowSharingDisplayName, new { class = "control-label col-md-2", style = "text-align: left" })
+            Html.Raw("<span class=\"control-label col-md-2\" style = \"text-align:left;font-weight:bold\">" + Model.AllowSharingDisplayName + "</span>");
+        }*@
+
+    @Html.LabelFor(model => model.AllowSharing, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" }) @*col-md-9  col-md-offset-2"*@
     <div class="col-md-1">
         <div class="checkbox">
             @Html.EditorFor(model => model.AllowSharing)

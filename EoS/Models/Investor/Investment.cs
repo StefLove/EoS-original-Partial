@@ -25,10 +25,10 @@ namespace EoS.Models.Investor
         public int CountryID { get; set; }
         public virtual Shared.Country Country { get; set; }
 
-        [ForeignKey("SwedishRegion")]
+        //[ForeignKey("SwedishRegion")]
         [Display(Name = "Swedish region (Län)")]
         public int? SwedishRegionID { get; set; }
-        public virtual Shared.SwedishRegion SwedishRegion { get; set; }
+        public virtual Shared.SwedishRegion SwedishRegion { get; set; } //<----does'nt work!!
 
         //Profile----------------------------------------------
 
@@ -90,7 +90,6 @@ namespace EoS.Models.Investor
         [Display(Name = "Skills you might bring to the team")]
         public virtual ICollection<TeamSkill> TeamSkills { get; set; }
 
-
         //Outcome----------------------------------------------
 
         [Display(Name = "Outcomes")]
@@ -128,11 +127,11 @@ namespace EoS.Models.Investor
         [Display(Name = "Locked")]
         public bool Locked { get; set; }
 
-        [Display(Name = "Profile is active")]
+        [Display(Name = "Profile activity")]
         public bool Active { get; set; }
 
         [Display(Name = "Matched Startup projects")]
-        public virtual ICollection<MMM.MatchMaking> MatchMakings { get; set; }
+        public virtual ICollection<MMM.MatchMaking> MatchMakings { get; set; } //<-------------------------
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

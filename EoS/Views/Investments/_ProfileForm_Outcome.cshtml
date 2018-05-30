@@ -54,6 +54,11 @@
     </div>
 </div>
 
-<div class="col-md-offset-4">
-    <input type="submit" value="Save your answers before returning later" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
-</div>
+@if (!Model.Locked)
+{
+    <div class="col-md-offset-4">
+        <input type="submit" value="Save your answers for this tab" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
+    </div>
+}
+
+    <br />&nbsp;<br />

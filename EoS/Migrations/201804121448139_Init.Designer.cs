@@ -13,7 +13,7 @@ namespace EoS.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201801310142497_Init"; }
+            get { return "201804121448139_Init"; }
         }
         
         string IMigrationMetadata.Source

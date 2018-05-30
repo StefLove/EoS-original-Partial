@@ -12,12 +12,19 @@
 <div class="form-group">
     @Html.LabelFor(model => model.ProjectDomainID, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
-        @Html.DropDownListFor(model => model.ProjectDomainID, (SelectList)ViewBag.projectDomainIdEdit, "Select:", new { @class = "form-control", @onchange = "toggleExtraDomainDisplay(this.value, " + @ViewBag.otherDomainId + ")" })
+        @Html.DropDownListFor(model => model.ProjectDomainID, (SelectList)ViewBag.projectDomainIdEdit, "Select:", new
+        {
+            @class = "form-control"@*, @onchange = "toggleExtraDomainDisplay(this.value, " + @ViewBag.otherDomainId + ")"*@})
         @Html.ValidationMessageFor(model => model.ProjectDomainID, "", new { @class = "text-danger" })
     </div>
 </div>
 
-<div class="col-md-offset-4">
-    <input type="submit" value="Save your answers before returning later" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
-</div>
+@if (!Model.Locked)
+{
+    <div class="col-md-offset-4">
+        <input type="submit" value="Save your answers for this tab" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
+    </div>
+}
+
+    <br />&nbsp;<br />
 

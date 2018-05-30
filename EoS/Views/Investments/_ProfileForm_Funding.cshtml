@@ -23,7 +23,7 @@
     <div class=" col-md-offset-2 col-md-10" style="margin-left:0">
         <table class="borderless">
             <tr>
-                @{ List<EoS.Models.Investor.InvestorFundingAmountViewModel> FundingAmounts = ViewBag.FundingAmountViewModel;
+                @{ List<EoS.Models.Investor.InvestorFundingAmountViewModel> FundingAmounts = ViewBag.fundingAmountViewModel;
                     foreach (var amount in FundingAmounts)
                     {
                         @:<td><input type="checkbox" name="selectedFundingAmount" value="@amount.FundingAmountID" @(Html.Raw(amount.Assigned ? "checked=\"checked\"" : "")) /> @amount.FundingAmountValue</td>
@@ -46,6 +46,11 @@
     </div>
 </div>
 
-<div class="col-md-offset-4">
-    <input type="submit" value="Save your answers before returning later" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
-</div>
+@if (!Model.Locked)
+{
+    <div class="col-md-offset-4">
+        <input type="submit" value="Save your answers for this tab" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
+    </div>
+}
+
+    <br />&nbsp;<br />

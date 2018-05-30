@@ -55,8 +55,13 @@ namespace EoS.Controllers
                     ViewBag.UserRole = Role.Admin.ToString();
                     ViewBag.InvestorId = id; //==investments.FirstOrDefault().User.Id
                     ViewBag.InvestorUserName = "";
+                    ViewBag.InvestorExternalId = "";
                     ApplicationUser investor = db.Users.Find(id);
-                    if (investor != null) ViewBag.InvestorUserName = investor.UserName;
+                    if (investor != null)
+                    {
+                        ViewBag.InvestorUserName = investor.UserName;
+                        ViewBag.InvestorExternalId = investor.ExternalId;
+                    }
                     //return View(investments);
                 }
                 else
@@ -85,6 +90,7 @@ namespace EoS.Controllers
                 ApplicationUser currentUser = db.Users.Find(currentUserId);
                 investments = db.Investments.Where(u => u.UserId == currentUser.Id).ToList();
                 ViewBag.UserRole = Role.Investor.ToString();
+                ViewBag.InvestorExternalId = currentUser.ExternalId;
                 //return View(investments);
             }
 
@@ -113,8 +119,6 @@ namespace EoS.Controllers
         [Authorize(Roles = "Admin, Investor")]
         public ActionResult ProfileDetails(string id)
         {
-            ViewBag.UserRole = Role.Investor.ToString();
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -126,12 +130,16 @@ namespace EoS.Controllers
                 return HttpNotFound();
             }
 
+            ViewBag.UserRole = Role.Investor.ToString();
+
             if (User.IsInRole(Role.Admin.ToString()))
             {
                 ViewBag.UserRole = Role.Admin.ToString();
                 ViewBag.InvestorUserName = investment.User.UserName;
                 return View(investment);
             }
+            ViewBag.SwedishRegionName = "";
+            if (investment.SwedishRegionID.HasValue) ViewBag.SwedishRegionName = db.SwedishRegions.Where(sr => sr.RegionID == investment.SwedishRegionID).FirstOrDefault().RegionName;
 
             return View(investment);
         }
@@ -157,12 +165,12 @@ namespace EoS.Controllers
         [Authorize(Roles = "Investor")] //InvestmentID,UserId,TeamMemberSize,ExtraProjectDomains,TeamExperience,CreatedDate,Locked
         public async Task<ActionResult> AddNewProfile([Bind(Include = "ProfileName,CountryID,SwedishRegionID")] Investment investment, string submitCommand)
         {
-            if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit"))
-            {   //if user submit the form, lock it for editable
+            //if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit"))
+            //{   //if user submit the form, lock it for editable
                 //this must be before ModelState.IsValid
-                investment.Locked = true;
-                TryValidateModel(investment);
-            }
+            //    investment.Locked = true;
+            //    TryValidateModel(investment);
+            //}
 
             if (ModelState.IsValid)
             {
@@ -176,7 +184,7 @@ namespace EoS.Controllers
                 investment.InvestmentID = investmentRandomCode;
                 investment.UserId = User.Identity.GetUserId();
                 investment.CreatedDate = DateTime.Now;
-                investment.LastSavedDate = DateTime.Now;
+                investment.LastSavedDate = investment.CreatedDate; //DateTime.Now;  //<----------Changed
 
                 string UserId = User.Identity.GetUserId();
                 var userInvestments = db.Investments.Where(i => i.UserId == UserId);
@@ -237,9 +245,8 @@ namespace EoS.Controllers
                     }
                 }
                 
-                if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Start")) //<-----------"Proceed to the Form"
+                if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Proceed")) //<-----------"Proceed to the Profile form"
                 {
-
                     return RedirectToAction("ProfileForm", "Investments", new { id = investment.InvestmentID });
                 }
                 else
@@ -304,7 +311,7 @@ namespace EoS.Controllers
 
                 investment.UserId = User.Identity.GetUserId();
                 investment.CreatedDate = DateTime.Now;
-                investment.LastSavedDate = DateTime.Now;
+                investment.LastSavedDate = investment.CreatedDate; //DateTime.Now; //<--------------Changed
 
                 string UserId = User.Identity.GetUserId();
                 var userInvestments = db.Investments.Where(i => i.UserId == UserId);
@@ -320,7 +327,7 @@ namespace EoS.Controllers
                 //investment.TeamMemberSize = addedProfile.TeamMemberSize;
 
                 //if (investment.Locked) 
-                investment.Active = true; //<------------ Active Added
+                investment.Active = true; //??<------------Added
 
                 db.Investments.Add(investment);
                 db.SaveChanges();
@@ -376,7 +383,6 @@ namespace EoS.Controllers
 
                 if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Start")) //<-------------"Proceed to the Form"
                 {
-
                     return RedirectToAction("Edit", "Investments", new { id = investment.InvestmentID });
                 }
                 else
@@ -404,6 +410,7 @@ namespace EoS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Investment investment = db.Investments.Find(id);
             if (investment == null)
             {
@@ -414,7 +421,7 @@ namespace EoS.Controllers
             ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", investment.ProjectDomainID != null ? investment.ProjectDomainID : null);
 
             //Get the Project Domain Value Other to display the extra box
-            ViewBag.otherDomainId = db.ProjectDomains.Where(d => d.ProjectDomainName == "Other").Select(u => u.ProjectDomainID).Single();
+            //ViewBag.otherDomainId = db.ProjectDomains.Where(d => d.ProjectDomainName == "Other").Select(u => u.ProjectDomainID).Single();
 
             //Get the already checked value if exist
             PopulateAssignedCheckBoxsData(investment);
@@ -427,14 +434,21 @@ namespace EoS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Investor")] //ExtraProjectDomains,TeamSkills
-        public ActionResult ProfileForm([Bind(Include = "InvestmentID,UserId,CountryID,SwedishRegionID,ProfileName,ProjectDomainID,FutureFundingNeeded,EstimatedBreakEven,TeamMemberSizeMoreThanOne,TeamHasExperience,ActiveInvestor,PossibleIncomeStreams,CreatedDate,LastSavedDate,Locked,Active")] Investment investment, string[] selectedFundingPhases, string[] selectedFundingAmount, string[] selectedEstimatedExitPlans, string[] selectedTeamSkills, string[] selectedOutcomes, string[] selectedInnovationLevels, string[] selectedScalabilities, string activeTab, string submitCommand)
+        [Authorize(Roles = "Investor")] //ExtraProjectDomains,TeamSkills  ,LastSavedDate ,Locked
+        public ActionResult ProfileForm([Bind(Include = "UserId,InvestmentID,CountryID,SwedishRegionID,ProfileName,ProjectDomainID,FutureFundingNeeded,EstimatedBreakEven,TeamMemberSizeMoreThanOne,TeamHasExperience,ActiveInvestor,PossibleIncomeStreams,CreatedDate,DueDate,Active")] Investment investment, string[] selectedFundingPhases, string[] selectedFundingAmount, string[] selectedEstimatedExitPlans, string[] selectedTeamSkills, string[] selectedOutcomes, string[] selectedInnovationLevels, string[] selectedScalabilities, string activeTab, string submitCommand)
         {
+            //Investment currentInvestment = db.Investments.Find(investment.InvestmentID);
+            //if (db.Investments.Find(investment.InvestmentID).Locked)
+            //if (IsLocked(investment.InvestmentID)) return RedirectToAction("ProfileDetails", new { id = investment.InvestmentID }); //<----------
+
             if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit"))
             {   //if user submit the form, lock it for editable
                 //this must be before ModelState.IsValid
+
                 investment.Locked = true;
-                if (selectedFundingAmount == null)
+
+                //
+                if (selectedFundingAmount == null) //!selectedFundingAmount.Any()
                 {
                     ModelState.AddModelError("FundingAmounts", "Select at least one Funding amount");
                 }
@@ -468,18 +482,24 @@ namespace EoS.Controllers
                 UpdateInvestmentCheckBoxesData(selectedTeamSkills, selectedFundingAmount, selectedFundingPhases, selectedOutcomes, selectedInnovationLevels, selectedScalabilities, selectedEstimatedExitPlans, investment);
                 db.SaveChanges();
 
-                return RedirectToAction("Index");
-                //return RedirectToAction("Details", new { id = investment.InvestmentID });
+                //if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit"))
+                //currentInvestment = db.Investments.Find(investment.InvestmentID);
+
+                //if (db.Investments.Find(investment.InvestmentID).Locked) return RedirectToAction("ProfileDetails", new { id = investment.InvestmentID });
+
             }
+            else ModelState.AddModelError("", "Validation Error !!");
+
+            //if (IsLocked(investment.InvestmentID)) return RedirectToAction("ProfileDetails", new { id = investment.InvestmentID });
 
             //These viewBags to handel the current values of the investment properties if exist and provide by other selections
             ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", investment.ProjectDomainID != null ? investment.ProjectDomainID : null);
 
             //Get the Project Domain Value Other to display the extra box
-            ViewBag.otherDomainId = db.ProjectDomains.Where(d => d.ProjectDomainName == "Other").Select(u => u.ProjectDomainID).Single();
+            //ViewBag.otherDomainId = db.ProjectDomains.Where(d => d.ProjectDomainName == "Other").Select(u => u.ProjectDomainID).Single(); //<---------Changed
 
-            //Get the already checked value again if exist to pass the viewBags
-            PopulateAssignedCheckBoxsData(investment, selectedTeamSkills ,selectedFundingAmount, selectedFundingPhases, selectedOutcomes, selectedInnovationLevels, selectedScalabilities, selectedEstimatedExitPlans);
+            //Get the already checked value again if it exists to pass the ViewBags
+            PopulateAssignedCheckBoxsData(investment, selectedTeamSkills, selectedFundingAmount, selectedFundingPhases, selectedOutcomes, selectedInnovationLevels, selectedScalabilities, selectedEstimatedExitPlans);
 
             return View(investment);
         }
@@ -488,7 +508,7 @@ namespace EoS.Controllers
         [Authorize(Roles = "Admin, Investor")]
         public ActionResult ProfileForm2(string id)
         {
-            if (User.IsInRole(Role.Admin.ToString())) RedirectToAction("EditAdmin", new { id = id });
+            if (User.IsInRole(Role.Admin.ToString())) RedirectToAction("EditAdmin", new { id });
 
             if (id == null)
             {
@@ -504,7 +524,7 @@ namespace EoS.Controllers
             ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", investment.ProjectDomainID != null ? investment.ProjectDomainID : null);
 
             //Get the Project Domain Value Other to display the extra box
-            ViewBag.otherDomainId = db.ProjectDomains.Where(d => d.ProjectDomainName == "Other").Select(u => u.ProjectDomainID).Single();
+            //ViewBag.otherDomainId = db.ProjectDomains.Where(d => d.ProjectDomainName == "Other").Select(u => u.ProjectDomainID).Single(); //<-------Changed
 
             //Get the already checked value if exist
             PopulateAssignedCheckBoxsData(investment);
@@ -541,7 +561,7 @@ namespace EoS.Controllers
                 }
                 if (selectedInnovationLevels == null)
                 {
-                    ModelState.AddModelError("InnovationLevels", "Select at least one Level o innovation");
+                    ModelState.AddModelError("InnovationLevels", "Select at least one Level of innovation");
                 }
                 if (selectedScalabilities == null)
                 {
@@ -556,11 +576,11 @@ namespace EoS.Controllers
 
             if (ModelState.IsValid)
             {
-                investment.LastSavedDate = DateTime.Now;
+                investment.LastSavedDate = DateTime.Now;  
                 db.Entry(investment).State = EntityState.Modified;
                 UpdateInvestmentCheckBoxesData(selectedTeamSkills, selectedFundingAmount, selectedFundingPhases, selectedOutcomes, selectedInnovationLevels, selectedScalabilities, selectedEstimatedExitPlans, investment);
                 db.SaveChanges();
-                return RedirectToAction("Details", new { id=investment.InvestmentID });
+                return RedirectToAction("ProfileDetails", new { id = investment.InvestmentID });
             }
             //These viewBags to handel the current values of the investment properties if exist and provide by other selections
             ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", investment.ProjectDomainID != null ? investment.ProjectDomainID : null);
@@ -592,7 +612,7 @@ namespace EoS.Controllers
 
             if (!investment.DueDate.HasValue)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);  //RedirectToAction("Details", new { id = id });  //<---Doesn't work
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);  //RedirectToAction("ProfileDetails", new { id = id });  //<---Doesn't work
             }
 
             InvestmentEditAdminViewModel model = new InvestmentEditAdminViewModel
@@ -624,7 +644,7 @@ namespace EoS.Controllers
 
                 db.Entry(investment).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Details", new { id = investment.InvestmentID });
+                return RedirectToAction("ProfileDetails", new { id = investment.InvestmentID });
             }
             return View(model);
         }
@@ -997,7 +1017,7 @@ namespace EoS.Controllers
             var allEstimatedExitPlans = db.EstimatedExitPlans;
             var currentInvestorEstimatedExitPlans = db.Investments.Include(e => e.EstimatedExitPlans).Where(i => i.InvestmentID == investment.InvestmentID).Single();
             var InvestmentEstimatedExitPlans = new HashSet<int>(currentInvestorEstimatedExitPlans.EstimatedExitPlans.Select(e => e.EstimatedExitPlanID));
-            var EstimatedExitPlanVMViewModel = new List<InvestorEstimatedExitPlanVíewModel>();
+            var EstimatedExitPlanViewModel = new List<InvestorEstimatedExitPlanViewModel>();
 
             foreach (var skill in allSkills) //<-----------------------------Added
             {
@@ -1008,13 +1028,13 @@ namespace EoS.Controllers
                     Assigned = investmentSkills.Contains(skill.SkillID)
                 });
             }
-            ViewBag.SkillsViewModel = skillsViewModel;
+            ViewBag.skillsViewModel = skillsViewModel;
 
             foreach (var amount in allFundingAmounts)
             {
                 FundingAmountViewModel.Add(new InvestorFundingAmountViewModel { FundingAmountID = amount.FundingAmountID, FundingAmountValue = amount.FundingAmountValue, Assigned = InvestmentFundingAmount.Contains(amount.FundingAmountID) });
             }
-            ViewBag.FundingAmountViewModel = FundingAmountViewModel;
+            ViewBag.fundingAmountViewModel = FundingAmountViewModel;
 
             foreach (var phase in allFundingPhases)
             {
@@ -1042,9 +1062,9 @@ namespace EoS.Controllers
 
             foreach (var exitPlan in allEstimatedExitPlans)
             {                                                    
-                EstimatedExitPlanVMViewModel.Add(new InvestorEstimatedExitPlanVíewModel { EstimatedExitPlanID = exitPlan.EstimatedExitPlanID, EstimatedExitPlanName = exitPlan.EstimatedExitPlanName, Assigned = InvestmentEstimatedExitPlans.Contains(exitPlan.EstimatedExitPlanID) });
+                EstimatedExitPlanViewModel.Add(new InvestorEstimatedExitPlanViewModel { EstimatedExitPlanID = exitPlan.EstimatedExitPlanID, EstimatedExitPlanName = exitPlan.EstimatedExitPlanName, Assigned = InvestmentEstimatedExitPlans.Contains(exitPlan.EstimatedExitPlanID) });
             }
-            ViewBag.estimatedExitPlanVMViewModel = EstimatedExitPlanVMViewModel;
+            ViewBag.estimatedExitPlanViewModel = EstimatedExitPlanViewModel;
 
         }
                                          //<-------remove investment, not used
@@ -1104,7 +1124,7 @@ namespace EoS.Controllers
 
             var allEstimatedExitPlans = db.EstimatedExitPlans;
             var selectedInvestmentEstimatedExitPlansHS = new HashSet<String>();
-            var EstimatedExitPlanVMViewModel = new List<InvestorEstimatedExitPlanVíewModel>();
+            var EstimatedExitPlanViewModel = new List<InvestorEstimatedExitPlanViewModel>();
             if (selectedEstimatedExitPlans != null)
             {
                 selectedInvestmentEstimatedExitPlansHS = new HashSet<String>(selectedEstimatedExitPlans);
@@ -1119,14 +1139,13 @@ namespace EoS.Controllers
                     Assigned = selectedSkillsHS.Contains(skill.SkillID.ToString())
                 });
             }
-            ViewBag.SkillsViewModel = skillsViewModel;
+            ViewBag.skillsViewModel = skillsViewModel;
 
             foreach (var amount in allFundingAmounts)
             {
                 FundingAmountViewModel.Add(new InvestorFundingAmountViewModel { FundingAmountID = amount.FundingAmountID, FundingAmountValue = amount.FundingAmountValue, Assigned = selectedInvestmentFundingAmountHS.Contains(amount.FundingAmountID.ToString()) });
             }
-            ViewBag.FundingAmountViewModel = FundingAmountViewModel;
-
+            ViewBag.fundingAmountViewModel = FundingAmountViewModel;
 
             foreach (var phase in allFundingPhases)
             {
@@ -1134,13 +1153,11 @@ namespace EoS.Controllers
             }
             ViewBag.fundingPhaseViewModel = FundingPhaseViewModel;
 
-
             foreach (var outcome in allOutcomes)
             {
                 OutcomeViewModel.Add(new InvestorOutcomeViewModel { OutcomeID = outcome.OutcomeID, OutcomeName = outcome.OutcomeName, Assigned = selectedInvestmentOutcomeHS.Contains(outcome.OutcomeID.ToString()) });
             }
             ViewBag.outcomeViewModel = OutcomeViewModel;
-
 
             foreach (var level in allInnovationLevels)
             {
@@ -1156,9 +1173,9 @@ namespace EoS.Controllers
 
             foreach (var exitPlan in allEstimatedExitPlans)
             {
-                EstimatedExitPlanVMViewModel.Add(new InvestorEstimatedExitPlanVíewModel { EstimatedExitPlanID = exitPlan.EstimatedExitPlanID, EstimatedExitPlanName = exitPlan.EstimatedExitPlanName, Assigned = selectedInvestmentEstimatedExitPlansHS.Contains(exitPlan.EstimatedExitPlanID.ToString()) });
+                EstimatedExitPlanViewModel.Add(new InvestorEstimatedExitPlanViewModel { EstimatedExitPlanID = exitPlan.EstimatedExitPlanID, EstimatedExitPlanName = exitPlan.EstimatedExitPlanName, Assigned = selectedInvestmentEstimatedExitPlansHS.Contains(exitPlan.EstimatedExitPlanID.ToString()) });
             }
-            ViewBag.estimatedExitPlanVMViewModel = EstimatedExitPlanVMViewModel;
+            ViewBag.estimatedExitPlanViewModel = EstimatedExitPlanViewModel;
         }
 
         [Authorize(Roles = "Investor")]
@@ -1183,10 +1200,37 @@ namespace EoS.Controllers
 
             if (!string.IsNullOrWhiteSpace(redirect))
             {
-                if (redirect == "Details") return RedirectToAction("Details", new { id = id });
+                /*if (redirect == "ProjectDetails") */
+                return RedirectToAction(redirect, new { id }); //<-------------------------Changed
             }
 
             return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "Investor")]
+        public bool IsLocked(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return false; //new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Investment investment = db.Investments.Find(id);
+
+            if (investment == null)
+            {
+                return false;
+            }
+
+            //try
+            //investment.Locked = true;
+
+            //db.Entry(investment).State = EntityState.Modified;
+            //db.SaveChanges();
+
+            //investment = db.Investments.Find(id);
+
+            return investment.Locked;
         }
 
         [Authorize(Roles = "Admin")]
@@ -1205,13 +1249,14 @@ namespace EoS.Controllers
             }
             //try
             investment.Locked = false;
-
+            
             db.Entry(investment).State = EntityState.Modified;
             db.SaveChanges();
 
             if (!string.IsNullOrWhiteSpace(redirect))
             {
-                if (redirect == "Details") return RedirectToAction("Details", new { id = id });
+                /*if (redirect == "ProfileDetails")*/
+                return RedirectToAction("ProjectDetails", new { id }); //<-----------------Changed
             }
 
             return RedirectToAction("Index");
@@ -1219,7 +1264,7 @@ namespace EoS.Controllers
 
         // GET: Investments/Reminder
         [Authorize(Roles = ("Admin"))]
-        public ActionResult Reminder(string id, string subject, string message, string redirect) //investmentId
+        public ActionResult Reminder(string id, string subject, string message, string redirect) //id==investmentId
         {
             if (string.IsNullOrEmpty(id))
             {

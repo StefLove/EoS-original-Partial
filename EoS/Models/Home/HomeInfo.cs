@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace EoS.Models.Home
 {
@@ -17,6 +18,7 @@ namespace EoS.Models.Home
 
         [Required]
         [Display(Name = "Info Text")]
+        [AllowHtml] //<---------------------------------------
         public string Text { get; set; }
     }
 }

@@ -142,7 +142,7 @@
             @Html.DisplayNameFor(model => model.ProjectFundingDivisions)
         </dt>
         <dd>
-            @if (Model.ProjectFundingDivisions != null && Model.ProjectFundingDivisions.Count() > 0)
+            @if (Model.ProjectFundingDivisions != null && Model.ProjectFundingDivisions.Any())
             {
                 var orderedFundingDivisions = Model.ProjectFundingDivisions.OrderBy(fd => fd.FundingDivision.FundingDivisionID);
                 foreach (var fundingDivision in orderedFundingDivisions)
@@ -324,7 +324,7 @@
                     @Html.DisplayNameFor(model => model.ApprovedByID)
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.ApprovedBy.UserName)
+                    @Html.DisplayFor(model => model.ApprovedBy.UserName) @*ViewBag.ApprovedBy*@
                 </dd>
             }
             else

@@ -48,7 +48,7 @@ namespace EoS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ValidateInput(false)]
+        //[ValidateInput(false)] <-------------------------------------------------------------
         public ActionResult Create([Bind(Include = "Id,Text")] HomeInfo homeInfo)
         {
             if (ModelState.IsValid)

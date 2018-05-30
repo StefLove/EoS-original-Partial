@@ -73,7 +73,7 @@ namespace EoS.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("MMM_180131", throwIfV1Schema: false)
+            : base("MMM_180412", throwIfV1Schema: false)
         {
         }
 

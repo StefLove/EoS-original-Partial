@@ -29,7 +29,6 @@ namespace EoS.Migrations
                         DeadlineDate = c.DateTime(),
                         ProjectSummary = c.String(maxLength: 1500),
                         AllowSharing = c.Boolean(nullable: false),
-                        AllowSharingDisplayName = c.String(),
                         FundingPhaseID = c.Int(),
                         FundingAmountID = c.Int(),
                         EstimatedExitPlanID = c.Int(),
@@ -51,12 +50,10 @@ namespace EoS.Migrations
                         CreatedDate = c.DateTime(nullable: false),
                         Locked = c.Boolean(nullable: false),
                         Approved = c.Boolean(nullable: false),
-                        ApprovedByID = c.String(maxLength: 128),
-                        ApplicationUser_Id = c.String(maxLength: 128),
+                        ApprovedByID = c.String(),
+                        SwedishRegion_RegionID = c.Int(),
                     })
                 .PrimaryKey(t => t.StartupID)
-                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.ApprovedByID)
                 .ForeignKey("dbo.Countries", t => t.CountryID, cascadeDelete: true)
                 .ForeignKey("dbo.EstimatedExitPlans", t => t.EstimatedExitPlanID)
                 .ForeignKey("dbo.FundingAmounts", t => t.FundingAmountID)
@@ -64,19 +61,167 @@ namespace EoS.Migrations
                 .ForeignKey("dbo.InnovationLevels", t => t.InnovationLevelID)
                 .ForeignKey("dbo.ProjectDomains", t => t.ProjectDomainID)
                 .ForeignKey("dbo.Scalabilities", t => t.ScalabilityID)
-                .ForeignKey("dbo.SwedishRegions", t => t.SwedishRegionID)
+                .ForeignKey("dbo.SwedishRegions", t => t.SwedishRegion_RegionID)
                 .ForeignKey("dbo.AspNetUsers", t => t.UserID)
                 .Index(t => t.UserID)
                 .Index(t => t.CountryID)
-                .Index(t => t.SwedishRegionID)
                 .Index(t => t.ProjectDomainID)
                 .Index(t => t.FundingPhaseID)
                 .Index(t => t.FundingAmountID)
                 .Index(t => t.EstimatedExitPlanID)
                 .Index(t => t.InnovationLevelID)
                 .Index(t => t.ScalabilityID)
-                .Index(t => t.ApprovedByID)
-                .Index(t => t.ApplicationUser_Id);
+                .Index(t => t.SwedishRegion_RegionID);
+            
+            CreateTable(
+                "dbo.Countries",
+                c => new
+                    {
+                        CountryID = c.Int(nullable: false, identity: true),
+                        CountryName = c.String(nullable: false),
+                        CountryAbbreviation = c.String(nullable: false),
+                    })
+                .PrimaryKey(t => t.CountryID);
+            
+            CreateTable(
+                "dbo.EstimatedExitPlans",
+                c => new
+                    {
+                        EstimatedExitPlanID = c.Int(nullable: false, identity: true),
+                        EstimatedExitPlanName = c.String(nullable: false),
+                    })
+                .PrimaryKey(t => t.EstimatedExitPlanID);
+            
+            CreateTable(
+                "dbo.Investments",
+                c => new
+                    {
+                        InvestmentID = c.String(nullable: false, maxLength: 128),
+                        UserId = c.String(maxLength: 128),
+                        CountryID = c.Int(nullable: false),
+                        SwedishRegionID = c.Int(),
+                        ProfileName = c.String(),
+                        ProjectDomainID = c.Int(),
+                        FutureFundingNeeded = c.Boolean(nullable: false),
+                        EstimatedBreakEven = c.Int(),
+                        PossibleIncomeStreams = c.Int(),
+                        TeamMemberSizeMoreThanOne = c.Boolean(nullable: false),
+                        TeamHasExperience = c.Boolean(nullable: false),
+                        ActiveInvestor = c.Boolean(nullable: false),
+                        CreatedDate = c.DateTime(nullable: false),
+                        LastSavedDate = c.DateTime(nullable: false),
+                        DueDate = c.DateTime(),
+                        Locked = c.Boolean(nullable: false),
+                        Active = c.Boolean(nullable: false),
+                        SwedishRegion_RegionID = c.Int(),
+                    })
+                .PrimaryKey(t => t.InvestmentID)
+                .ForeignKey("dbo.Countries", t => t.CountryID, cascadeDelete: true)
+                .ForeignKey("dbo.ProjectDomains", t => t.ProjectDomainID)
+                .ForeignKey("dbo.SwedishRegions", t => t.SwedishRegion_RegionID)
+                .ForeignKey("dbo.AspNetUsers", t => t.UserId)
+                .Index(t => t.UserId)
+                .Index(t => t.CountryID)
+                .Index(t => t.ProjectDomainID)
+                .Index(t => t.SwedishRegion_RegionID);
+            
+            CreateTable(
+                "dbo.FundingAmounts",
+                c => new
+                    {
+                        FundingAmountID = c.Int(nullable: false, identity: true),
+                        FundingAmountValue = c.String(nullable: false),
+                    })
+                .PrimaryKey(t => t.FundingAmountID);
+            
+            CreateTable(
+                "dbo.FundingPhases",
+                c => new
+                    {
+                        FundingPhaseID = c.Int(nullable: false, identity: true),
+                        FundingPhaseName = c.String(nullable: false),
+                    })
+                .PrimaryKey(t => t.FundingPhaseID);
+            
+            CreateTable(
+                "dbo.InnovationLevels",
+                c => new
+                    {
+                        InnovationLevelID = c.Int(nullable: false, identity: true),
+                        InnovationLevelName = c.String(nullable: false),
+                    })
+                .PrimaryKey(t => t.InnovationLevelID);
+            
+            CreateTable(
+                "dbo.MatchMakings",
+                c => new
+                    {
+                        MatchMakingId = c.Int(nullable: false, identity: true),
+                        MatchMakingDate = c.DateTime(nullable: false),
+                        InvestmentId = c.String(maxLength: 128),
+                        StartupId = c.String(maxLength: 128),
+                        ProjectDomainMatched = c.Boolean(),
+                        FundingPhaseMatched = c.Boolean(),
+                        FundingAmountMatched = c.Boolean(),
+                        EstimatedExitPlanMatched = c.Boolean(),
+                        OutcomesMatched = c.Boolean(),
+                        InnovationLevelMatched = c.Boolean(),
+                        ScalabilityMatched = c.Boolean(),
+                        TeamSkillsMatched = c.Boolean(),
+                        NoOfMatches = c.Int(nullable: false),
+                        MaxNoOfMatches = c.Int(nullable: false),
+                        Sent = c.Boolean(nullable: false),
+                    })
+                .PrimaryKey(t => t.MatchMakingId)
+                .ForeignKey("dbo.Investments", t => t.InvestmentId)
+                .ForeignKey("dbo.Startups", t => t.StartupId)
+                .Index(t => t.InvestmentId)
+                .Index(t => t.StartupId);
+            
+            CreateTable(
+                "dbo.Outcomes",
+                c => new
+                    {
+                        OutcomeID = c.Int(nullable: false, identity: true),
+                        OutcomeName = c.String(nullable: false),
+                    })
+                .PrimaryKey(t => t.OutcomeID);
+            
+            CreateTable(
+                "dbo.ProjectDomains",
+                c => new
+                    {
+                        ProjectDomainID = c.Int(nullable: false, identity: true),
+                        ProjectDomainName = c.String(nullable: false),
+                    })
+                .PrimaryKey(t => t.ProjectDomainID);
+            
+            CreateTable(
+                "dbo.Scalabilities",
+                c => new
+                    {
+                        ScalabilityID = c.Int(nullable: false, identity: true),
+                        ScalabilityName = c.String(nullable: false),
+                    })
+                .PrimaryKey(t => t.ScalabilityID);
+            
+            CreateTable(
+                "dbo.SwedishRegions",
+                c => new
+                    {
+                        RegionID = c.Int(nullable: false, identity: true),
+                        RegionName = c.String(nullable: false),
+                    })
+                .PrimaryKey(t => t.RegionID);
+            
+            CreateTable(
+                "dbo.TeamSkills",
+                c => new
+                    {
+                        SkillID = c.Int(nullable: false, identity: true),
+                        SkillName = c.String(nullable: false),
+                    })
+                .PrimaryKey(t => t.SkillID);
             
             CreateTable(
                 "dbo.AspNetUsers",
@@ -146,155 +291,6 @@ namespace EoS.Migrations
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.AspNetUsers", t => t.UserId, cascadeDelete: true)
                 .Index(t => t.UserId);
-            
-            CreateTable(
-                "dbo.Investments",
-                c => new
-                    {
-                        InvestmentID = c.String(nullable: false, maxLength: 128),
-                        UserId = c.String(maxLength: 128),
-                        CountryID = c.Int(nullable: false),
-                        SwedishRegionID = c.Int(),
-                        ProfileName = c.String(),
-                        ProjectDomainID = c.Int(),
-                        FutureFundingNeeded = c.Boolean(nullable: false),
-                        EstimatedBreakEven = c.Int(),
-                        PossibleIncomeStreams = c.Int(),
-                        TeamMemberSizeMoreThanOne = c.Boolean(nullable: false),
-                        TeamHasExperience = c.Boolean(nullable: false),
-                        ActiveInvestor = c.Boolean(nullable: false),
-                        CreatedDate = c.DateTime(nullable: false),
-                        LastSavedDate = c.DateTime(nullable: false),
-                        DueDate = c.DateTime(),
-                        Locked = c.Boolean(nullable: false),
-                        Active = c.Boolean(nullable: false),
-                    })
-                .PrimaryKey(t => t.InvestmentID)
-                .ForeignKey("dbo.Countries", t => t.CountryID, cascadeDelete: true)
-                .ForeignKey("dbo.ProjectDomains", t => t.ProjectDomainID)
-                .ForeignKey("dbo.SwedishRegions", t => t.SwedishRegionID)
-                .ForeignKey("dbo.AspNetUsers", t => t.UserId)
-                .Index(t => t.UserId)
-                .Index(t => t.CountryID)
-                .Index(t => t.SwedishRegionID)
-                .Index(t => t.ProjectDomainID);
-            
-            CreateTable(
-                "dbo.Countries",
-                c => new
-                    {
-                        CountryID = c.Int(nullable: false, identity: true),
-                        CountryName = c.String(nullable: false),
-                        CountryAbbreviation = c.String(nullable: false),
-                    })
-                .PrimaryKey(t => t.CountryID);
-            
-            CreateTable(
-                "dbo.EstimatedExitPlans",
-                c => new
-                    {
-                        EstimatedExitPlanID = c.Int(nullable: false, identity: true),
-                        EstimatedExitPlanName = c.String(nullable: false),
-                    })
-                .PrimaryKey(t => t.EstimatedExitPlanID);
-            
-            CreateTable(
-                "dbo.FundingAmounts",
-                c => new
-                    {
-                        FundingAmountID = c.Int(nullable: false, identity: true),
-                        FundingAmountValue = c.String(nullable: false),
-                    })
-                .PrimaryKey(t => t.FundingAmountID);
-            
-            CreateTable(
-                "dbo.FundingPhases",
-                c => new
-                    {
-                        FundingPhaseID = c.Int(nullable: false, identity: true),
-                        FundingPhaseName = c.String(nullable: false),
-                    })
-                .PrimaryKey(t => t.FundingPhaseID);
-            
-            CreateTable(
-                "dbo.InnovationLevels",
-                c => new
-                    {
-                        InnovationLevelID = c.Int(nullable: false, identity: true),
-                        InnovationLevelName = c.String(nullable: false),
-                    })
-                .PrimaryKey(t => t.InnovationLevelID);
-            
-            CreateTable(
-                "dbo.MatchMakings",
-                c => new
-                    {
-                        MatchMakingId = c.Int(nullable: false, identity: true),
-                        MatchMakingDate = c.DateTime(nullable: false),
-                        InvestmentId = c.String(maxLength: 128),
-                        StartupId = c.String(maxLength: 128),
-                        ProjectDomainMatched = c.Boolean(nullable: false),
-                        FundingPhaseMatched = c.Boolean(nullable: false),
-                        FundingAmountMatched = c.Boolean(nullable: false),
-                        EstimatedExitPlanMatched = c.Boolean(nullable: false),
-                        OutcomesMatched = c.Boolean(nullable: false),
-                        InnovationLevelMatched = c.Boolean(nullable: false),
-                        ScalabilityMatched = c.Boolean(nullable: false),
-                        TeamSkillsMatched = c.Boolean(nullable: false),
-                        NoOfMatches = c.Int(nullable: false),
-                        MaxNoOfMatches = c.Int(nullable: false),
-                        Sent = c.Boolean(nullable: false),
-                    })
-                .PrimaryKey(t => t.MatchMakingId)
-                .ForeignKey("dbo.Investments", t => t.InvestmentId)
-                .ForeignKey("dbo.Startups", t => t.StartupId)
-                .Index(t => t.InvestmentId)
-                .Index(t => t.StartupId);
-            
-            CreateTable(
-                "dbo.Outcomes",
-                c => new
-                    {
-                        OutcomeID = c.Int(nullable: false, identity: true),
-                        OutcomeName = c.String(nullable: false),
-                    })
-                .PrimaryKey(t => t.OutcomeID);
-            
-            CreateTable(
-                "dbo.ProjectDomains",
-                c => new
-                    {
-                        ProjectDomainID = c.Int(nullable: false, identity: true),
-                        ProjectDomainName = c.String(nullable: false),
-                    })
-                .PrimaryKey(t => t.ProjectDomainID);
-            
-            CreateTable(
-                "dbo.Scalabilities",
-                c => new
-                    {
-                        ScalabilityID = c.Int(nullable: false, identity: true),
-                        ScalabilityName = c.String(nullable: false),
-                    })
-                .PrimaryKey(t => t.ScalabilityID);
-            
-            CreateTable(
-                "dbo.SwedishRegions",
-                c => new
-                    {
-                        RegionID = c.Int(nullable: false, identity: true),
-                        RegionName = c.String(nullable: false),
-                    })
-                .PrimaryKey(t => t.RegionID);
-            
-            CreateTable(
-                "dbo.TeamSkills",
-                c => new
-                    {
-                        SkillID = c.Int(nullable: false, identity: true),
-                        SkillName = c.String(nullable: false),
-                    })
-                .PrimaryKey(t => t.SkillID);
             
             CreateTable(
                 "dbo.AspNetUserLogins",
@@ -438,17 +434,17 @@ namespace EoS.Migrations
                 .Index(t => t.AllowedInvestor_AllowedInvestorID);
             
             CreateTable(
-                "dbo.EstimatedExitPlanInvestments",
+                "dbo.InvestmentEstimatedExitPlans",
                 c => new
                     {
-                        EstimatedExitPlan_EstimatedExitPlanID = c.Int(nullable: false),
                         Investment_InvestmentID = c.String(nullable: false, maxLength: 128),
+                        EstimatedExitPlan_EstimatedExitPlanID = c.Int(nullable: false),
                     })
-                .PrimaryKey(t => new { t.EstimatedExitPlan_EstimatedExitPlanID, t.Investment_InvestmentID })
-                .ForeignKey("dbo.EstimatedExitPlans", t => t.EstimatedExitPlan_EstimatedExitPlanID, cascadeDelete: true)
+                .PrimaryKey(t => new { t.Investment_InvestmentID, t.EstimatedExitPlan_EstimatedExitPlanID })
                 .ForeignKey("dbo.Investments", t => t.Investment_InvestmentID, cascadeDelete: true)
-                .Index(t => t.EstimatedExitPlan_EstimatedExitPlanID)
-                .Index(t => t.Investment_InvestmentID);
+                .ForeignKey("dbo.EstimatedExitPlans", t => t.EstimatedExitPlan_EstimatedExitPlanID, cascadeDelete: true)
+                .Index(t => t.Investment_InvestmentID)
+                .Index(t => t.EstimatedExitPlan_EstimatedExitPlanID);
             
             CreateTable(
                 "dbo.FundingAmountInvestments",
@@ -564,7 +560,7 @@ namespace EoS.Migrations
             DropForeignKey("dbo.Startups", "UserID", "dbo.AspNetUsers");
             DropForeignKey("dbo.TeamWeaknessStartups", "Startup_StartupID", "dbo.Startups");
             DropForeignKey("dbo.TeamWeaknessStartups", "TeamWeakness_TeamWeaknessID", "dbo.TeamWeaknesses");
-            DropForeignKey("dbo.Startups", "SwedishRegionID", "dbo.SwedishRegions");
+            DropForeignKey("dbo.Startups", "SwedishRegion_RegionID", "dbo.SwedishRegions");
             DropForeignKey("dbo.Startups", "ScalabilityID", "dbo.Scalabilities");
             DropForeignKey("dbo.FundingDivisionStartups", "StartupID", "dbo.Startups");
             DropForeignKey("dbo.FundingDivisionStartups", "FundingDivisionID", "dbo.FundingDivisions");
@@ -573,15 +569,16 @@ namespace EoS.Migrations
             DropForeignKey("dbo.Startups", "FundingPhaseID", "dbo.FundingPhases");
             DropForeignKey("dbo.Startups", "FundingAmountID", "dbo.FundingAmounts");
             DropForeignKey("dbo.Startups", "EstimatedExitPlanID", "dbo.EstimatedExitPlans");
-            DropForeignKey("dbo.Startups", "CountryID", "dbo.Countries");
-            DropForeignKey("dbo.Startups", "ApprovedByID", "dbo.AspNetUsers");
-            DropForeignKey("dbo.Startups", "ApplicationUser_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Investments", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
-            DropForeignKey("dbo.Investments", "UserId", "dbo.AspNetUsers");
+            DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
+            DropForeignKey("dbo.BlogComments", "CreatorId", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Blogs", "CreatorId", "dbo.AspNetUsers");
+            DropForeignKey("dbo.BlogComments", "BlogId", "dbo.Blogs");
             DropForeignKey("dbo.TeamSkillInvestments", "Investment_InvestmentID", "dbo.Investments");
             DropForeignKey("dbo.TeamSkillInvestments", "TeamSkill_SkillID", "dbo.TeamSkills");
-            DropForeignKey("dbo.Investments", "SwedishRegionID", "dbo.SwedishRegions");
+            DropForeignKey("dbo.Investments", "SwedishRegion_RegionID", "dbo.SwedishRegions");
             DropForeignKey("dbo.ScalabilityInvestments", "Investment_InvestmentID", "dbo.Investments");
             DropForeignKey("dbo.ScalabilityInvestments", "Scalability_ScalabilityID", "dbo.Scalabilities");
             DropForeignKey("dbo.Investments", "ProjectDomainID", "dbo.ProjectDomains");
@@ -597,13 +594,10 @@ namespace EoS.Migrations
             DropForeignKey("dbo.FundingPhaseInvestments", "FundingPhase_FundingPhaseID", "dbo.FundingPhases");
             DropForeignKey("dbo.FundingAmountInvestments", "Investment_InvestmentID", "dbo.Investments");
             DropForeignKey("dbo.FundingAmountInvestments", "FundingAmount_FundingAmountID", "dbo.FundingAmounts");
-            DropForeignKey("dbo.EstimatedExitPlanInvestments", "Investment_InvestmentID", "dbo.Investments");
-            DropForeignKey("dbo.EstimatedExitPlanInvestments", "EstimatedExitPlan_EstimatedExitPlanID", "dbo.EstimatedExitPlans");
+            DropForeignKey("dbo.InvestmentEstimatedExitPlans", "EstimatedExitPlan_EstimatedExitPlanID", "dbo.EstimatedExitPlans");
+            DropForeignKey("dbo.InvestmentEstimatedExitPlans", "Investment_InvestmentID", "dbo.Investments");
             DropForeignKey("dbo.Investments", "CountryID", "dbo.Countries");
-            DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
-            DropForeignKey("dbo.BlogComments", "CreatorId", "dbo.AspNetUsers");
-            DropForeignKey("dbo.Blogs", "CreatorId", "dbo.AspNetUsers");
-            DropForeignKey("dbo.BlogComments", "BlogId", "dbo.Blogs");
+            DropForeignKey("dbo.Startups", "CountryID", "dbo.Countries");
             DropForeignKey("dbo.StartupAllowedInvestors", "AllowedInvestor_AllowedInvestorID", "dbo.AllowedInvestors");
             DropForeignKey("dbo.StartupAllowedInvestors", "Startup_StartupID", "dbo.Startups");
             DropIndex("dbo.TeamWeaknessStartups", new[] { "Startup_StartupID" });
@@ -622,8 +616,8 @@ namespace EoS.Migrations
             DropIndex("dbo.FundingPhaseInvestments", new[] { "FundingPhase_FundingPhaseID" });
             DropIndex("dbo.FundingAmountInvestments", new[] { "Investment_InvestmentID" });
             DropIndex("dbo.FundingAmountInvestments", new[] { "FundingAmount_FundingAmountID" });
-            DropIndex("dbo.EstimatedExitPlanInvestments", new[] { "Investment_InvestmentID" });
-            DropIndex("dbo.EstimatedExitPlanInvestments", new[] { "EstimatedExitPlan_EstimatedExitPlanID" });
+            DropIndex("dbo.InvestmentEstimatedExitPlans", new[] { "EstimatedExitPlan_EstimatedExitPlanID" });
+            DropIndex("dbo.InvestmentEstimatedExitPlans", new[] { "Investment_InvestmentID" });
             DropIndex("dbo.StartupAllowedInvestors", new[] { "AllowedInvestor_AllowedInvestorID" });
             DropIndex("dbo.StartupAllowedInvestors", new[] { "Startup_StartupID" });
             DropIndex("dbo.AspNetRoles", "RoleNameIndex");
@@ -634,26 +628,24 @@ namespace EoS.Migrations
             DropIndex("dbo.AspNetUserRoles", new[] { "RoleId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "UserId" });
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
-            DropIndex("dbo.MatchMakings", new[] { "StartupId" });
-            DropIndex("dbo.MatchMakings", new[] { "InvestmentId" });
-            DropIndex("dbo.Investments", new[] { "ProjectDomainID" });
-            DropIndex("dbo.Investments", new[] { "SwedishRegionID" });
-            DropIndex("dbo.Investments", new[] { "CountryID" });
-            DropIndex("dbo.Investments", new[] { "UserId" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
             DropIndex("dbo.Blogs", new[] { "CreatorId" });
             DropIndex("dbo.BlogComments", new[] { "BlogId" });
             DropIndex("dbo.BlogComments", new[] { "CreatorId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
-            DropIndex("dbo.Startups", new[] { "ApplicationUser_Id" });
-            DropIndex("dbo.Startups", new[] { "ApprovedByID" });
+            DropIndex("dbo.MatchMakings", new[] { "StartupId" });
+            DropIndex("dbo.MatchMakings", new[] { "InvestmentId" });
+            DropIndex("dbo.Investments", new[] { "SwedishRegion_RegionID" });
+            DropIndex("dbo.Investments", new[] { "ProjectDomainID" });
+            DropIndex("dbo.Investments", new[] { "CountryID" });
+            DropIndex("dbo.Investments", new[] { "UserId" });
+            DropIndex("dbo.Startups", new[] { "SwedishRegion_RegionID" });
             DropIndex("dbo.Startups", new[] { "ScalabilityID" });
             DropIndex("dbo.Startups", new[] { "InnovationLevelID" });
             DropIndex("dbo.Startups", new[] { "EstimatedExitPlanID" });
             DropIndex("dbo.Startups", new[] { "FundingAmountID" });
             DropIndex("dbo.Startups", new[] { "FundingPhaseID" });
             DropIndex("dbo.Startups", new[] { "ProjectDomainID" });
-            DropIndex("dbo.Startups", new[] { "SwedishRegionID" });
             DropIndex("dbo.Startups", new[] { "CountryID" });
             DropIndex("dbo.Startups", new[] { "UserID" });
             DropTable("dbo.TeamWeaknessStartups");
@@ -664,7 +656,7 @@ namespace EoS.Migrations
             DropTable("dbo.InnovationLevelInvestments");
             DropTable("dbo.FundingPhaseInvestments");
             DropTable("dbo.FundingAmountInvestments");
-            DropTable("dbo.EstimatedExitPlanInvestments");
+            DropTable("dbo.InvestmentEstimatedExitPlans");
             DropTable("dbo.StartupAllowedInvestors");
             DropTable("dbo.SmtpClients");
             DropTable("dbo.AspNetRoles");
@@ -677,6 +669,10 @@ namespace EoS.Migrations
             DropTable("dbo.FundingDivisionStartups");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetUserLogins");
+            DropTable("dbo.AspNetUserClaims");
+            DropTable("dbo.Blogs");
+            DropTable("dbo.BlogComments");
+            DropTable("dbo.AspNetUsers");
             DropTable("dbo.TeamSkills");
             DropTable("dbo.SwedishRegions");
             DropTable("dbo.Scalabilities");
@@ -686,13 +682,9 @@ namespace EoS.Migrations
             DropTable("dbo.InnovationLevels");
             DropTable("dbo.FundingPhases");
             DropTable("dbo.FundingAmounts");
+            DropTable("dbo.Investments");
             DropTable("dbo.EstimatedExitPlans");
             DropTable("dbo.Countries");
-            DropTable("dbo.Investments");
-            DropTable("dbo.AspNetUserClaims");
-            DropTable("dbo.Blogs");
-            DropTable("dbo.BlogComments");
-            DropTable("dbo.AspNetUsers");
             DropTable("dbo.Startups");
             DropTable("dbo.AllowedInvestors");
         }

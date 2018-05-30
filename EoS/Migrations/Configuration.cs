@@ -56,7 +56,7 @@ namespace EoS.Migrations
             var userStore = new UserStore<ApplicationUser>(context);
             var userManager = new UserManager<ApplicationUser>(userStore);
 
-            var emails = new[] { "mmm@enablersofsweden.com", "ideaCarrier1@enablersofsweden.com", "ideaCarrier2@enablersofsweden.com", "aalhinai83@gmail.com", "stefanlovefors@hotmail.com" }; //"ideaCarrier@eos.com", ideaCarrier1@eos.com, investor@eos.com
+            var emails = new[] { "mmm@enablersofsweden.com", "ideaCarrier1@enablersofsweden.com", "ideaCarrier2@enablersofsweden.com", "aalhinai83@gmail.com", "stefanlovefors@hotmail.com" };
 
             foreach (var email in emails)
             {
@@ -70,7 +70,7 @@ namespace EoS.Migrations
                         UserStartDate = DateTime.Now,                       
                     };
 
-                    var result = userManager.Create(user, "pW@EoS#123");
+                    var result = userManager.Create(user, "_123Abc");
                     if (!result.Succeeded)
                     {
                         throw new Exception(string.Join("\n", result.Errors));
@@ -98,11 +98,13 @@ namespace EoS.Migrations
             userManager.AddToRole(investor1.Id, Role.Investor.ToString());
             investor1.UserFirstName = "Investor1";
             investor1.EmailConfirmed = true;
+            investor1.ExternalId = "Investor1";
 
             var investor2 = userManager.FindByName("stefanlovefors@hotmail.com");
             userManager.AddToRole(investor2.Id, Role.Investor.ToString());
             investor2.UserFirstName = "Investor2";
             investor2.EmailConfirmed = true;
+            investor1.ExternalId = "Investor2";
 
             context.Countries.AddOrUpdate(
                 c => c.CountryName,
@@ -323,7 +325,7 @@ namespace EoS.Migrations
                 new TeamSkill { SkillName = "Other" }
                 );
             
-            // new List<Weaknesses>().Add(new Weaknesses { WeaknessID = 1 })
+            //...new List<Weaknesses>().Add(new Weaknesses { WeaknessID = 1 })
             //TeamWeaknesses = new List<Weaknesses> { 1, 1 }
             //TeamWeaknesses = new List<Weaknesses> { Weakness1 }
             //var Weakness1 = new Weaknesses() { WeaknessID = 2};
@@ -353,7 +355,7 @@ namespace EoS.Migrations
                   InnovationLevelID = 1,
                   DeadlineDate = DateTime.Now.AddMonths(1),
                   LastSavedDate = DateTime.Now,
-                  CreatedDate = DateTime.Now,
+                  CreatedDate = DateTime.Now
                   //AllowSharingDisplayName = "(Admin) We allow Enablers of Sweden to share this project information given,<br /> to at least one type of investor mention below:"
               },
 
@@ -377,8 +379,8 @@ namespace EoS.Migrations
                   InnovationLevelID = 1,
                   DeadlineDate = DateTime.Now.AddMonths(1),
                   LastSavedDate = DateTime.Now,
-                  CreatedDate = DateTime.Now,
-                  AllowSharingDisplayName = "(Admin) We allow Enablers of Sweden to share this project information given,<br /> to at least one type of investor mention below:"
+                  CreatedDate = DateTime.Now
+                  //AllowSharingDisplayName = "(Admin) We allow Enablers of Sweden to share this project information given,<br /> to at least one type of investor mention below:"
               });
             context.SaveChanges();
 

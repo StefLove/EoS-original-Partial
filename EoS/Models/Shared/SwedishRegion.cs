@@ -8,7 +8,7 @@ namespace EoS.Models.Shared
          public int RegionID { get; set; }
 
          [Required]
-         [Display(Name = "Swedish Region name (Län)")]
+         [Display(Name = "Swedish region name (Län)")]
          public string RegionName { get; set; }
 }
 }

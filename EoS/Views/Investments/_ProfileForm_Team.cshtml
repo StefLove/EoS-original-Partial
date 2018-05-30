@@ -35,10 +35,10 @@
     <div class="col-md-offset-2 col-md-10" style="margin-left:0">
         <table class="borderless">
             <tr>
-                @{ List<EoS.Models.Investor.TeamSkillViewModel> skills = ViewBag.SkillsViewModel;
+                @{ List<EoS.Models.Investor.TeamSkillViewModel> skills = ViewBag.skillsViewModel;
                     foreach (var skill in skills)
                     {
-                        @:<td><input type="checkbox" name="selectedSkills" value="@skill.SkillID" @(Html.Raw(skill.Assigned ? "checked=\"checked\"" : "")) /> @skill.SkillName</td>
+                        @:<td><input type="checkbox" name="selectedTeamSkills" value="@skill.SkillID" @(Html.Raw(skill.Assigned ? "checked=\"checked\"" : "")) /> @skill.SkillName</td>
                         @:</tr><tr>
                     }
                 }
@@ -47,6 +47,11 @@
     </div>
 </div>
 
-<div class="col-md-offset-4">
-    <input type="submit" value="Save your answers before returning later" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
-</div>
+@if (!Model.Locked)
+{
+    <div class="col-md-offset-4">
+        <input type="submit" value="Save your answers for this tab" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
+    </div>
+}
+
+    <br />&nbsp;<br />

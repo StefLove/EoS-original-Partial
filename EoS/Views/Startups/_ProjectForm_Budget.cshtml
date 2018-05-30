@@ -3,22 +3,23 @@
 <div class="form-group">
     <label class="control-label col-md-2" style="text-align:left">How will funding be spent?<br />(100% max for all fields)</label>
     <div class=" col-md-offset-0 col-md-9" style="margin-left:inherit">
-        @*@{*@
         <table class="borderless">
             <tr>
                 @{
-                    for (var j = 0; j < Model.ProjectFundingDivisions.Count(); j++)
+                    if (Model.ProjectFundingDivisions != null && Model.ProjectFundingDivisions.Any())
                     {
-                        <td>@Html.DisplayFor(model => model.ProjectFundingDivisions[j].FundingDivision.FundingDivisionName)</td>
-                        int percentage = Model.ProjectFundingDivisions[j].Percentage;
-                        <td>@Html.Raw((percentage < 10 ? "&nbsp;" : "") + percentage.ToString() + " %  ") </td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hidden-print">@Html.ActionLink("Change value", "Edit", "FundingDivisionStartups", new { id = Model.ProjectFundingDivisions[j].Id, fundingDivisionName = Model.ProjectFundingDivisions[j].FundingDivision.FundingDivisionName }, new { @class = "btn btn-success" })</span></td>
-                        @:</tr><tr>
+                        for (var j = 0; j < Model.ProjectFundingDivisions.Count(); j++)
+                        {
+                            <td>@Html.DisplayFor(model => model.ProjectFundingDivisions[j].FundingDivision.FundingDivisionName)</td>
+                            int percentage = Model.ProjectFundingDivisions[j].Percentage;
+                            <td>@Html.Raw((percentage < 10 ? "&nbsp;" : "") + percentage.ToString() + " %  ") </td>
+                            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hidden-print">@Html.ActionLink("Change value", "Edit", "FundingDivisionStartups", new { id = Model.ProjectFundingDivisions[j].Id, fundingDivisionName = Model.ProjectFundingDivisions[j].FundingDivision.FundingDivisionName }, new { @class = "btn btn-success" })</span></td>
+                            @:</tr><tr>
+                        }
                     }
                 }
             </tr>
         </table>
-        @*}*@
     </div>
 </div>
 
