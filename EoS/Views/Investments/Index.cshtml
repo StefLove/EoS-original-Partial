@@ -2,9 +2,16 @@
 
 @if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
 {
-    <h4>Your External id: @ViewBag.InvestorExternalId</h4>  
+    <h4>Your External id is @ViewBag.InvestorExternalId</h4>
+    @*<h4>Are you an active investor? @(ViewBag.ActiveInvestor ? "Yes" : "No")&nbsp;&nbsp;@Html.ActionLink("Change your activation", "ActivateInvestor", new { id = ViewBag.InvestorID }, new { @class = (ViewBag.ActiveInvestor ? "btn btn-primary hidden-print" : "btn btn-success hidden-print"), @style = "height:25px;padding:1px" })</h4>*@
+}
+else if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+{
+    <h4>This investors External id is @ViewBag.InvestorExternalId</h4>
+    @*<h4>Is this investor active? @(ViewBag.ActiveInvestor ? "Yes" : "No")</h4>*@
 }
 
+<hr />
 @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && ViewBag.Matchable != null)
 {
     if (ViewBag.Matchable)
@@ -22,43 +29,27 @@ else if (!string.IsNullOrEmpty(ViewBag.InvestorUserName))
 }
 else
 {
-    ViewBag.Title = (string.IsNullOrEmpty(ViewBag.InvestorUserName) ? "Investment profiles" : "Your Investment profiles");
+    ViewBag.Title = (string.IsNullOrEmpty(ViewBag.InvestorID) ? "Investment profiles" : "Your Investment profiles");
 }
-
-@*{
-        if (ViewBag.Matchable)
-        {
-            ViewBag.Title = "Matchable Investment profiles" + (string.IsNullOrEmpty(ViewBag.InvestorUserName) ? "" : " by " + ViewBag.InvestorUserName);
-        }
-        else if (!ViewBag.Matchable)
-        {
-            ViewBag.Title = "Unmatchable Investment profiles" + (string.IsNullOrEmpty(ViewBag.InvestorUserName) ? "" : " by " + ViewBag.InvestorUserName);
-        }
-    }
-    else
-    {
-        //ViewBag.Title = "Investment profiles" + (string.IsNullOrEmpty(ViewBag.InvestorUserName) ? "" : " by " + ViewBag.InvestorUserName);
-        ViewBag.Title = (string.IsNullOrEmpty(ViewBag.IdeaCarrierUserName) ? "Investment profiles by " + ViewBag.IdeaCarrierUserName : "Your Investment profiles");
-    }*@
 
 <h3>@ViewBag.Title</h3>
 
 @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
 {
     <p class="hidden-print">
-        @Html.ActionLink("Match all matchable profiles", "Motor", "MatchMakings", new { Id = ViewBag.InvestorId }, new { @class = "btn btn-primary" }) @*<---Hide if none*@
+        @Html.ActionLink("Match all matchable profiles", "Motor", "MatchMakings", new { Id = ViewBag.InvestorId }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" }) @*<---Hide if none*@
         <text>&nbsp;</text>
         @if (ViewBag.Matchable == null)
         {
-            @Html.ActionLink("Show matchable profile", "Index", new { id = ViewBag.InvestorId, matchable = true }, new { @class = "btn btn-success" })
+            @Html.ActionLink("Show matchable profile", "Index", new { id = ViewBag.InvestorId, matchable = true }, new { @class = "btn btn-success", @style = "height:25px;padding:1px" })
         }
         else if (ViewBag.Matchable)
         {
-            @Html.ActionLink("Show unmatchable profiles", "Index", new { id = ViewBag.InvestorId, matchable = false }, new { @class = "btn btn-danger" })
+            @Html.ActionLink("Show unmatchable profiles", "Index", new { id = ViewBag.InvestorId, matchable = false }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
         }
         else if (!ViewBag.Matchable)
         {
-            @Html.ActionLink("Show all profiles", "Index", new { id = ViewBag.InvestorId }, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Show all profiles", "Index", new { id = ViewBag.InvestorId }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
         }
     </p>
 }
@@ -74,68 +65,73 @@ else
         @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && string.IsNullOrEmpty(ViewBag.InvestorUserName))
         {
             <th>
-                @*@Html.Raw("Investor User Name")*@
-                @Html.ActionLink("Investor User name", "Index", new { orderBy = "UserName" }, htmlAttributes: new { title = "Order by User name" })
+                @Html.Raw("<span class=\"visible-print\">Investor user name</span>")
+                @Html.ActionLink("Investor user name", "Index", new { orderBy = "InvestorUserName" }, htmlAttributes: new { title = "Order by Investor user name", @class = "hidden-print" })
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.InvestmentID)*@
-                @Html.ActionLink(Html.DisplayNameFor(model => model.InvestmentID).ToString(), "Index", new { orderBy = "InvestmentID" }, htmlAttributes: new { title = "Order by Investment profile id" })
+                @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.InvestmentID)@Html.Raw("</span>")
+                @Html.ActionLink(Html.DisplayNameFor(model => model.InvestmentID).ToString(), "Index", new { orderBy = "InvestmentID" }, htmlAttributes: new { title = "Order by Investment profile id", @class = "hidden-print" })
             </th>
             <th>
-                @Html.ActionLink(Html.DisplayNameFor(model => model.ProfileName).ToString(), "Index", new { orderBy = "ProfileName" }, htmlAttributes: new { title = "Order by Investment profile name" })
+                @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.ProfileName)@Html.Raw("</span>")
+                @Html.ActionLink(Html.DisplayNameFor(model => model.ProfileName).ToString(), "Index", new { orderBy = "ProfileName" }, htmlAttributes: new { title = "Order by Investment profile name", @class = "hidden-print" })
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.CountryID)*@
-                @Html.ActionLink(Html.DisplayNameFor(model => model.CountryID).ToString(), "Index", new { orderBy = "Country" }, htmlAttributes: new { title = "Order by Country" })
+                @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.CountryID)@Html.Raw("</span>")
+                @Html.ActionLink(Html.DisplayNameFor(model => model.CountryID).ToString(), "Index", new { orderBy = "Country" }, htmlAttributes: new { title = "Order by Country", @class = "hidden-print" })
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.SwedishRegionID)*@
-                @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayNameFor(model => model.SwedishRegion).ToString()), "Index", new { orderBy = "SwedishRegion" }, htmlAttributes: new { title = "Order by Swedish region (län)" })
+                @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.SwedishRegionID)@Html.Raw("</span>")
+                @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayNameFor(model => model.SwedishRegion).ToString()), "Index", new { orderBy = "SwedishRegion" }, htmlAttributes: new { title = "Order by Swedish region (Län)", @class = "hidden-print" })
             </th>
         }
-        else //Investor
+        else //UserRole == Investor
         {
             <th>
-                @*@Html.DisplayNameFor(model => model.InvestmentID)*@
-                @Html.ActionLink(Html.DisplayNameFor(model => model.InvestmentID).ToString(), "Index", new { orderBy = "InvestmentID" }, htmlAttributes: new { title = "Order by Investment profile id" })
+                @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.InvestmentID)@Html.Raw("</span>")
+                @Html.ActionLink(Html.DisplayNameFor(model => model.InvestmentID).ToString(), "Index", new { orderBy = "InvestmentID" }, htmlAttributes: new { title = "Order by Investment profile id", @class = "hidden-print" })
             </th>
             <th>
-                @Html.ActionLink(Html.DisplayNameFor(model => model.ProfileName).ToString(), "Index", new { orderBy = "ProfileName" }, htmlAttributes: new { title = "Order by Investment profile name" })
+                @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.ProfileName)@Html.Raw("</span>")
+                @Html.ActionLink(Html.DisplayNameFor(model => model.ProfileName).ToString(), "Index", new { orderBy = "ProfileName" }, htmlAttributes: new { title = "Order by Investment profile name", @class = "hidden-print" })
             </th>
         }
-        <th>
-            @*@Html.DisplayNameFor(model => model.ProjectDomainID)*@
-            @Html.ActionLink(Html.DisplayNameFor(model => model.ProjectDomainID).ToString(), "Index", new { orderBy = "ProjectDomainName" }, htmlAttributes: new { title = "Order by Project domain" })
-        </th>
-        <th>
-            @*@Html.Raw("Matches")*@
-            @Html.ActionLink("Matches", "Index", new { orderBy = "MatchMakingCount" }, htmlAttributes: new { title = "Order by Match making count" })
-        </th>
+            <th>
+                @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.ProjectDomainID)@Html.Raw("</span>")
+                @Html.ActionLink(Html.DisplayNameFor(model => model.ProjectDomainID).ToString(), "Index", new { orderBy = "ProfileDomainName" }, htmlAttributes: new { title = "Order by Profile domain", @class = "hidden-print" })
+            </th>
+            <th>
+                @Html.Raw("<span class=\"visible-print\">#Matches</span>")
+                @Html.ActionLink("Matches", "Index", new { orderBy = "MatchMakingCount" }, htmlAttributes: new { title = "Order by Match making count", @class = "hidden-print" })
+            </th>
         @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
         {
             <th>
-                @Html.ActionLink("Match makings", "Index", new { orderBy = "MatchMakingCount" }, htmlAttributes: new { title = "Order by Match making count" })
+                @Html.Raw("<span class=\"visible-print\">Match makings</span>")
+                @Html.ActionLink("Match makings", "Index", new { orderBy = "MatchMakingCount" }, htmlAttributes: new { title = "Order by Match making count", @class = "hidden-print" })
             </th>
         }
-        <th>
-            @*@Html.DisplayNameFor(model => model.CreatedDate)*@
-            @Html.ActionLink(Html.DisplayNameFor(model => model.CreatedDate).ToString(), "Index", new { orderBy = "CreatedDate" }, htmlAttributes: new { title = "Order by Created date" })
-        </th>
-        <th>
-            @*@Html.DisplayNameFor(model => model.DueDate)*@
-            @Html.ActionLink(Html.DisplayNameFor(model => model.DueDate).ToString(), "Index", new { orderBy = "DueDate" }, htmlAttributes: new { title = "Order by Due date" })
-        </th>
-        @*@if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
-            {*@
-        <th>
-            @*@Html.Raw("Days since Last Saved")*@
-            @Html.ActionLink("Profile form", "Index", new { orderBy = "LastSavedDate" }, htmlAttributes: new { title = "Order by Last saved date" })
-        </th>
-        @*}*@
-        <th>
-            @*@Html.DisplayNameFor(model => model.Active)*@
-            @Html.ActionLink(Html.DisplayNameFor(model => model.Active).ToString(), "Index", new { orderBy = "Active" }, htmlAttributes: new { title = "Order by Active profile" })
-        </th>
+            <th>
+                @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.CreatedDate)@Html.Raw("</span>")
+                @Html.ActionLink(Html.DisplayNameFor(model => model.CreatedDate).ToString(), "Index", new { orderBy = "CreatedDate" }, htmlAttributes: new { title = "Order by Created date", @class = "hidden-print" })
+            </th>
+            <th>
+                @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.DueDate)@Html.Raw("</span>")
+                @Html.ActionLink(Html.DisplayNameFor(model => model.DueDate).ToString(), "Index", new { orderBy = "DueDate" }, htmlAttributes: new { title = "Order by Due date", @class = "hidden-print" })
+            </th>
+            <th>
+                @*@Html.Raw("Days since Last saved")*@
+                @Html.Raw("<span class=\"visible-print\">Form</span>")
+                @Html.ActionLink("Profile form", "Index", new { orderBy = "LastSavedDate" }, htmlAttributes: new { title = "Order by Last saved date", @class = "hidden-print" })
+            </th>
+            <th>
+                @Html.Raw("<span class=\"visible-print\">Active?</span>")
+                @Html.ActionLink(Html.DisplayNameFor(model => model.Active).ToString(), "Index", new { orderBy = "Active" }, htmlAttributes: new { title = "Order by Activivity", @class = "hidden-print" })
+            </th>
+            <th>
+                @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.LastSavedDate)@Html.Raw("</span>")
+                @Html.ActionLink(Html.DisplayNameFor(model => model.LastSavedDate).ToString(), "Index", new { orderBy = "LastSavedDate" }, htmlAttributes: new { title = "Order by Last saved date", @class = "hidden-print" })
+            </th>
         <th class="hidden-print"></th>
     </tr>
 
@@ -183,7 +179,8 @@ else
                 <td>
                     @if (item.Locked && item.Active && (!item.DueDate.HasValue || item.DueDate.HasValue && item.DueDate.Value.Date > DateTime.Now.Date))
                     {
-                        @Html.ActionLink("Match", "Motor", "MatchMakings", new { id = item.InvestmentID }, new { @class = "btn btn-primary" })
+                        @Html.Raw("<span class=\"visible-print\">Matchable&nbsp;</span>")
+                        @Html.ActionLink("Match", "Motor", "MatchMakings", new { id = item.InvestmentID }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
                     }
                     else
                     {
@@ -196,11 +193,13 @@ else
                 <td>
                     @if (item.DueDate.HasValue && DateTime.Now.Date > item.DueDate.Value.Date)
                     {
-                        @Html.ActionLink("Date passed", "EditAdmin", new { id = item.InvestmentID }, new { @class = "btn btn-danger" })
+                        @Html.Raw("<span class=\"visible-print\">Date passed&nbsp;</span>")
+                        @Html.ActionLink("Date passed", "EditAdmin", new { id = item.InvestmentID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
                     }
                     else if (item.DueDate.HasValue && DateTime.Now.Date == item.DueDate.Value.Date)
                     {
-                        @Html.ActionLink("Today", "EditAdmin", new { id = item.InvestmentID }, new { @class = "btn btn-danger" })
+                        @Html.Raw("<span class=\"visible-print\">Today&nbsp;</span>")
+                        @Html.ActionLink("Today", "EditAdmin", new { id = item.InvestmentID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
                     }
                     else if (item.DueDate.HasValue)
                     {
@@ -216,18 +215,19 @@ else
                 <td>
                     @if (item.Locked)
                     {
-                        @Html.ActionLink("Unlock it", "Unlock", new { id = item.InvestmentID }, new { @class = "btn btn-success" })
+                        @Html.Raw("Locked&nbsp;")
+                        @Html.ActionLink("Unlock it", "Unlock", new { id = item.InvestmentID }, new { @class = "btn btn-success hidden-print", @style = "height:25px;padding:1px" })
                     }
                     else
                     {
                         int daysSincelastSaved = DateTime.Now.Date.Subtract(item.LastSavedDate.Date).Days;
-                        string message = daysSincelastSaved + (daysSincelastSaved == 1 ? " day" : " days") + " since last saved";
+                        string message = daysSincelastSaved + (daysSincelastSaved == 1 ? " day" : " days") + " since last saved&nbsp;";
                         @Html.Raw(message);
                         <span class="hidden-print">
                             @if (daysSincelastSaved >= 1)
                             {
-                                <text>&nbsp;&nbsp;&nbsp;</text>
-                                @Html.ActionLink("Remind", "Reminder", new { id = item.InvestmentID, subject = "Finish Profile form " + item.InvestmentID, message = message, redirect = (string.IsNullOrEmpty(ViewBag.InvestorUserName) ? "" : "IndexUser") }, new { @class = "btn btn-danger hidden-print" })
+                                <text>&nbsp;&nbsp;</text>
+                                @Html.ActionLink("Remind", "Reminder", new { id = item.InvestmentID, subject = "Finish your Profile form " + item.InvestmentID, message = message, redirect = (string.IsNullOrEmpty(ViewBag.InvestorUserName) ? "" : "IndexUser") }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
                             }
                         </span>
                     }
@@ -244,7 +244,8 @@ else
                 <td>
                     @if (item.DueDate.HasValue && DateTime.Now.Date > item.DueDate.Value.Date)
                     {
-                        @Html.ActionLink("Pay", "Contact", "Home", new { subject = "Pay for " + item.InvestmentID }, new { @class = "btn btn-danger" })
+                        @Html.Raw("<span class=\"visible-print\">Pay&nbsp;</span>")
+                        @Html.ActionLink("Pay", "Contact", "Home", new { subject = "Pay for " + item.InvestmentID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
                     }
                     else if (item.DueDate.HasValue)
                     {
@@ -260,41 +261,41 @@ else
                 <td>
                     @if (!item.Locked)
                     {
-                        @Html.ActionLink("Finish it", "ProfileForm", new { id = item.InvestmentID }, new { @class = "btn btn-danger" })
+                        @Html.Raw("<span class=\"visible-print\">Not finished</span>")
+                        @Html.ActionLink("Finish it", "ProfileForm", new { id = item.InvestmentID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
                     }
                     else
                     {
-                        @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + item.InvestmentID }, new { @class = "btn btn-primary" })
+                        @Html.Raw("Locked&nbsp;&nbsp;")
+                        @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + item.InvestmentID }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
                     }
                 </td>
                 <td>
                     @if (item.Active)
                     {
-                        @Html.ActionLink("Unactivate", "Activate", new { id = item.InvestmentID }, new { @class = "btn btn-primary" })
+                        @Html.Raw("Yes&nbsp;&nbsp;")
+                        @Html.ActionLink("Unactivate", "Activate", new { id = item.InvestmentID }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
                     }
                     else
                     {
-                        @Html.ActionLink("Activate", "Activate", new { id = item.InvestmentID }, new { @class = "btn btn-success" })
+                        @Html.Raw("No&nbsp;&nbsp;")
+                        @Html.ActionLink("Activate", "Activate", new { id = item.InvestmentID }, new { @class = "btn btn-success hidden-print", @style = "height:25px;padding:1px" })
                     }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastSavedDate)
                 </td>
 
             }
             <td class="hidden-print">
-                @Html.ActionLink("Details", "ProfileDetails", new { id = item.InvestmentID }) |
-                @Html.ActionLink("Remove", "RemoveProfile", new { id = item.InvestmentID }, new { @style = "color:red" })
 
-                @*@if (!item.Locked && ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
-                    {*@
-                @*<text>| </text>@Html.ActionLink("Form", "ProfileForm", new { id = item.InvestmentID })*@
-                @*<text>| (</text>@Html.ActionLink("Edit Form", "ProfileForm", new { id = item.InvestmentID })*@
+                @Html.ActionLink("Details", "ProfileDetails", new { id = item.InvestmentID })
+                @if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString() && item.DueDate.HasValue)
+                {
+                    <text>|</text>
+                    @Html.ActionLink("Remove", "RemoveProfile", new { id = item.InvestmentID }, new { @style = "color:red" })
+                }
 
-                @*<text>| (</text>@Html.ActionLink("Remove", "RemoveProfile", new { id = item.InvestmentID }, new { @style = "color:red" })<text>)</text>*@
-                @*}*@  @*&& item.DueDate.HasValue*@
-                @*else if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && item.DueDate.HasValue)
-                    {
-                    <text>| </text>
-                    @Html.ActionLink("Edit", "EditAdmin", new { id = item.InvestmentID })
-                    }*@
             </td>
         </tr>
     }

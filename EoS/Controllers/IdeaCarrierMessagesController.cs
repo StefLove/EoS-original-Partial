@@ -48,13 +48,14 @@ namespace EoS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ValidateInput(false)]
-        public ActionResult Create([Bind(Include = "Id,Text")] IdeaCarrierMessage ideaCarrierMessage)
+        //[ValidateInput(false)]
+        public ActionResult Create([Bind(Include = "Id,Text,AllowSharing_DisplayName")] IdeaCarrierMessage ideaCarrierMessage) /*Id,Text,AllowSharing_DisplayName*/
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && !db.IdeaCarrierMessages.Any())
             {
                 db.IdeaCarrierMessages.Add(ideaCarrierMessage);
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
 
@@ -82,7 +83,7 @@ namespace EoS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        public ActionResult Edit([Bind(Include = "Id,Text")] IdeaCarrierMessage ideaCarrierMessage)
+        public ActionResult Edit([Bind(Include = "Id,Text,AllowSharing_DisplayName")] IdeaCarrierMessage ideaCarrierMessage) /*Id,Text,AllowSharing_DisplayName*/
         {
             if (ModelState.IsValid)
             {
@@ -116,6 +117,7 @@ namespace EoS.Controllers
             IdeaCarrierMessage ideaCarrierMessage = db.IdeaCarrierMessages.Find(id);
             db.IdeaCarrierMessages.Remove(ideaCarrierMessage);
             db.SaveChanges();
+
             return RedirectToAction("Index");
         }
 

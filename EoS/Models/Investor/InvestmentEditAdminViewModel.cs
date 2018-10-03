@@ -9,16 +9,19 @@ namespace EoS.Models.Investor
     public class InvestmentEditAdminViewModel
     {
         //[Key]
-        [Display(Name = "Investment Code")]
+        [Display(Name = "Investment ID")]
         public string InvestmentId { get; set; }
 
-        [Display(Name = "Investor Name")]
+        [Display(Name = "Investor name")]
         public string InvestorName { get; set; }
 
         [Editable(true)]
-        [DataType(DataType.DateTime, ErrorMessage = "Use Date Format: YYYY-MM-DD")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
+        [DataType(DataType.DateTime, ErrorMessage = "Use date format: yyyy-MM-dd")]
+        [DisplayFormat(ApplyFormatInEditMode = true, NullDisplayText = "yyyy-MM-dd", DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "Due Date")]
         public DateTime? DueDate { get; set; }
+
+        [Display(Name = "Locked")]
+        public bool Locked { get; set; }
     }
 }

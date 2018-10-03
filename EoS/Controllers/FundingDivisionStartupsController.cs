@@ -120,7 +120,13 @@ namespace EoS.Controllers
 
                 db.Entry(fundingDivisionStartup).State = EntityState.Modified;
                 db.SaveChanges();
-                return Redirect("~/Startups/ProjectForm/" + fundingDivisionStartup.StartupID + "#Budget"); //RedirectToAction("Index");
+
+                TempData["message"] = "Funding divisions uppdated in tab Funding.";
+                TempData["tab"] = "Budget";
+                return RedirectToAction("ProjectForm", "Startups", new { id = fundingDivisionStartup.StartupID });
+
+                //return Redirect("~/Startups/ProjectForm/" + fundingDivisionStartup.StartupID + "/#Budget"); //RedirectToAction("Index");
+                //return Redirect(Url.Action("ProjectForm", "Startups", new { id = fundingDivisionStartup.StartupID }) + "#Budget");
             }
             //ViewBag.FundingDivisionID = new SelectList(db.FundingDivisions, "FundingDivisionID", "FundingDivisionName", fundingDivisionStartup.FundingDivisionID);
             //ViewBag.StartupID = new SelectList(db.Startups, "StartupID", "UserID", fundingDivisionStartup.StartupID);

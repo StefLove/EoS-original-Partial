@@ -7,7 +7,7 @@
 <h3>@ViewBag.Title</h3>
 
 <div>
-    @*<h4>Startup </h4>*@
+    @*<h4>Startup</h4>*@
     <hr />
     <dl class="dl-horizontal">
 
@@ -58,7 +58,8 @@
                 @Html.DisplayNameFor(model => model.SwedishRegionID)
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.SwedishRegion.RegionName)
+                @ViewBag.SwedishRegionName
+                @*@Html.DisplayFor(model => model.SwedishRegion.RegionName)*@
             </dd>
         }
 
@@ -73,7 +74,32 @@
             @Html.DisplayNameFor(model => model.DeadlineDate)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.DeadlineDate)
+            @if (Model.DeadlineDate.HasValue && DateTime.Now.Date > Model.DeadlineDate.Value.Date)
+            {
+                if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+                {
+                    @:<span class="visible-print">date passed.</span>
+                    @Html.ActionLink("Remind about prolonging Deadline date", "Reminder", new { id = Model.StartupID, subject = "Deadline date passed for " + Model.StartupID, message = "Prolong the Deadline date for project " + Model.StartupID, redirect = "ProjectDetails" }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" });
+                }
+                else //Investor
+                {
+                    @:<span class="visible-print">date passed. You need to prolong the date!</span>
+                    if (Model.Locked)
+                    {
+                        @Html.ActionLink("Prolong Deadline date 6 months", "ProlongDeadlineDate", new { id = Model.StartupID, months = 6, redirect = "ProjectDetails" }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" }); Html.Raw("&nbsp;");
+                        @Html.ActionLink("Prolong Deadline date 1 year", "ProlongDeadlineDate", new { id = Model.StartupID, months = 12, redirect = "ProjectDetails" }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" });
+                    }
+                }
+            }
+            else if (!Model.DeadlineDate.HasValue)
+            {
+                @:<span class="visible-print">date not set.</span>
+                @Html.ActionLink("Set Deadline date", "ProjectForm", new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" });
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.DeadlineDate)
+            }
         </dd>
 
         <dd class="hidden-print">
@@ -128,7 +154,7 @@
         <dd>
             @Html.DisplayFor(model => model.AlreadySpentMoney)
         </dd>
-  
+
         <dt>
             @Html.DisplayNameFor(model => model.WillSpendOwnMoney)
         </dt>
@@ -147,7 +173,7 @@
                 var orderedFundingDivisions = Model.ProjectFundingDivisions.OrderBy(fd => fd.FundingDivision.FundingDivisionID);
                 foreach (var fundingDivision in orderedFundingDivisions)
                 {
-                    @Html.Raw(fundingDivision.FundingDivision.FundingDivisionName + "&nbsp;&nbsp;" + fundingDivision.Percentage + "%" +"<br />");
+                    @Html.Raw(fundingDivision.FundingDivision.FundingDivisionName + "&nbsp;&nbsp;" + fundingDivision.Percentage + "%" + "<br />");
                 }
             }
             else
@@ -283,14 +309,14 @@
             </dd>
         }
 
-        @*The rest*@        
+        @*The rest*@
 
         <dt>
             @Html.DisplayNameFor(model => model.CreatedDate)
         </dt>
         <dd>
             @Html.DisplayFor(model => model.CreatedDate)
-        </dd>      
+        </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.LastSavedDate)
@@ -320,17 +346,28 @@
                     </dd>
                 }
 
+                <dt class="hidden-print">
+                    @Html.Raw("This Profile form")
+                </dt>
+                if (Model.Locked)
+                {
+                    @Html.Raw("is locked&nbsp;")
+                    <dd class="hidden-print">
+                        @Html.ActionLink("Unlock it", "Unlock", new { id = Model.StartupID, redirect = "ProjectDetails" }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
+                    </dd>
+                }
+
                 <dt>
                     @Html.DisplayNameFor(model => model.ApprovedByID)
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.ApprovedBy.UserName) @*ViewBag.ApprovedBy*@
+                    @ViewBag.ApprovedBy) @*@Html.DisplayFor(model => model.ApprovedByID*@
                 </dd>
             }
             else
             {
                 <dt>
-                    @Html.Raw("Form")
+                    @Html.Raw("This Project form")
                 </dt>
                 <dd>
                     @*@Html.Raw(DateTime.Now.Date.Subtract(Model.LastSavedDate.Date).Days);
@@ -352,8 +389,8 @@
         }
         else if (ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString())
         {
-        if (Model.Locked)
-        {
+            if (Model.Locked)
+            {
                 <dt>
                     @Html.Raw("No of Matched Profiles")
                 </dt>
@@ -369,31 +406,51 @@
                 </dd>
 
                 <dt>
-                    @Html.Raw("Form")
+                    @Html.Raw("This Project form")
                 </dt>
                 <dd>
-                    @Html.ActionLink("Unlock it", "Unlock", new { id = Model.StartupID }, new { @class = "btn btn-success" })                    
-                </dd>
-
-                <dt>
-                    @Html.DisplayNameFor(model => model.Approved)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.Approved)
+                    @Html.Raw("is locked&nbsp;")
+                    @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + Model.StartupID }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
                 </dd>
             }
             else
             {
                 <dt>
-                    @Html.Raw("Form")
+                    @Html.Raw("This Project form")
                 </dt>
                 <dd>
-                   @Html.ActionLink("Finish it!", "ProjectForm", new { id = Model.StartupID }, new { @class = "btn btn-danger" })
+                    @Html.Raw("is not finished.&nbsp;")
+                    @Html.ActionLink("Finish it", "ProjectForm", new { id = Model.StartupID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
                 </dd>
             }
         }
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastLockedDate)
+        </dt>
+        @if (Model.LastLockedDate.HasValue)
+        {
+        <dd>
+            @Html.DisplayFor(model => model.LastLockedDate)
+        </dd>
+        }
+        else
+        {
+        <dd>
+            @Html.Raw("None")
+        </dd>
+        }
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Approved)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Approved)
+        </dd>
+
+        <dt>@Html.Raw("Documents")</dt>
+        <dd>@Html.Raw("None") @*@Html.Action("List", "DocumentList", new { startupID = Model.StartupID, @class = "hidden-print" })*@</dd>
     </dl>
-    @Html.Action("DocumentList", new { startupID = Model.StartupID })
 </div>
 
 <div class="hidden-print">
@@ -419,11 +476,9 @@
     {
         @Html.ActionLink("Back to your Startup projects", "Index")
     }
-
+    @* &&!ViewBag.TheOnlyProject*@
     @if (!Model.Locked && ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString())
     {
-        @*<text>|</text>
-            @Html.ActionLink("Edit", "Edit", new { id = Model.StartupID })*@
         <text>|</text>
         @Html.ActionLink("Remove project", "RemoveProject", new { id = Model.StartupID }, new { @style = "color:red" })
     }

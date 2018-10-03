@@ -13,7 +13,6 @@ namespace EoS.Models.IdeaCarrier
         public string FundingDivisionName { get; set; }
 
         //public virtual ICollection<Models.IdeaCarrier.Startup> Startups { get; set; }
-        public virtual ICollection<FundingDivisionStartup> FundingDivisionStartups { get; set; }
-        
+        public virtual ICollection<FundingDivisionStartup> FundingDivisionStartups { get; set; } //<----necessary??
     }
 }

@@ -12,6 +12,6 @@ namespace EoS.Models.Shared
         [Display(Name = "Estimated exit plan")]
         public string EstimatedExitPlanName { get; set; }
 
-        public virtual ICollection<Models.Investor.Investment> Investments { get; set; }
+        public virtual ICollection<Investor.Investment> Investments { get; set; } //<---necessary??
     }
 }

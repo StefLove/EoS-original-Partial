@@ -56,7 +56,7 @@ namespace EoS.Migrations
             var userStore = new UserStore<ApplicationUser>(context);
             var userManager = new UserManager<ApplicationUser>(userStore);
 
-            var emails = new[] { "mmm@enablersofsweden.com", "ideaCarrier1@enablersofsweden.com", "ideaCarrier2@enablersofsweden.com", "aalhinai83@gmail.com", "stefanlovefors@hotmail.com" };
+            var emails = new[] { "mmm@enablersofsweden.com", "ideaCarrier1@enablersofsweden.com", "ideaCarrier2@enablersofsweden.com", "pr.stfn@gmail.com", "stefanlovefors@hotmail.com" }; //"aalhinai83@gmail.com",
 
             foreach (var email in emails)
             {
@@ -67,7 +67,7 @@ namespace EoS.Migrations
                     {
                         UserName = email,
                         Email = email,
-                        UserStartDate = DateTime.Now,                       
+                        UserStartDate = DateTime.Now,
                     };
 
                     var result = userManager.Create(user, "_123Abc");
@@ -94,7 +94,7 @@ namespace EoS.Migrations
             ideaCarrierUser2.UserFirstName = "IdeaCarrier2";
             ideaCarrierUser2.EmailConfirmed = true;
 
-            var investor1 = userManager.FindByName("aalhinai83@gmail.com");
+            var investor1 = userManager.FindByName("pr.stfn@gmail.com");
             userManager.AddToRole(investor1.Id, Role.Investor.ToString());
             investor1.UserFirstName = "Investor1";
             investor1.EmailConfirmed = true;
@@ -148,7 +148,7 @@ namespace EoS.Migrations
             context.SaveChanges();
 
             context.SwedishRegions.AddOrUpdate(
-                c => c.RegionName,
+                sr => sr.RegionName,
                 new SwedishRegion { RegionName = "Blekinge" },
                 new SwedishRegion { RegionName = "Dalarna" },
                 new SwedishRegion { RegionName = "Gotland" },
@@ -173,74 +173,8 @@ namespace EoS.Migrations
                 );
             context.SaveChanges();
 
-            context.InnovationLevels.AddOrUpdate(
-               c => c.InnovationLevelName,
-                new InnovationLevel { InnovationLevelName = "0 - 3 already proven business model" },
-                new InnovationLevel { InnovationLevelName = "4-6 innovation that could lead to a fair market share" },
-                new InnovationLevel { InnovationLevelName = "7-8 this will for sure make a change" },
-                new InnovationLevel { InnovationLevelName = "9 disruptive change" },
-                new InnovationLevel { InnovationLevelName = "10 gamechanger \"It is nothing like it out there\"" });
-            context.SaveChanges();
-
-            context.EstimatedExitPlans.AddOrUpdate(
-              c => c.EstimatedExitPlanName,
-                new EstimatedExitPlan { EstimatedExitPlanName = "Budget" },
-                new EstimatedExitPlan { EstimatedExitPlanName = "Break even" },
-                new EstimatedExitPlan { EstimatedExitPlanName = "Possible income streams" },
-                new EstimatedExitPlan { EstimatedExitPlanName = "ASAP" },
-                new EstimatedExitPlan { EstimatedExitPlanName = "< 3 years" },
-                new EstimatedExitPlan { EstimatedExitPlanName = "3 - 5 years" },
-                new EstimatedExitPlan { EstimatedExitPlanName = "5 - 10 years" },
-                new EstimatedExitPlan { EstimatedExitPlanName = "Long Term Involvement" });
-            context.SaveChanges();
-
-            context.FundingAmounts.AddOrUpdate(
-                    c => c.FundingAmountValue,
-                    new FundingAmount { FundingAmountValue = "0-500,000" },
-                    new FundingAmount { FundingAmountValue = "500,000 - 1,000,000" },
-                    new FundingAmount { FundingAmountValue = "1,000,000 - 2,000,000" },
-                    new FundingAmount { FundingAmountValue = "2,000,000 - 4,000,000" },
-                    new FundingAmount { FundingAmountValue = "4,000,000 - 8,000,000" },
-                    new FundingAmount { FundingAmountValue = "8,000,000 - 16,000,000" },
-                    new FundingAmount { FundingAmountValue = "16,000,000 - 32,000,000" },
-                    new FundingAmount { FundingAmountValue = "32,000,000 - 64,000,000" },
-                    new FundingAmount { FundingAmountValue = "64 000 000 and above" });
-            context.SaveChanges();
-
-            context.FundingDivisions.AddOrUpdate(
-                    c => c.FundingDivisionName,                  
-                    new FundingDivision { FundingDivisionName = "M & A" },
-                    new FundingDivision { FundingDivisionName = "R & D" },
-                    new FundingDivision { FundingDivisionName = "Sales" },
-                    new FundingDivision { FundingDivisionName = "Marketing" },
-                    new FundingDivision { FundingDivisionName = "Administration" },
-                    new FundingDivision { FundingDivisionName = "Other" });
-            context.SaveChanges();
-
-            context.FundingPhases.AddOrUpdate(
-                  c => c.FundingPhaseName,
-                  new FundingPhase { FundingPhaseName = "Idea Development" },
-                  new FundingPhase { FundingPhaseName = "Prototype Development" },
-                  new FundingPhase { FundingPhaseName = "Seed" },
-                  new FundingPhase { FundingPhaseName = "Early growth" },
-                  new FundingPhase { FundingPhaseName = "Round A" },
-                  new FundingPhase { FundingPhaseName = "Round B" },
-                  new FundingPhase { FundingPhaseName = "Round C" },
-                  new FundingPhase { FundingPhaseName = "Round D" });
-            context.SaveChanges();
-
-            context.Outcomes.AddOrUpdate(
-            c => c.OutcomeName,
-                  new Outcome { OutcomeName = "Product" },
-                  new Outcome { OutcomeName = "Service" },
-                  new Outcome { OutcomeName = "Process" },
-                  new Outcome { OutcomeName = "Software" },
-                  new Outcome { OutcomeName = "Hardware" },
-                  new Outcome { OutcomeName = "Other" });
-            context.SaveChanges();
-
             context.ProjectDomains.AddOrUpdate(
-                 c => c.ProjectDomainName,
+                 pd => pd.ProjectDomainName,
                  new ProjectDomain { ProjectDomainName = "Agriculture" },
                  new ProjectDomain { ProjectDomainName = "Advertising" },
                  new ProjectDomain { ProjectDomainName = "Banking" },
@@ -284,16 +218,61 @@ namespace EoS.Migrations
                  );
             context.SaveChanges();
 
-            context.Scalabilities.AddOrUpdate(
-                c => c.ScalabilityName,
-                new Scalability { ScalabilityName = "Local" },
-                new Scalability { ScalabilityName = "Continental" },
-                new Scalability { ScalabilityName = "Global" }
-                );
+            context.AllowedInvestors.AddOrUpdate(
+              ai => ai.AllowedInvestorName,
+              new AllowedInvestor { AllowedInvestorName = "Within Sweden" },
+              new AllowedInvestor { AllowedInvestorName = "Globally" });
+            context.SaveChanges();
+
+            context.EstimatedExitPlans.AddOrUpdate(
+              eep => eep.EstimatedExitPlanName,
+                new EstimatedExitPlan { EstimatedExitPlanName = "Budget" },
+                new EstimatedExitPlan { EstimatedExitPlanName = "Break even" },
+                new EstimatedExitPlan { EstimatedExitPlanName = "Possible income streams" },
+                new EstimatedExitPlan { EstimatedExitPlanName = "ASAP" },
+                new EstimatedExitPlan { EstimatedExitPlanName = "< 3 years" },
+                new EstimatedExitPlan { EstimatedExitPlanName = "3 - 5 years" },
+                new EstimatedExitPlan { EstimatedExitPlanName = "5 - 10 years" },
+                new EstimatedExitPlan { EstimatedExitPlanName = "Long Term Involvement" });
+            context.SaveChanges();
+
+            context.FundingAmounts.AddOrUpdate(
+                    fa => fa.FundingAmountValue,
+                    new FundingAmount { FundingAmountValue = "0-500,000" },
+                    new FundingAmount { FundingAmountValue = "500,000 - 1,000,000" },
+                    new FundingAmount { FundingAmountValue = "1,000,000 - 2,000,000" },
+                    new FundingAmount { FundingAmountValue = "2,000,000 - 4,000,000" },
+                    new FundingAmount { FundingAmountValue = "4,000,000 - 8,000,000" },
+                    new FundingAmount { FundingAmountValue = "8,000,000 - 16,000,000" },
+                    new FundingAmount { FundingAmountValue = "16,000,000 - 32,000,000" },
+                    new FundingAmount { FundingAmountValue = "32,000,000 - 64,000,000" },
+                    new FundingAmount { FundingAmountValue = "64 000 000 and above" });
+            context.SaveChanges();
+
+            context.FundingPhases.AddOrUpdate(
+                  fp => fp.FundingPhaseName,
+                  new FundingPhase { FundingPhaseName = "Idea Development" },
+                  new FundingPhase { FundingPhaseName = "Prototype Development" },
+                  new FundingPhase { FundingPhaseName = "Seed" },
+                  new FundingPhase { FundingPhaseName = "Early growth" },
+                  new FundingPhase { FundingPhaseName = "Round A" },
+                  new FundingPhase { FundingPhaseName = "Round B" },
+                  new FundingPhase { FundingPhaseName = "Round C" },
+                  new FundingPhase { FundingPhaseName = "Round D" });
+            context.SaveChanges();
+
+            context.FundingDivisions.AddOrUpdate(
+                    fd => fd.FundingDivisionName,
+                    new FundingDivision { FundingDivisionName = "M & A" },
+                    new FundingDivision { FundingDivisionName = "R & D" },
+                    new FundingDivision { FundingDivisionName = "Sales" },
+                    new FundingDivision { FundingDivisionName = "Marketing" },
+                    new FundingDivision { FundingDivisionName = "Administration" },
+                    new FundingDivision { FundingDivisionName = "Other" });
             context.SaveChanges();
 
             context.TeamWeaknesses.AddOrUpdate(
-               c => c.TeamWeaknessName,
+               tw => tw.TeamWeaknessName,
                 new TeamWeakness { TeamWeaknessName = "M & A" },
                 new TeamWeakness { TeamWeaknessName = "R & D" },
                 new TeamWeakness { TeamWeaknessName = "Sales" },
@@ -301,39 +280,55 @@ namespace EoS.Migrations
                 new TeamWeakness { TeamWeaknessName = "Administration" },
                 new TeamWeakness { TeamWeaknessName = "Investment Readiness" },
                 new TeamWeakness { TeamWeaknessName = "Manufactoring" },
-                new TeamWeakness { TeamWeaknessName = "Distribution" },              
+                new TeamWeakness { TeamWeaknessName = "Distribution" },
                 new TeamWeakness { TeamWeaknessName = "Team" },
                 new TeamWeakness { TeamWeaknessName = "Other" }
                 );
             context.SaveChanges();
 
-            context.AllowedInvestors.AddOrUpdate(
-              c => c.AllowedInvestorName,
-              new AllowedInvestor { AllowedInvestorName = "Within Sweden" },
-              new AllowedInvestor { AllowedInvestorName = "Globally" });
-            context.SaveChanges();
-
             context.TeamSkills.AddOrUpdate(
-                new TeamSkill { SkillName = "M & A"},
+                ts => ts.SkillName,
+                new TeamSkill { SkillName = "M & A" },
                 new TeamSkill { SkillName = "R & D" },
                 new TeamSkill { SkillName = "Sales" },
                 new TeamSkill { SkillName = "Marketing" },
+                new TeamSkill { SkillName = "Administration" },
                 new TeamSkill { SkillName = "Manufacturing" },
                 new TeamSkill { SkillName = "Distribution" },
                 new TeamSkill { SkillName = "Investment readiness" },
                 new TeamSkill { SkillName = "Team members" },
                 new TeamSkill { SkillName = "Other" }
                 );
-            
-            //...new List<Weaknesses>().Add(new Weaknesses { WeaknessID = 1 })
-            //TeamWeaknesses = new List<Weaknesses> { 1, 1 }
-            //TeamWeaknesses = new List<Weaknesses> { Weakness1 }
-            //var Weakness1 = new Weaknesses() { WeaknessID = 2};
-            //new List<Weaknesses> { context.Weaknesses.FirstOrDefault(s => s.WeaknessName == "MF") }
-            //var Weakness = new List<Weaknesses> { new Weaknesses() { WeaknessID = 1 }, new Weaknesses() { WeaknessID = 2 } };
+
+            context.Outcomes.AddOrUpdate(
+                o => o.OutcomeName,
+                  new Outcome { OutcomeName = "Product" },
+                  new Outcome { OutcomeName = "Service" },
+                  new Outcome { OutcomeName = "Process" },
+                  new Outcome { OutcomeName = "Software" },
+                  new Outcome { OutcomeName = "Hardware" },
+                  new Outcome { OutcomeName = "Other" });
+            context.SaveChanges();
+
+            context.InnovationLevels.AddOrUpdate(
+              il => il.InnovationLevelName,
+               new InnovationLevel { InnovationLevelName = "0 - 3 already proven business model" },
+               new InnovationLevel { InnovationLevelName = "4-6 innovation that could lead to a fair market share" },
+               new InnovationLevel { InnovationLevelName = "7-8 this will for sure make a change" },
+               new InnovationLevel { InnovationLevelName = "9 disruptive change" },
+               new InnovationLevel { InnovationLevelName = "10 gamechanger \"It is nothing like it out there\"" });
+            context.SaveChanges();
+
+            context.Scalabilities.AddOrUpdate(
+                sc => sc.ScalabilityName,
+                new Scalability { ScalabilityName = "Local" },
+                new Scalability { ScalabilityName = "Continental" },
+                new Scalability { ScalabilityName = "Global" }
+                );
+            context.SaveChanges();
 
             context.Startups.AddOrUpdate(
-              c => c.StartupID,
+              su => su.StartupID,
               new Startup
               {
                   StartupID = "ICSE12345",
@@ -358,7 +353,6 @@ namespace EoS.Migrations
                   CreatedDate = DateTime.Now
                   //AllowSharingDisplayName = "(Admin) We allow Enablers of Sweden to share this project information given,<br /> to at least one type of investor mention below:"
               },
-
               new Startup
               {
                   StartupID = "ICSE12346",
@@ -384,11 +378,70 @@ namespace EoS.Migrations
               });
             context.SaveChanges();
 
+            List<FundingDivision> fundingDivisions = context.FundingDivisions.ToList(); //<---------------------------
+
+            foreach (var fundingDivision in fundingDivisions)
+            {
+                //var fundingDivisionStartup = context.FundingDivisionStartups.Where(fds => fds.StartupID == "ICSE12345" && fds.FundingDivisionID == fundingDivision.FundingDivisionID);
+
+                //if (fundingDivisionStartup == null || !fundingDivisionStartup.Any())
+
+                context.FundingDivisionStartups.AddOrUpdate(
+                    fds => fds.FundingDivisionID, //<--------------------!!!
+                    new FundingDivisionStartup
+                    {
+                        FundingDivisionID = fundingDivision.FundingDivisionID,
+                        Percentage = 0,
+                        StartupID = "ICSE12345"
+                    });
+            }
+            context.SaveChanges();
+
+            foreach (var fundingDivision in fundingDivisions)
+            {
+                //var fundingDivisionStartup = context.FundingDivisionStartups.Where(fds => fds.StartupID == "ICSE12345" && fds.FundingDivisionID == fundingDivision.FundingDivisionID);
+
+                //if (fundingDivisionStartup == null || !fundingDivisionStartup.Any())
+
+                context.FundingDivisionStartups.AddOrUpdate(
+                    fds => fds.FundingDivisionID, //<--------------------!!!
+                    new FundingDivisionStartup
+                    {
+                        FundingDivisionID = fundingDivision.FundingDivisionID,
+                        Percentage = 0,
+                        StartupID = "ICSE12346"
+                    });
+            }
+            context.SaveChanges();
+
+            //if (context.IdeaCarrierMessages.Any())
+            //{
+            //    context.IdeaCarrierMessages.FirstOrDefault().Text = "";
+            //    context.IdeaCarrierMessages.FirstOrDefault().AllowSharing_DisplayName = "Hej";
+            //}
+            //else
+            //{
+
+            context.IdeaCarrierMessages.AddOrUpdate(
+            icm => icm.Id,
+            new IdeaCarrierMessage
+            {
+                Text =
+                "Kul att ha dig här. Vi brinner för att möjliggöra så att fler svenska startups skall förverkligas och få möjligheten.<br />" +
+                "Tips: Det går bra att lägga upp flera olika projekt i din användarprofil.<br />&nbsp;</br />" +
+                "Fun to have you here. We are burning to enable more Swedish startups to be implemented and get the opportunity.<br />" +
+                "Tips It is helpful to post several projects in your user profile.",
+                AllowSharing_DisplayName = ""
+            });
+            //}
+            context.SaveChanges();
+
             context.Investments.AddOrUpdate(
-              c => c.InvestmentID,
-              new Investment {
+              i => i.InvestmentID,
+              new Investment
+              {
                   InvestmentID = "IVSE54321",
-                  UserId = userManager.FindByName("aalhinai83@gmail.com").Id,
+                  UserId = userManager.FindByName("pr.stfn@gmail.com").Id,
                   ProfileName = "Profile1",
                   CountryID = 2,
                   ProjectDomainID = 2,
@@ -398,7 +451,8 @@ namespace EoS.Migrations
                   CreatedDate = DateTime.Now,
                   Active = true
               },
-              new Investment {
+              new Investment
+              {
                   InvestmentID = "IVSE64321",
                   UserId = userManager.FindByName("stefanlovefors@hotmail.com").Id,
                   ProfileName = "Profile2",
@@ -411,18 +465,27 @@ namespace EoS.Migrations
                   CreatedDate = DateTime.Now,
                   Active = true
               });
-
             context.SaveChanges();
 
+            //if (context.InvestorMessages.Any())
+            //{
+            //    context.InvestorMessages.FirstOrDefault().Text = "";
+            //}
+            //else
+            //{
 
             context.InvestorMessages.AddOrUpdate(
-              c => c.Id,
-              new InvestorMessage { Text = "Please create a profile to test our service. If you want, you can also be completely anonymous initially. We will send you your matches in a case preview document that always has the same format and aggregate data for each bootup. If you like our approach, contact us to gain access to multiple profiles to broaden your search. Tips Try to be as precise as you can in your choices to minimize the number of startups presented to you. Our goal is to give you as few spreads as possible, so that all you get is potential investment." });
-            context.SaveChanges();
-
-            context.IdeaCarrierMessages.AddOrUpdate(
-              c => c.Id,
-              new IdeaCarrierMessage { Text = "Kul att ha dig här. Vi brinner för att möjliggöra så att fler svenska startups skall förverkligas och få möjligheten  Tips Det går bra att lägga upp flera olika projekt i din användarprofil. \n\n Fun to have you here. We are burning to enable more Swedish startups to be implemented and get the opportunity. Tips It is helpful to post several projects in your user profile." });
+            im => im.Id,
+            new InvestorMessage
+            {
+                Text =
+                "Please create a profile to test our service. If you want, you can also be completely anonymous initially.<br />" +
+                "We will send you your matches in a case preview document that always has the same format and aggregate data for each bootup.<br />" +
+                "If you like our approach, contact us to gain access to multiple profiles to broaden your search.<br />" +
+                "Tip: Try to be as precise as you can in your choices to minimize the number of startups presented to you.<br />" +
+                "Our goal is to give you as few spreads as possible, so that all you get is potential investment."
+            });
+            //}         
             context.SaveChanges();
         }
     }

@@ -7,10 +7,11 @@ namespace EoS.Models.IdeaCarrier
     {
         [Key]
         public int AllowedInvestorID { get; set; }
+
         [Required]
         [Display(Name = "Allowed investor name")]
         public string AllowedInvestorName { get; set; }
 
-        public virtual ICollection<Models.IdeaCarrier.Startup> Startups { get; set; }
+        public virtual ICollection<Startup> Startups { get; set; } //<---necessary??
     }
 }

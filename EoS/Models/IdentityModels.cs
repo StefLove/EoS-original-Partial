@@ -17,7 +17,7 @@ namespace EoS.Models
         public string UserFullName { get { return UserFirstName + " " + UserLastName; } }
 
         [Editable(false)]
-        public string ExternalId { get; internal set; }
+        public string ExternalId { get; internal set; } //for Investors
 
         [Editable(false)]
         [DataType(DataType.DateTime)]
@@ -41,7 +41,7 @@ namespace EoS.Models
 
         public virtual ICollection<Shared.BlogComment> BlogComments { get; set; } //for Investors and IdeaCarriers
 
-        //public bool Payed { get; set; } //for Investors
+        //public bool? ActiveInvestor { get; set; } //for Investors <----to be implemented?
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -73,7 +73,7 @@ namespace EoS.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("MMM_180412", throwIfV1Schema: false)
+            : base("MMM", throwIfV1Schema: false)
         {
         }
 
@@ -89,27 +89,30 @@ namespace EoS.Models
         public DbSet<Admin.InvestorMessage> InvestorMessages { get; set; }
 
         public DbSet<Investor.Investment> Investments { get; set; }
-        public DbSet<Investor.TeamSkill> TeamSkills { get; set; }
-
         public DbSet<IdeaCarrier.Startup> Startups { get; set; }
-        public DbSet<IdeaCarrier.AllowedInvestor> AllowedInvestors { get; set; }
-        public DbSet<IdeaCarrier.FundingDivision> FundingDivisions { get; set; }
-        public DbSet<IdeaCarrier.FundingDivisionStartup> FundingDivisionStartups { get; set; }
-        public DbSet<IdeaCarrier.TeamWeakness> TeamWeaknesses { get; set; }
-        public DbSet<IdeaCarrier.Document> Documents { get; set; }
 
-        public DbSet<Shared.ProjectDomain> ProjectDomains { get; set; }
+        public DbSet<Shared.ProjectDomain> ProjectDomains { get; set; } //<-----DbSet<Shared.Domain> Domains { get; set; }
+        public DbSet<IdeaCarrier.AllowedInvestor> AllowedInvestors { get; set; }
+
         public DbSet<Shared.FundingAmount> FundingAmounts { get; set; }
         public DbSet<Shared.FundingPhase> FundingPhases { get; set; }
+
+        public DbSet<IdeaCarrier.FundingDivision> FundingDivisions { get; set; }
+        public DbSet<IdeaCarrier.FundingDivisionStartup> FundingDivisionStartups { get; set; }
         public DbSet<Shared.EstimatedExitPlan> EstimatedExitPlans { get; set; }
+
+        public DbSet<Investor.TeamSkill> TeamSkills { get; set; }
+        public DbSet<IdeaCarrier.TeamWeakness> TeamWeaknesses { get; set; }
+
         public DbSet<Shared.Outcome> Outcomes { get; set; }
-        public DbSet<Shared.InnovationLevel> InnovationLevels { get; set; }      
+        public DbSet<Shared.InnovationLevel> InnovationLevels { get; set; }
         public DbSet<Shared.Scalability> Scalabilities { get; set; }
 
-        public DbSet<Shared.Country> Countries { get; set; }
-        public DbSet<Shared.SwedishRegion> SwedishRegions { get; set; }
+        public DbSet<IdeaCarrier.Document> Documents { get; set; }
 
         public DbSet<Shared.BlogComment> BlogComments { get; set; }
+        public DbSet<Shared.Country> Countries { get; set; }
+        public DbSet<Shared.SwedishRegion> SwedishRegions { get; set; }
 
         public DbSet<Home.HomeInfo> HomeInfos { get; set; }
         public DbSet<SMTP.SmtpClient> SmtpClients { get; set; }

@@ -1,26 +1,32 @@
-@model EoS.Models.IdeaCarrier.Startup
+@model EoS.Models.IdeaCarrier.StartupProjectViewModel
 
 @{
-    ViewBag.Title = "Startup project form";
-
+    ViewBag.Title = "Startup project form for " + Model.StartupID;
 }
 
-@*<h2>Edit</h2>*@
+<h3>@ViewBag.Title</h3>
 
-@*@using (Html.BeginForm())
-{*@
+@*@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <br />
+    <span class="text-danger" style="font-size:larger">@Html.Raw(ViewBag.Message)</span>
+    <hr />
+}*@
 
 @using (Ajax.BeginForm("ProjectForm", "Startups",
-                new AjaxOptions
-                {
-                    HttpMethod = "POST",
-                    //UpdateTargetId = "StartupProjectForm",
-                    OnSuccess = "OnSuccess",
-                    OnFailure = "OnFailure",
-                    LoadingElementId = "Progress",
-                    InsertionMode = InsertionMode.Replace, /*Confirm = "...",*/
-                    //AllowCache = false
-                }, new { @id = "StartUpProjectForm" }))
+    new AjaxOptions
+    {
+        HttpMethod = "POST",
+        //UpdateTargetId = "StartupProjectForm",
+        //OnBegin = "OnBegin",
+        //OnComplete = "OnComplete",
+        OnSuccess = "OnSuccess",
+        OnFailure = "OnFailure",
+        LoadingElementId = "Progress",
+        InsertionMode = InsertionMode.Replace, 
+        //Confirm = "...",
+        //AllowCache = false
+    }, new { @id = "StartupProjectForm" }))
 {
     @Html.AntiForgeryToken()
 
@@ -28,53 +34,45 @@
 
         <div id="wizard">
 
-            <h3>@ViewBag.Title</h3>
-
             <div id="Message" class="text-danger">Your answers are automatically saved when navigating (on reloading only in Profile tab), but the form is not submitted.</div>
             <hr />
 
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
             @Html.HiddenFor(model => model.StartupID)
-            @Html.HiddenFor(model => model.UserID)
-            @Html.HiddenFor(model => model.CountryID)
-            @*@Html.HiddenFor(model => model.AllowSharingDisplayName)*@
-            @Html.HiddenFor(model => model.SwedishRegion)
-            @Html.HiddenFor(model => model.CreatedDate)
-            @Html.HiddenFor(model => model.LastSavedDate)
 
-            <input type="hidden" name="activeTab" id="activeTab" value="all_tabs" />
+            <input type="hidden" name="ActiveTab" id="ActiveTab" value="" />
 
             @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
             {
                 <div class="alert alert-danger">
-                <a href="#" class="close" data-dismiss="alert">×</a>
-                <h4>Validation Errors</h4>
-                @Html.ValidationSummary()
+                    <a href="#" class="close" data-dismiss="alert">×</a>
+                    <h4>Validation Errors</h4>
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 </div>
             }
 
             <!-- Tabstrip -->
 
             <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active" id="tab_Project">
+                <li role="presentation" id="tab_Project" class="active">
                     <a href="#Project" role="tab" data-toggle="tab" onclick="SaveData()">Project</a>
                 </li>
-                <li role="presentation" id="tab_Funding">
-                    | <a href="#Funding" role="tab" data-toggle="tab" onclick="SaveData()">Funding</a>
+                <li role="presentation" id="tab_Funding" class="">
+                    <a href="#Funding" role="tab" data-toggle="tab" onclick="SaveData()">Funding</a>
                 </li>
-                <li role="presentation" id="tab_Budget">
-                    | <a href="#Budget" role="tab" data-toggle="tab" onclick="SaveData()">Budget</a>
+                <li role="presentation" id="tab_Budget" class="">
+                    <a href="#Budget" role="tab" data-toggle="tab" onclick="SaveData()">Budget</a>
                 </li>
-                <li role="presentation" id="tab_Team">
-                    | <a href="#Team" role="tab" data-toggle="tab" onclick="SaveData()">Team</a>
+                <li role="presentation" id="tab_Team" class="">
+                    <a href="#Team" role="tab" data-toggle="tab" onclick="SaveData()">Team</a>
                 </li>
-                <li role="presentation" id="tab_Outcome">
-                    | <a href="#Outcome" role="tab" data-toggle="tab" onclick="SaveData()">Outcome</a>
+                <li role="presentation" id="tab_Outcome" class="">
+                    <a href="#Outcome" role="tab" data-toggle="tab" onclick="SaveData()">Outcome</a>
                 </li>
+
+
                 @*<li role="presentation" id="tab_RelatedFiles">
-                <a href="#RelatedFiles" role="tab" data-toggle="tab" onclick="SaveData()">Related Files</a>
-            </li>*@
+                        <a href="#RelatedFiles" role="tab" data-toggle="tab" onclick="SaveData()">Related Files</a>
+                    </li>*@
             </ul>
 
             <br />&nbsp;<br />
@@ -85,125 +83,136 @@
 
                 <div role="tabpanel" class="tab-pane active" id="Project">
                     @{
-                Html.RenderPartial("_ProjectForm_Project");
+                        Html.RenderPartial("_ProjectForm_Project");
                     }
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="Funding">
                     @{
-                Html.RenderPartial("_ProjectForm_Funding");
+                        Html.RenderPartial("_ProjectForm_Funding");
                     }
-
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="Budget">
                     @{
-                Html.RenderPartial("_ProjectForm_Budget");
+                        Html.RenderPartial("_ProjectForm_Budget");
                     }
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="Team">
                     @{
-                Html.RenderPartial("_ProjectForm_Team");
+                        Html.RenderPartial("_ProjectForm_Team");
                     }
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="Outcome">
                     @{
-                Html.RenderPartial("_ProjectForm_Outcome");
+                        Html.RenderPartial("_ProjectForm_Outcome");
                     }
                 </div>
 
-                @*<div role="tabpanel" class="tab-pane" id="RelatedFiles">
-                @{
-                    Html.RenderPartial("_ProjectForm_RelatedFiles");
-                }
-            </div>*@
-
-            </div> <!-- Tab panes end -->
-            @*</div>*@
+            </div> <!-- Tab panes end -->          
             <hr />
 
             <div class="form-group hidden-print">
                 <div class="col-md-offset-0 col-md-10">
-                    <div style="float:right">
-                        <input type="button" class="btn button-next btn-info" name="next" value="Next" onclick="SaveData()" />
-                        <input type="button" class="btn button-last btn-info" name="last" value="Last" onclick="SaveData()" />
-                    </div>
                     <div style="float:left">
-                        <input type="button" class="btn button-first btn-info" name="first" value="First" onclick="SaveData()" />
-                        <input type="button" class="btn button-previous btn-info" name="previous" value="Previous" onclick="SaveData()" />
+                        <input type="button" name="first" value="First" class="btn button-first btn-info" onclick="SaveData()" />
+                        <input type="button" name="previous" value="Previous" class="btn button-previous btn-info" onclick="SaveData()" />
                     </div>
-                    <div class="col-md-offset-4">
-                        <input type="submit" value="Save your answers before returning later" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />&nbsp;&nbsp; @* onchange="activateTab('all')" onsubmit="activateTab('all')"*@
-                        <input type="submit" value="Submit & lock the form" class="btn btn-primary" name="submitCommand" onclick="return confirm('Are you sure you wish to submit this form? (It will not be editable any more)');" />
+                    <div style="float:unset" class="col-md-offset-5">                       
+                        @Html.ActionLink("Submit & lock the form", "SubmitProjectForm", new { id = Model.StartupID, redirect = "ProjectDetails" }, new { @id = "projectFormSubmission", @class = "btn btn-primary", @style = "width:180px", title = "Do you really wish to submit this form? (It will not be editable any more)" })
+                    </div>
+                    <div style="float:right">
+                        <input type="button" name="next" value="Next" class="btn button-next btn-info" onclick="SaveData()" />
+                        <input type="button" name="last" value="Last" class="btn button-last btn-info" onclick="SaveData()" />
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 }
 
-    <div id="Progress" class="modal text-danger text-center center-block hidden-print" style="width:100%; height:100%; left:50%; top:40%;">
-        <div style="position:absolute;">
-            @*style="background-color:black; width:300px; border-radius:25px; border: 10px solid red;*@
-            @*<h1>SAVING <br />YOUR DATA<br />IN PROGRESS</h1>*@
-            <img src="~/img/ajax_loader.gif" />
-        </div>
+<div id="Progress" class="modal text-danger text-center center-block hidden-print" style="width:100%; height:100%; left:50%; top:40%;">
+    <div style="position:absolute;">
+        @*style="background-color:black; width:300px; border-radius:25px; border: 10px solid red;*@
+        @*<h1>SAVING <br />YOUR DATA<br />IN PROGRESS</h1>*@
+        <img src="~/img/ajax_loader.gif" />
     </div>
-
-<div class="hidden-print">
-    @Html.ActionLink("Back to your Startup projects", "Index")
 </div>
 
-@section Scripts {
-}
+<div class="hidden-print">
+    <hr />
+    @Html.ActionLink("Back to your Startup projects", "Index") |
+    @Html.ActionLink("Details", "ProjectDetails", new { id = Model.StartupID })
+</div>
 
 <script type="text/javascript">
 
-    window.onbeforeunload = function (evt) {
-                //$('#Message').html('Your answers are being saved.');
-                //alert('Your answers are being saved');
+    window.onload = function (evt) { $("#Progress").hide(); };
+    window.onbeforeunload = function (evt) { SaveData(); };
+
+    //function submitProjectForm() {
+    //    SaveData();
+    //    if (confirm('Do you really wish to submit this form? (It will not be editable any more)')) {
+            //SaveData(); //$('#StartupProjectForm').submit();
+    //        location.href = '/Startups/SubmitProjectForm/ Model.StartupID'; // + '?redirect=ProjectDetails';
+    //    }
+        //else SaveData();
+    //}
+
+    $('a#projectFormSubmission').click(function () {
         SaveData();
+        if (!confirm('Do you really wish to submit this form? (It will not be editable any more)')) return false;
+        return true;
+    });
+
+    function SaveData() {
+        activateTab($('.active')[0].id);
+        $('#StartupProjectForm').submit();
     }
 
-        function SaveData() {
+    function OnSuccess(response) {
+         //$("#Progress").hide();
+        
+        @*if ('@Model.Updated' === 'True') $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.<br />');
+        else $('#Message').html('There were nothing that needed to be updated in ') + $("input[name='activeTab']")[0].value.replace('_', ' ') + '.';*@
 
-            activateTab($('.active')[0].id);
+         @*if ('@Model.Updated' === 'True') {*@
 
-        //$("input[name='activeTab']")[0].value = ;
+            message = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.'; // $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.';
+            $('#Message').html(message + '<br /> @ViewBag.Message');
 
-        //alert($('.active')[0].id);
-        //alert($("input[name='activeTab']")[0].value);
+        //}
+        //else {
+        //    message = 'There were nothing that needed to be updated in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + '.'; //+ $("input[name='ActiveTab']")[0].value.replace('_', ' ') + '.';
+        //    $('#Message').html(message);
+        //}
+    }
+     
+    function OnFailure(response) {
+        var errorMessage = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' could not be saved!<br />' + response.responseText;
+        $('#Message').html(errorMessage + '<br /> @ViewBag.Message');
 
-        $('#StartUpProjectForm').submit();
-        }
+        //$('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' could not be saved!<br />' + response.responseText);
+    }
 
-        function OnSuccess(response) {
-            $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.<br />');
-        }
+    //function OnSuccess(response) { //(data, textStatus, jqXHR)
+    //    //document.getElementById("Message").innerHTML = "Data saved and updated";
+    //    if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
+    //        $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.');
+    //    else $('#Message').html('');
+    //}
 
-        function OnFailure(response) {
-            $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' could not be saved! <br />' + response.responseText);
-        }
+    //function OnFailure(response) {
+    //    //document.getElementById("Message").innerHTML = "Data could not be saved and updated!";
+    //    if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
+    //        $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' could not be saved!');
+    //    else $('#Message').html('');
+    //}
 
-            //function OnSuccess(response) { //(data, textStatus, jqXHR)
-            //    //document.getElementById("Message").innerHTML = "Data saved and updated";
-            //    if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
-            //        $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.');
-            //    else $('#Message').html('');
-            //}
-
-            //function OnFailure(response) {
-            //    //document.getElementById("Message").innerHTML = "Data could not be saved and updated!";
-            //    if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
-            //        $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' could not be saved!');
-            //    else $('#Message').html('');
-            //}
-
-        function activateTab(activeTabId) {
-            $("input[name='activeTab']")[0].value = activeTabId;
-        }
+    function activateTab(activeTabId) {
+        $("input[name='ActiveTab']")[0].value = activeTabId;
+    }
 
 </script>

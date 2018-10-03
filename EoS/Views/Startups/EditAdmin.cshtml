@@ -1,7 +1,7 @@
 ﻿@model EoS.Models.IdeaCarrier.StartupEditAdminViewModel
 
 @{
-    ViewBag.Title = "Edit Startup Project " + Model.StartupID + " (Admin only)";
+    ViewBag.Title = "Edit Startup project " + Model.StartupID + " belonging to " + Model.IdeaCarrierName + " (Admin only)";
 }
 
 @using (Html.BeginForm())
@@ -14,14 +14,6 @@
 
         @Html.HiddenFor(model => model.StartupID)
 
-        @*<div class="form-group">
-            @Html.LabelFor(model => model.AllowSharingDisplayName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.TextAreaFor(model => model.AllowSharingDisplayName, 10, 150, new { htmlAttributes = new { @class = "form-control", @placeholder = "no HTML" } }) @*HTML not allowed*@
-                @*@Html.ValidationMessageFor(model => model.AllowSharingDisplayName, "", new { @class = "text-danger" })
-            </div>
-        </div>*@
-
         <div class="form-group">
             @if (!string.IsNullOrEmpty(Model.ProjectSummary))
             {
@@ -31,17 +23,41 @@
                 @Html.ValidationMessageFor(model => model.ProjectSummary, "", new { @class = "text-danger" })
                 </div>
             }
-            else { @Html.Raw("<h3>No project summary</h3><br />"); }
+            else { @Html.Raw("<h3>No project summary has been written by this Idea carrier.</h3><br />"); }
         </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Locked, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+            <div class="col-md-9">
+                <div class="checkbox col-md-10">
+                    @Html.EditorFor(model => model.Locked)
+                    @Html.ValidationMessageFor(model => model.Locked, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Approved.HasValue)
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Approved, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+                <div class="col-md-9">
+                    <div class="checkbox col-md-10">
+                        @Html.EditorFor(model => model.Approved)
+                        @Html.ValidationMessageFor(model => model.Approved, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        }
 
         <div class="form-group hidden-print">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </div>
+
     </div>
 }
 
 <div class="hidden-print">
-    @Html.ActionLink("Back to Startup Projects", "Index")
+    @Html.ActionLink("Back to Startup projects", "Index")
 </div>

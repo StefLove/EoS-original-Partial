@@ -8,19 +8,23 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Idea Carrier Messages</title>
+    <title>Idea carrier message index</title>
 </head>
 <body>
+
     @if (!Model.Any())
     {
         <p>
-            @Html.ActionLink("Create new Idea Carrier message", "Create")
+            @Html.ActionLink("Create new Idea carrier message", "Create")
         </p>
     }
     <table class="table">
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Text)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllowSharing_DisplayName)
             </th>
             <th></th>
         </tr>
@@ -33,6 +37,10 @@
                     <div style="border-style:solid; border-width:1px" title="HTML">@Html.Raw(item.Text)</div>
                 </td>
                 <td>
+                    @*@Html.DisplayFor(modelItem => item.AllowSharing_DisplayName)*@
+                    <div style="border-style:solid; border-width:1px" title="HTML">@Html.Raw(item.AllowSharing_DisplayName)</div>
+                </td>
+                <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                     @Html.ActionLink("Details", "Details", new { id = item.Id }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @style = "color:red" })
@@ -41,5 +49,6 @@
         }
 
     </table>
+
 </body>
 </html>

@@ -11,6 +11,7 @@
     <title>Edit Investor message</title>
 </head>
 <body>
+
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
@@ -41,5 +42,6 @@
         @Html.ActionLink("Back to Investor message index", "Index") |
         @Html.ActionLink("Delete", "Delete", new { id = Model.Id }, new { @style = "color:red" })
     </div>
+
 </body>
 </html>

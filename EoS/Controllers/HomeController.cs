@@ -162,7 +162,7 @@ namespace EoS.Controllers
         }
 
         [Authorize]
-        public ActionResult MessageSent(bool? sent, string message) //<--------
+        public ActionResult MessageSent(bool? sent/*, string message*/) //<--------
         {
             ViewBag.Sent = sent;
 

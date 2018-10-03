@@ -12,6 +12,6 @@ namespace EoS.Models.Investor
         [Display(Name = "Skill name")]
         public string SkillName { get; set; }
 
-        public virtual ICollection<Investment> Investments { get; set; }
+        public virtual ICollection<Investment> Investments { get; set; } //<---necessary??
     }
 }

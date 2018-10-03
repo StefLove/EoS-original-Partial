@@ -69,15 +69,19 @@
             </dd>
         }
 
-        @if (Model.ProjectDomainID.HasValue)
-        {
-            <dt>
-                @Html.DisplayNameFor(model => model.ProjectDomainID)
-            </dt>
-            <dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ProjectDomainID)
+        </dt>
+        <dd>
+            @if (Model.ProjectDomainID.HasValue)
+            {
                 @Html.DisplayFor(model => model.ProjectDomain.ProjectDomainName)
-            </dd>
-        }
+            }
+            else
+            {
+                @Html.Raw("None")
+            }
+        </dd>
 
         @*Funding*@
 
@@ -85,9 +89,9 @@
             @Html.DisplayNameFor(model => model.FundingPhases)
         </dt>
         <dd>
-            @if (Model.FundingPhases != null && Model.FundingPhases.Count() > 0)
+            @if (Model.FundingPhases.Any())
             {
-                var orderedFundingPhases = Model.FundingPhases.OrderBy(fp => fp.FundingPhaseName);
+                var orderedFundingPhases = Model.FundingPhases.OrderBy(fp => fp.FundingPhaseID);
                 foreach (var fundingPhase in orderedFundingPhases)
                 {
                     @Html.Raw(fundingPhase.FundingPhaseName + "<br />");
@@ -95,7 +99,7 @@
             }
             else
             {
-                @Html.Raw("None");
+                @Html.Raw("None")
             }
         </dd>
 
@@ -103,11 +107,11 @@
             @Html.DisplayNameFor(model => model.FundingAmounts)
         </dt>
         <dd>
-            @if (Model.FundingAmounts.Any() && Model.FundingAmounts.Count() > 0)
+            @if (Model.FundingAmounts.Any())
             {
                 //Html.Raw(Model.FundingAmounts.Count().ToString() + "<br />");
 
-                var orderedFondingAmounts = Model.FundingAmounts.OrderBy(fa => fa.FundingAmountValue);
+                var orderedFondingAmounts = Model.FundingAmounts.OrderBy(fa => fa.FundingAmountID);
                 foreach (var fondingAmount in orderedFondingAmounts)
                 {
                     @Html.Raw(fondingAmount.FundingAmountValue + "<br />");
@@ -115,7 +119,7 @@
             }
             else
             {
-                @Html.Raw("None");
+                @Html.Raw("None")
             }
         </dd>
 
@@ -132,9 +136,9 @@
             @Html.DisplayNameFor(model => model.EstimatedExitPlans)
         </dt>
         <dd>
-            @if (Model.EstimatedExitPlans.Any() && Model.EstimatedExitPlans.Count() > 0)
+            @if (Model.EstimatedExitPlans.Any())
             {
-                var orderedEstimatedExitPlans = Model.EstimatedExitPlans.OrderBy(ee => ee.EstimatedExitPlanName);
+                var orderedEstimatedExitPlans = Model.EstimatedExitPlans.OrderBy(ee => ee.EstimatedExitPlanID);
                 foreach (var estimatedExitPlan in orderedEstimatedExitPlans)
                 {
                     @Html.Raw(estimatedExitPlan.EstimatedExitPlanName + "<br />");
@@ -142,7 +146,7 @@
             }
             else
             {
-                @Html.Raw("None");
+                @Html.Raw("None")
             }
         </dd>
 
@@ -187,17 +191,17 @@
             @Html.DisplayNameFor(model => model.TeamSkills)
         </dt>
         <dd>
-            @if (Model.Outcomes.Any() && Model.TeamSkills.Count() > 0)
+            @if (Model.TeamSkills.Any())
             {
-                var orderedTeamSkills = Model.TeamSkills.OrderBy(ts => ts.SkillName);
+                var orderedTeamSkills = Model.TeamSkills.OrderBy(ts => ts.SkillID);
                 foreach (var teamSkill in orderedTeamSkills)
                 {
-                    @Html.Raw(teamSkill.SkillName+ "<br />");
+                    @Html.Raw(teamSkill.SkillName + "<br />");
                 }
             }
             else
             {
-                @Html.Raw("None");
+                @Html.Raw("None")
             }
         </dd>
 
@@ -207,9 +211,9 @@
             @Html.DisplayNameFor(model => model.Outcomes)
         </dt>
         <dd>
-            @if (Model.Outcomes.Any() && Model.Outcomes.Count() > 0)
+            @if (Model.Outcomes.Any())
             {
-                var orderedOutcomes = Model.Outcomes.OrderBy(oc => oc.OutcomeName);
+                var orderedOutcomes = Model.Outcomes.OrderBy(oc => oc.OutcomeID);
                 foreach (var outcome in orderedOutcomes)
                 {
                     @Html.Raw(outcome.OutcomeName + "<br />");
@@ -217,7 +221,7 @@
             }
             else
             {
-                @Html.Raw("None");
+                @Html.Raw("None")
             }
         </dd>
 
@@ -225,9 +229,9 @@
             @Html.DisplayNameFor(model => model.InnovationLevels)
         </dt>
         <dd>
-            @if (Model.InnovationLevels.Any() && Model.InnovationLevels.Count() > 0)
+            @if (Model.InnovationLevels.Any())
             {
-                var orderedInnovationLevels = Model.InnovationLevels.OrderBy(il => il.InnovationLevelName);
+                var orderedInnovationLevels = Model.InnovationLevels.OrderBy(il => il.InnovationLevelID);
                 foreach (var innovationLevel in orderedInnovationLevels)
                 {
                     @Html.Raw(innovationLevel.InnovationLevelName + "<br />");
@@ -235,7 +239,7 @@
             }
             else
             {
-                @Html.Raw("None");
+                @Html.Raw("None")
             }
         </dd>
 
@@ -243,9 +247,9 @@
             @Html.DisplayNameFor(model => model.Scalabilities)
         </dt>
         <dd>
-            @if (Model.Scalabilities.Any() && Model.Scalabilities.Count() > 0)
+            @if (Model.Scalabilities.Any())
             {
-                var orderedScalabilities = Model.Scalabilities.OrderBy(s => s.ScalabilityName);
+                var orderedScalabilities = Model.Scalabilities.OrderBy(s => s.ScalabilityID);
                 foreach (var scalability in orderedScalabilities)
                 {
                     @Html.Raw(scalability.ScalabilityName + "<br />");
@@ -253,7 +257,7 @@
             }
             else
             {
-                @Html.Raw("None");
+                @Html.Raw("None")
             }
         </dd>
 
@@ -283,13 +287,19 @@
                 {
                     if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
                     {
-                        Html.ActionLink("Date passed", "EditAdmin", new { id = Model.InvestmentID }, new { @class = "btn btn-danger" });
+                        @:<span class="visible-print">date passed.</span>
+                        @Html.ActionLink("Date passed", "EditAdmin", new { id = Model.InvestmentID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" });
                     }
                     else //Investor
                     {
-                        Html.ActionLink("Pay", "Contact", "Home", new { subject = "Payment for " + Model.InvestmentID }, new { @class = "btn btn-danger" });
+                        @:<span class="visible-print">date passed. You need to pay for this profile!</span>
+                        @Html.ActionLink("Pay for this profile", "Contact", "Home", new { subject = "Payment for " + Model.InvestmentID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" });
                     }
                 }
+                @*else
+                {
+                    Html.Raw("Role: " + ViewBag.UserRole);
+                }*@
             </dd>
         }
         else //if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
@@ -299,7 +309,7 @@
             </dt>
             <dd>
                 @Html.Raw("Never")
-            </dd>          
+            </dd>
         }
 
         @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && Model.MatchMakings.Any())
@@ -315,7 +325,7 @@
                 {
                     foreach (var matchMaking in Model.MatchMakings)
                     {
-                        @Html.ActionLink(linkText: matchMaking.StartupId, actionName: "ProjectDetails", controllerName: "Startups", routeValues: new { id = matchMaking.StartupId }, htmlAttributes: new { title = "Startup project details" }) <br />
+                        @Html.ActionLink(linkText: matchMaking.StartupId, actionName: "ProjectDetails", controllerName: "Startups", routeValues: new { id = matchMaking.StartupId }, htmlAttributes: new { title = "Startup project details", @style = "height:25px;padding:1px" }) <br />
                     }
                 }
                 @*else if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
@@ -330,7 +340,7 @@
         else if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
         {
             <dt>
-                @Html.Raw("No of Matching Projects")
+                @Html.Raw("#Matching projects")
             </dt>
             <dd>
                 @if (Model.MatchMakings.Any())
@@ -343,46 +353,60 @@
                 }
             </dd>
         }
+
         @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
         {
+
             if (Model.Locked && Model.Active && (!Model.DueDate.HasValue || Model.DueDate.HasValue && Model.DueDate.Value > DateTime.Now))
             {
-                <dt></dt>
-                <dd>
-                    @Html.ActionLink("Match", "Motor", "MatchMakings", new { id = Model.InvestmentID }, new { @class = "btn btn-primary" })
+                <dt class="hidden-print"></dt>
+                <dd class="hidden-print">
+                    @Html.ActionLink("Match with projects", "Motor", "MatchMakings", new { id = Model.InvestmentID }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
                 </dd>
             }
+            
+            <dt class="hidden-print">
+                @Html.Raw("This Profile form")
+            </dt>
             if (Model.Locked)
             {
-                <dt>
-                    @Html.Raw("Profile form")
-                </dt>
-                <dd>
-                    @Html.ActionLink("Unlock", "Unlock", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-primary" })
+                <dd class="hidden-print">
+                    @Html.ActionLink("Unlock it", "Unlock", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
                 </dd>
             }
-            else if (!Model.Locked)
+            else /*if (!Model.Locked)*/
             {
-                <dt>
-                    @Html.Raw("Profile form")
-                </dt>
                 <dd>
                     @*@Html.Raw(DateTime.Now.Subtract(Model.LastSavedDate).Days)
                     @Html.Raw(" days since last saved");*@
 
                     @{int daysSincelastSaved = DateTime.Now.Date.Subtract(Model.LastSavedDate.Date).Days;
-                    string message = daysSincelastSaved + (daysSincelastSaved == 1 ? " day" : " days") + " since last saved";}
+                        string message = daysSincelastSaved + (daysSincelastSaved == 1 ? " day" : " days") + " since last saved";}
                     @Html.Raw(message)
 
                     <span class="hidden-print">
                         @if (daysSincelastSaved >= 1)
                         {
                             <text>&nbsp;&nbsp;</text>
-                            @Html.ActionLink("Remind", "Reminder", new { id = Model.InvestmentID, subject = "Finish it" + Model.InvestmentID, message = message, redirect = "ProfileDetails" }, new { @class = "btn btn-danger" })
+                            @Html.ActionLink("Remind about finishing", "Reminder", new { id = Model.InvestmentID, subject = "Finish profile " + Model.InvestmentID, message = message, redirect = "ProfileDetails" }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
                         }
                     </span>
                 </dd>
             }
+
+            <dt>
+                @Html.DisplayNameFor(model => model.LastLockedDate)
+            </dt>
+            <dd>
+                @if (Model.LastLockedDate.HasValue)
+                {
+                    @Html.DisplayFor(model => model.LastLockedDate)
+                }
+                else
+                {
+                    @Html.Raw("None")
+                }
+            </dd>
 
             @*if (!Model.Locked && DateTime.Now.Subtract(Model.LastSavedDate).Days >= 1)
             {
@@ -407,44 +431,65 @@
                     @Html.Raw("Unlocked")
                 }
             </dd>*@
-            
+
         }
         else //if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
-            {
+        {
             <dt>
-                @Html.Raw("Profile form")
+                @Html.Raw("This Profile form")
             </dt>
             <dd>
                 @if (Model.Locked)
                 {
-                    @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + Model.InvestmentID }, new { @class = "btn btn-primary" })
+                    @Html.Raw("is locked&nbsp;&nbsp;")
+                    @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + Model.InvestmentID }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
                 }
                 else
                 {
-                    @Html.ActionLink("Finish it", "ProfileForm", new { id = Model.InvestmentID }, new { @class = "btn btn-danger" })
+                    @Html.Raw("is not locked&nbsp;&nbsp;")
+                    @Html.ActionLink("Finish the form and lock it", "ProfileForm", new { id = Model.InvestmentID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
                 }
                 @*@Html.DisplayFor(model => model.Locked)*@
             </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.LastLockedDate)
+            </dt>
+            <dd>
+                @if (Model.LastLockedDate.HasValue)
+                {
+                    @Html.DisplayFor(model => model.LastLockedDate)
+                }
+                else
+                {
+                    @Html.Raw("None")
+                }
+            </dd>
         }
+
+
+
         <dt>
             @Html.DisplayNameFor(model => model.Active)
         </dt>
         <dd>
-            <div class="hidden-print">
+            <div>
                 @if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
-        {
-            if (Model.Active)
-            {
-                @Html.ActionLink("Unactive", "Activate", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-primary", @style = "width:120px" })
-    }
-    else
-    {
-        @Html.ActionLink("Activate", "Activate", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-success", @style = "width:120px" })
-}
-}
+                {
+                    if (Model.Active)
+                    {
+                        @Html.Raw("Yes&nbsp;&nbsp;")
+                        @Html.ActionLink("Unactivate", "Activate", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
+                    }
+                    else
+                    {
+                        @Html.Raw("No&nbsp;&nbsp;")
+                        @Html.ActionLink("Activate", "Activate", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-success hidden-print", @style = "height:25px;padding:1px" })
+                    }
+                }
             </div>
-            @*@Html.DisplayFor(model => model.Active)*@
         </dd>
+
     </dl>
 </div>
 
@@ -463,7 +508,7 @@
         <text>|</text>
         @Html.ActionLink("Edit", "EditAdmin", new { id = Model.InvestmentID }) 
     }
-    @if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
+    @if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString() && Model.DueDate.HasValue)
     {
         <text>|</text>
         @Html.ActionLink("Remove", "RemoveProfile", new { id = Model.InvestmentID }, new { @style = "color:red" } )

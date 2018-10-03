@@ -1,64 +1,70 @@
-﻿@model EoS.Models.Investor.Investment
+﻿@model EoS.Models.Investor.InvestmentProfileViewModel
 
-<div class="form-group">
-    <label class="control-label col-md-2" style="text-align:left">The outcome</label>
+<div class="@(ViewBag.Unanswered == "Outcomes" ? "form-group warning" : "form-group")">
+    <label class="control-label col-md-2" style="text-align:left">The outcomes</label>
     <div class=" col-md-offset-2 col-md-10" style="margin-left:0">
         <table class="borderless">
             <tr>
-                @{ List<EoS.Models.Investor.InvestorOutcomeViewModel> Outcomes = ViewBag.outcomeViewModel;
-                    foreach (var outcome in Outcomes)
+                @{
+                    foreach (var outcome in Model.Outcomes)
                     {
-                        @:<td><input type="checkbox" name="selectedOutcomes" value="@outcome.OutcomeID" @(Html.Raw(outcome.Assigned ? "checked=\"checked\"" : "")) /> @outcome.OutcomeName</td>
-                        @:</tr><tr>
+                        <td><input type="checkbox" name="SelectedOutcomeIDs" value="@outcome.OutcomeID" @(outcome.Assigned ? "checked=\"checked\"" : "") /> @outcome.OutcomeName</td>
+                    @:</tr><tr>
                     }
                 }
             </tr>
         </table>
-        @Html.ValidationMessageFor(model => model.Outcomes, "", new { @class = "text-danger" })
     </div>
 </div>
 
-<div class="form-group">
-    <label class="control-label col-md-2" style="text-align:left">Level of innovation</label>
+<div class="@(ViewBag.Unanswered == "InnovationLevels" ? "form-group warning" : "form-group")">
+    <label class="control-label col-md-2" style="text-align:left">Levels of innovation</label>
     <div class=" col-md-offset-2 col-md-10" style="margin-left:0">
         <table class="borderless">
             <tr>
-                @{ List<EoS.Models.Investor.InvestorInnovationLevelViewModel> InnovationLevels = ViewBag.innovationLevelsViewModel;
-                    foreach (var level in InnovationLevels)
+                @{
+                    foreach (var innovationLevel in Model.InnovationLevels)
                     {
-                        @:<td><input type="checkbox" name="selectedInnovationLevels" value="@level.InnovationLevelID" @(Html.Raw(level.Assigned ? "checked=\"checked\"" : "")) /> @level.InnovationLevelName </td>
-                        @:</tr><tr>
+                        <td><input type="checkbox" name="SelectedInnovationLevelIDs" value="@innovationLevel.InnovationLevelID" @(innovationLevel.Assigned ? "checked=\"checked\"" : "") /> @innovationLevel.InnovationLevelName </td>
+                    @:</tr><tr>
                     }
                 }
             </tr>
         </table>
-        @Html.ValidationMessageFor(model => model.InnovationLevels, "", new { @class = "text-danger" })
     </div>
 </div>
 
-<div class="form-group">
-    <label class="control-label col-md-2" style="text-align:left">Required scalability</label>
+<div class="@(ViewBag.Unanswered == "Scalabilities" ? "form-group warning" : "form-group")">
+    <label class="control-label col-md-2" style="text-align:left">Required scalabilities</label>
     <div class=" col-md-offset-2 col-md-10" style="margin-left:0">
         <table class="borderless">
             <tr>
-                @{ List<EoS.Models.Investor.InvestorScalabilityViewModel> Scalabilities = ViewBag.scalabilitiesViewModel;
-                    foreach (var scalability in Scalabilities)
+                @{
+                    foreach (var scalability in Model.Scalabilities)
                     {
-                        @:<td><input type="checkbox" name="selectedScalabilities" value="@scalability.ScalabilityID" @(Html.Raw(scalability.Assigned ? "checked=\"checked\"" : "")) /> @scalability.ScalabilityName</td>
-                        @:</tr><tr>
+                        <td><input type="checkbox" name="SelectedScalabilityIDs" value="@scalability.ScalabilityID" @(scalability.Assigned ? "checked=\"checked\"" : "") /> @scalability.ScalabilityName</td>
+                    @:</tr><tr>
                     }
                 }
             </tr>
         </table>
-        @Html.ValidationMessageFor(model => model.Scalabilities, "", new { @class = "text-danger" })
     </div>
 </div>
 
-@if (!Model.Locked)
+<hr />
+@if (string.IsNullOrEmpty(ViewBag.Unanswered))
 {
-    <div class="col-md-offset-4">
-        <input type="submit" value="Save your answers for this tab" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
+    <div class="col-md-offset-4 hidden-print">
+        <input type="button" value="Save your answers for this tab Outcome" class="btn btn-warning btn-sm" style="color:black;max-width:500px" onclick="SaveData()" title="in order to return later" />
+    </div>
+    <div class="col-md-offset-2">
+        <h5 class="text-danger">You have to answer all the necessary questions in all tabs before you may submit the form.</h5>
+    </div>
+}
+else
+{
+    <div class="col-md-offset-4 hidden-print">
+        @Html.ActionLink("Cancel submission of form", "SubmitProfileForm", new { id = Model.InvestmentID, cancel = true, redirect = "ProfileForm", redirectTab = "Outcome" }, new { @id = "cancelProfileFormSubmission", @class = "btn btn-danger" })
     </div>
 }
 
-    <br />&nbsp;<br />

@@ -1,4 +1,4 @@
-@model EoS.Models.IdeaCarrier.Startup
+@model EoS.Models.IdeaCarrier.AddNewProjectViewModel
 
 @{
     ViewBag.Title = "New Startup project";
@@ -19,12 +19,12 @@
         <div class="form-group">
             @*@Html.LabelFor(model => model.ProjectSummary, htmlAttributes: new { @class = "control-label col-md-2" })*@
             <div class="col-md-10 col-md-offset-1">
-               @Html.TextArea("myTextArea", (String)ViewBag.IdeaCarrierMessage, 15, 150, new { @class = "form-control" })
+               @Html.TextArea("myTextArea", Model.IdeaCarrierMessage, 15, 150, new { @class = "form-control" })
             </div>
         </div>
 
         <div class="form-group">
-            <div class="col-md-offset-2">
+            <div class="col-md-offset-2">   @*ProjectName*@
                 @Html.LabelFor(model => model.StartupName, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.EditorFor(model => model.StartupName, new { htmlAttributes = new { @class = "form-control", placeholder = "This is for you only" }  })
@@ -36,8 +36,8 @@
         <div class="form-group">
             <div class="col-md-offset-2">
                 @Html.LabelFor(model => model.CountryID, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">                             @*Model.Countries*@
-                    @Html.DropDownListFor(model => model.CountryID, (SelectList)ViewBag.CountryId, "Please select a country", new { @class = "form-control", @onchange = "toggleDIvDisplay(this.value, " + @ViewBag.SwedishCountryId + ")" })
+                <div class="col-md-10">                           @*Model.Countries*@
+                    @Html.DropDownListFor(model => model.CountryID, Model.CountryList, "Please select a country", new { @class = "form-control", @onchange = "toggleDIvDisplay(this.value, " + Model.SwedishCountryID + ")" })
                     @Html.ValidationMessageFor(model => model.CountryID, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -46,8 +46,8 @@
         <div class="form-group col-md-offset-5" id="divtwo" style="display:none">
             <div class="col-md-offset-2">
                 @Html.LabelFor(model => model.SwedishRegionID, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">                                   @*Model.SwedishRegions*@
-                    @Html.DropDownListFor(model => model.SwedishRegionID, (SelectList)ViewBag.RegionsId, "Please select a region", new { @class = "form-control" })
+                <div class="col-md-10">                                 @*Model.SwedishRegions*@
+                    @Html.DropDownListFor(model => model.SwedishRegionID, Model.SwedishRegionList, "Please select a region", new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.SwedishRegionID, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -55,8 +55,8 @@
 
         <div class="form-group">
             <div class="col-md-offset-5 col-md-10">
-                @*<input type="submit" value="Submit" class="btn btn-default"  name="submitCommand" />*@
-                <input type="submit" value="Proceed to Project form" class="btn btn-primary" name="submitCommand" />
+                @*<input type="submit" value="Submit" class="btn btn-default" name="submit_command" />*@
+                <input type="submit" value="Proceed to the Project form" class="btn btn-primary" name="submit_command" />
             </div>
         </div>
     </div>
@@ -67,6 +67,6 @@
 </div>
 
 
-@section Scripts {
+@*@section Scripts {
     <script type="text/javascript" src="~/Scripts/eosJavaScripts.js"></script>
-}
+}*@

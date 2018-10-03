@@ -10,5 +10,5 @@ namespace EoS.Models.Shared
          [Required]
          [Display(Name = "Swedish region name (Län)")]
          public string RegionName { get; set; }
-}
+    }
 }

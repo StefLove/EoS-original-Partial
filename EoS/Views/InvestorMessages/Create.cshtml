@@ -11,6 +11,7 @@
     <title>New Investor message</title>
 </head>
 <body>
+
     @using (Html.BeginForm()) 
     {
         @Html.AntiForgeryToken()
@@ -36,7 +37,8 @@
     }
     
     <div>
-        @Html.ActionLink("Back to Investor Message list", "Index")
+        @Html.ActionLink("Back to Investor message index", "Index")
     </div>
+
 </body>
 </html>

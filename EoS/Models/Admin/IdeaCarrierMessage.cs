@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace EoS.Models.Admin
 {
@@ -16,7 +17,12 @@ namespace EoS.Models.Admin
         //public string Language { get; set; } //Enum or List
 
         [Required]
-        [Display(Name = "Message for Idea Carrier")]
+        [AllowHtml]
+        [Display(Name = "Message to the Idea carriers")]
         public string Text { get; set; }
+
+        [AllowHtml]
+        [Display(Name = "Display name for Allow sharing in tab Project in the Startup project form")]
+        public string AllowSharing_DisplayName { get; set; }
     }
 }

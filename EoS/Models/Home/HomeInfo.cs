@@ -18,7 +18,7 @@ namespace EoS.Models.Home
 
         [Required]
         [Display(Name = "Info Text")]
-        [AllowHtml] //<---------------------------------------
+        [AllowHtml]
         public string Text { get; set; }
     }
 }

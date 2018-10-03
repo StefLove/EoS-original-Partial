@@ -528,7 +528,7 @@ namespace EoS.Controllers
                     user.ExternalId = investorRandomId;
 
                     //countryName = country.CountryName + " (" + country.CountryAbbreviation + ")"; //for email
-
+                    //user.ActiveInvestor = true; //<-------to be implemented
                     user.LockoutEnabled = false;
                 }
 

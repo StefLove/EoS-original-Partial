@@ -1,30 +1,32 @@
-﻿@model EoS.Models.IdeaCarrier.Startup
+﻿@model EoS.Models.IdeaCarrier.StartupProjectViewModel
 
-<div class="form-group">
-    @Html.LabelFor(model => model.StartupName, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+<div class="@(ViewBag.Unanswered == "ProjectName" ? "form-group warning" : "form-group")">
+    @Html.LabelFor(model => model.ProjectName, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
-        @Html.EditorFor(model => model.StartupName, new { htmlAttributes = new { @class = "form-control", placeholder = "This is for you only" } })
-        @Html.ValidationMessageFor(model => model.StartupName, "", new { @class = "text-danger" })
+        @Html.EditorFor(model => model.ProjectName, new { htmlAttributes = new { @class = "form-control", placeholder = "This is for you only" } })
+        @Html.ValidationMessageFor(model => model.ProjectName, "", new { @class = "text-danger" })
     </div>
 </div>
 
-<div class="form-group">
+<div class="@(ViewBag.Unanswered == "ProjectDomain" ? "form-group warning" : "form-group")">
+    @*class="form-group unanswered" with red frame and a warning text*@
     @Html.LabelFor(model => model.ProjectDomainID, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
-        @Html.DropDownListFor(model => model.ProjectDomainID, (SelectList)ViewBag.projectDomainIdEdit, "Please select a domain", new { @class = "form-control" })
+        @Html.DropDownListFor(model => model.ProjectDomainID, Model.ProjectDomainList, "Please select a domain", new { @class = "form-control" })
         @Html.ValidationMessageFor(model => model.ProjectDomainID, "", new { @class = "text-danger" })
     </div>
 </div>
 
-<div class="form-group">
+<div class="@(ViewBag.Unanswered == "DeadlineDate" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.DeadlineDate, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.DeadlineDate, new { htmlAttributes = new { @class = "form-control date-picker", onkeydown = "return false", onpaste = "return false", @placeholder = "Time you give us to find funding for you" } })
         @Html.ValidationMessageFor(model => model.DeadlineDate, "", new { @class = "text-danger" })
+        <input type="button" value="Set date 6 months ahead" onclick="setMonthsAhead(6)" class="btn btn-primary" style="height:25px;padding:1px" />&nbsp;&nbsp;<input type="button" value="Set date 1 year ahead" onclick="setMonthsAhead(12)" class="btn btn-primary" style="height:25px;padding:1px" />
     </div>
 </div>
 
-<div class="form-group">
+<div class="@(ViewBag.Unanswered == "ProjectSummary" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.ProjectSummary, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.TextAreaFor(model => model.ProjectSummary, 15, 150, new { htmlAttributes = new { @class = "form-control" }, @onkeyup = "countChar(this)", maxlength = "1500", @placeholder = "Add summary about the project idea, note that any information that can identify you, your company or project or someone in the team will be deleted during auditing stage (plain text only)" })
@@ -33,19 +35,15 @@
     </div>
 </div>
 
-<div class="form-group">
-
-    @*if (string.IsNullOrWhiteSpace(Model.AllowSharingDisplayName))
-        {
-            Html.LabelFor(model => model.AllowSharing, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
-        }
-        else
-        {
-            Html.DisplayFor(model => model.AllowSharingDisplayName, new { class = "control-label col-md-2", style = "text-align: left" })
-            Html.Raw("<span class=\"control-label col-md-2\" style = \"text-align:left;font-weight:bold\">" + Model.AllowSharingDisplayName + "</span>");
-        }*@
-
-    @Html.LabelFor(model => model.AllowSharing, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" }) @*col-md-9  col-md-offset-2"*@
+<div class="form-group" id="AllowSharing">
+    @if (!string.IsNullOrEmpty(Model.AllowSharing_DisplayName))
+    {
+        Html.Raw(Model.AllowSharing_DisplayName);
+    }
+    else
+    {
+        @Html.LabelFor(model => model.AllowSharing, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" }) @*col-md-9  col-md-offset-2"*@
+    }
     <div class="col-md-1">
         <div class="checkbox">
             @Html.EditorFor(model => model.AllowSharing)
@@ -54,22 +52,47 @@
     @Html.ValidationMessageFor(model => model.AllowSharing, "", new { @class = "text-danger col-md-9 col-md-offset-2" })
 </div>
 
-<div class="form-group">
+<div class="@(ViewBag.Unanswered == "AllowedInvestors" ? "form-group warning" : "form-group")">
     <label class="control-label col-md-2" style="text-align: left">Allow us to share to investors</label>
     <div class=" col-md-offset-0 col-md-9" style="margin-left:inherit">
         <table class="borderless">
             <tr>
-                @{ List<EoS.Models.IdeaCarrier.AllowedInvestorViewModel> Investors = ViewBag.AllowedInvestorsViewModel;
-                    foreach (var investor in Investors)
+                @{
+                    foreach (var allowedInvestor in Model.AllowedInvestors)
                     {
-                        @:<td><input type="checkbox" name="selectedSharedToInvestors" value="@investor.AllowedInvestorID" @(Html.Raw(investor.Assigned ? "checked=\"checked\"" : "")) /> @investor.AllowedInvestorName</td>
+                        <td><input type="checkbox" name="SelectedAllowedInvestorIDs" value="@allowedInvestor.AllowedInvestorID" @(allowedInvestor.Assigned ? "checked=\"checked\"" : "") /> @allowedInvestor.AllowedInvestorName</td>
                         @:</tr><tr>
                     }
                 }
             </tr>
         </table>
-        @Html.ValidationMessageFor(model => model.AllowedInvestors, "", new { @class = "text-danger" })
     </div>
 </div>
 
-<br />&nbsp;<br />
+<hr />
+@if (string.IsNullOrEmpty(ViewBag.Unanswered))
+{
+    <div class="col-md-offset-4">
+        <input type="button" value="Save your answers for the questions in this tab Project" class="btn btn-warning btn-sm" style="color:black;max-width:500px" onclick="SaveData()" />
+    </div>
+    <div class="col-md-offset-2">
+        <h5 class="text-danger">You have to answer all the necessary questions in all tabs before you may submit the form.</h5>
+    </div>
+}
+else
+{
+    <div class="col-md-offset-4">
+        @Html.ActionLink("Cancel submission of form", "SubmitProjectForm", new { id = Model.StartupID, cancel = true, redirect = "ProjectForm", redirectTab = "Project" }, new { @id = "cancelProjectFormSubmission", @class = "btn btn-danger" })
+    </div>
+}
+
+
+<script>
+
+    function setMonthsAhead(months) {
+        var newDate = new Date();
+        newDate.setMonth(newDate.getMonth() + months);
+        document.getElementById("DeadlineDate").value = newDate.toLocaleDateString();
+    }
+
+</script>

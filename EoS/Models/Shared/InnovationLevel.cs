@@ -7,10 +7,11 @@ namespace EoS.Models.Shared
     {
         [Key]
         public int InnovationLevelID { get; set; }
+
         [Required]
         [Display(Name = "Name of Level of innovation")]
         public string InnovationLevelName { get; set; }
 
-        public virtual ICollection<Investor.Investment> Investments { get; set; }
+        public virtual ICollection<Investor.Investment> Investments { get; set; } //<---necessary??
     }
 }

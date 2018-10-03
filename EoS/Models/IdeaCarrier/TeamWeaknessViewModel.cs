@@ -5,7 +5,7 @@ using System.Web;
 
 namespace EoS.Models.IdeaCarrier
 {
-    public class TeamWeaknessesViewModel
+    public class TeamWeaknessViewModel
     {     
         public int WeaknessID { get; set; }
                

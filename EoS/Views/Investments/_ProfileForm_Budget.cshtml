@@ -1,24 +1,23 @@
-﻿@model EoS.Models.Investor.Investment
+﻿@model EoS.Models.Investor.InvestmentProfileViewModel
 
-<div class="form-group">
-    <label class="control-label col-md-2" style="text-align:left">Estimated exit plan</label>
+<div class="@(ViewBag.Unanswered == "EstimatedExitPlans" ? "form-group warning" : "form-group")">
+    <label class="control-label col-md-2" style="text-align:left">Estimated exit plans</label>
     <div class=" col-md-offset-2 col-md-10" style="margin-left:0">
         <table class="borderless">
             <tr>
-                @{ List<EoS.Models.Investor.InvestorEstimatedExitPlanViewModel> ExitPlans = ViewBag.estimatedExitPlanViewModel;
-                    foreach (var plan in ExitPlans)
+                @{
+                    foreach (var estimatedExitPlan in Model.EstimatedExitPlans)
                     {
-                        @:<td><input type="checkbox" name="selectedEstimatedExitPlans" value="@plan.EstimatedExitPlanID" @(Html.Raw(plan.Assigned ? "checked=\"checked\"" : "")) /> @plan.EstimatedExitPlanName  </td>
+                        <td><input type="checkbox" name="SelectedEstimatedExitPlanIDs" value="@estimatedExitPlan.EstimatedExitPlanID" @(estimatedExitPlan.Assigned ? "checked=\"checked\"" : "") /> @estimatedExitPlan.EstimatedExitPlanName </td>
                         @:</tr><tr>
                     }
                 }
             </tr>
         </table>
-        @Html.ValidationMessageFor(model => model.EstimatedExitPlans, "", new { @class = "text-danger" })
     </div>
 </div>
 
-<div class="form-group">
+<div class="@(ViewBag.Unanswered == "EstimatedBreakEven" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.EstimatedBreakEven, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.EstimatedBreakEven, new { htmlAttributes = new { @class = "form-control", @placeholder = "In term of years, 10 equals to any number" } })
@@ -26,7 +25,7 @@
     </div>
 </div>
 
-<div class="form-group">
+<div class="@(ViewBag.Unanswered == "PossibleIncomeStreams" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.PossibleIncomeStreams, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.PossibleIncomeStreams, new { htmlAttributes = new { @class = "form-control", @placeholder = "10 equals to any number" } })
@@ -34,11 +33,19 @@
     </div>
 </div>
 
-@if (!Model.Locked)
+<hr />
+@if (string.IsNullOrEmpty(ViewBag.Unanswered))
 {
-    <div class="col-md-offset-4">
-        <input type="submit" value="Save your answers for this tab" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
+    <div class="col-md-offset-4 hidden-print">
+        <input type="button" value="Save your answers for this tab Budget" class="btn btn-warning btn-sm" style="color:black;max-width:500px" onclick="SaveData()" title="in order to return later" />
+    </div>
+    <div class="col-md-offset-2">
+        <h5 class="text-danger">You have to answer all the necessary questions in all tabs before you may submit the form.</h5>
     </div>
 }
-
-<br />&nbsp;<br />
+else
+{
+    <div class="col-md-offset-4 hidden-print">
+        @Html.ActionLink("Cancel submission of form", "SubmitProfileForm", new { id = Model.InvestmentID, cancel = true, redirect = "ProfileForm", redirectTab = "Budget" }, new { @id = "cancelProfileFormSubmission", @class = "btn btn-danger" })
+    </div>
+}

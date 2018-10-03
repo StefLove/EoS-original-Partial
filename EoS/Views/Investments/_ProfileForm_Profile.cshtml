@@ -1,7 +1,6 @@
-﻿@model EoS.Models.Investor.Investment
+﻿@model EoS.Models.Investor.InvestmentProfileViewModel
 
-
-<div class="form-group">
+<div class="@(ViewBag.Unanswered == "ProfileName" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.ProfileName, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.ProfileName, new { htmlAttributes = new { @class = "form-control", placeholder = "This is for you only" } })
@@ -9,22 +8,28 @@
     </div>
 </div>
 
-<div class="form-group">
-    @Html.LabelFor(model => model.ProjectDomainID, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
+<div class="@(ViewBag.Unanswered == "ProfileDomain" ? "form-group warning" : "form-group")">
+    @Html.LabelFor(model => model.ProfileDomainID, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
-        @Html.DropDownListFor(model => model.ProjectDomainID, (SelectList)ViewBag.projectDomainIdEdit, "Select:", new
-        {
-            @class = "form-control"@*, @onchange = "toggleExtraDomainDisplay(this.value, " + @ViewBag.otherDomainId + ")"*@})
-        @Html.ValidationMessageFor(model => model.ProjectDomainID, "", new { @class = "text-danger" })
+        @Html.DropDownListFor(model => model.ProfileDomainID, Model.ProfileDomainList, "Select:", new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.ProfileDomainID, "", new { @class = "text-danger" })
     </div>
 </div>
 
-@if (!Model.Locked)
+<hr />
+@if (string.IsNullOrEmpty(ViewBag.Unanswered))
 {
-    <div class="col-md-offset-4">
-        <input type="submit" value="Save your answers for this tab" class="btn btn-warning btn-sm" style="color:black" onclick="activateTab('all_tabs')" />
+    <div class="col-md-offset-4 hidden-print">
+        <input type="button" value="Save your answers for this tab Profile" class="btn btn-warning btn-sm" style="color:black;;max-width:500px" onclick="SaveData()" title="in order to return later" />
+    </div>
+    <div class="col-md-offset-2">
+        <h5 class="text-danger">You have to answer all the necessary questions in all tabs before you may submit the form.</h5>
     </div>
 }
-
-    <br />&nbsp;<br />
+else
+{
+    <div class="col-md-offset-4 hidden-print">
+        @Html.ActionLink("Cancel submission of form", "SubmitProfileForm", new { id = Model.InvestmentID, cancel = true, redirect = "ProfileForm", redirectTab = "Profile" }, new { @id = "cancelProfileFormSubmission", @class = "btn btn-danger" })
+    </div>
+}
 

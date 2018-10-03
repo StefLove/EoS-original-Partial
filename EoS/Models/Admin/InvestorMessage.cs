@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace EoS.Models.Admin
 {
@@ -16,7 +17,8 @@ namespace EoS.Models.Admin
         //public string Language { get; set; } //Enum or List
 
         [Required]
-        [Display(Name = "Message for Investor")]
+        [AllowHtml]
+        [Display(Name = "Message for the Investors")]
         public string Text { get; set; }
     }
 }

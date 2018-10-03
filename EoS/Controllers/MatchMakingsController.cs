@@ -394,24 +394,35 @@ namespace EoS.Controllers
             }
             else NoOfFailures++;
 
-            bool outcomesMatch = false;
-            if (model.OutcomesSelected && investment.Outcomes.Count() > startup.Outcomes.Count())
+            if (model.OutcomesSelected)
             {
-                foreach (var startupOutcome in startup.Outcomes)
+                bool outcomesMatch = false;
+                if (investment.Outcomes.Count() > startup.Outcomes.Count())
                 {
-                    if (investment.Outcomes.Contains(startupOutcome)) outcomesMatch = true;
-                    else outcomesMatch = false;
+                    foreach (var startupOutcome in startup.Outcomes)
+                    {
+                        if (investment.Outcomes.Contains(startupOutcome))
+                        {
+                            outcomesMatch = true;
+                            matchFound = true;
+                        }
+                        //else outcomesMatch = false;
+                    }
                 }
-            }
-            else
-            {
-                foreach (var investmentOutcome in investment.Outcomes)
+                else
                 {
-                    if (startup.Outcomes.Contains(investmentOutcome)) outcomesMatch = true;
-                    else outcomesMatch = false;
+                    foreach (var investmentOutcome in investment.Outcomes)
+                    {
+                        if (startup.Outcomes.Contains(investmentOutcome))
+                        {
+                            outcomesMatch = true;
+                            matchFound = true;
+                        }
+                        //else outcomesMatch = false;
+                    }
                 }
+                matchMaking.OutcomesMatched = outcomesMatch;
             }
-            matchMaking.OutcomesMatched = outcomesMatch;
 
             if (model.InnovationLevelSelected && investment.InnovationLevels.Contains(startup.InnovationLevel))
             {

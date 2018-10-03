@@ -282,3 +282,12 @@ __pycache__/
 /EoS/Migrations/201712211309331_Init.cs
 /EoS/Migrations/201712211309331_Init.Designer.cs
 /EoS/Migrations/201712211309331_Init.resx
+/EoS/Migrations/201809101221051_AllowSharing.resx
+/EoS/Migrations/201809101221051_AllowSharing.Designer.cs
+/EoS/Migrations/201809101221051_AllowSharing.cs
+/EoS/Migrations/201806081922421_LastLockedDate.resx
+/EoS/Migrations/201806081922421_LastLockedDate.Designer.cs
+/EoS/Migrations/201806081922421_LastLockedDate.cs
+/EoS/Migrations/201806061500041_Init.resx
+/EoS/Migrations/201806061500041_Init.cs
+/EoS/Migrations/201806061500041_Init.Designer.cs

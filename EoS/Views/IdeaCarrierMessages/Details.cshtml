@@ -8,27 +8,38 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Idea Carrier Message Details</title>
+    <title>Idea carrier message details</title>
 </head>
 <body>
+
     <div>
-        <h4>Idea Carrier Message Details</h4>
+        <h4>Idea carrier message details</h4>
         <hr />
         <dl class="dl-horizontal">
+
             <dt>
                 @Html.DisplayNameFor(model => model.Text)
             </dt>
-    
             <dd>
                 @*@Html.DisplayFor(model => model.Text)*@
                 <div style="border-style:solid; border-width:1px" title="HTML">@Html.Raw(Model.Text)</div>
-            </dd>  
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.AllowSharing_DisplayName)
+            </dt>
+            <dd>
+                @*@Html.DisplayFor(model => model.AllowSharing_DisplayName)*@
+                <div style="border-style:solid; border-width:1px" title="HTML">@Html.Raw(Model.AllowSharing_DisplayName)</div>
+            </dd>
+
         </dl>
     </div>
     <p>
-        @Html.ActionLink("Back to Idea Carrier Message List", "Index")
+        @Html.ActionLink("Back to Idea carrier message index", "Index")
         @Html.ActionLink("Edit", "Edit", new { id = Model.Id })  |
         @Html.ActionLink("Delete", "Delete", new { id = Model.Id }, new { @style = "color:red" })
     </p>
+
 </body>
 </html>
