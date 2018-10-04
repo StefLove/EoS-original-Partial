@@ -215,30 +215,17 @@ namespace EoS.Controllers
                     //Locked = false
                 };
 
-                //------------------------------------
-
-                //List<FundingDivision> fundingDivisions = db.FundingDivisions.ToList(); //initFundingDivisions(newStartupProject.StartupID)
-                //foreach (var fundingDivision in fundingDivisions)
-                //{
-                //    db.FundingDivisionStartups.Add(new FundingDivisionStartup
-                //    {
-                //        FundingDivisionID = fundingDivision.FundingDivisionID,
-                //        Percentage = 0,
-                //        StartupID = newStartupProjectID //<---necessary?
-                //    });
-                //}
-
                 List<FundingDivision> fundingDivisions = db.FundingDivisions.ToList();
                 foreach (FundingDivision fundingDivision in fundingDivisions)
                 {
-                    newStartupProject.ProjectFundingDivisions.Add(new FundingDivisionStartup
+                    //newStartupProject.ProjectFundingDivisions.Add(new FundingDivisionStartup
+                    db.FundingDivisionStartups.Add(new FundingDivisionStartup
                     {
                          FundingDivisionID = fundingDivision.FundingDivisionID,
                          Percentage = 0,
-                         StartupID = newStartupProjectID //<---necessary?
+                         StartupID = newStartupProjectID
                     });
                 }
-                //---------------------------------
 
                 db.Startups.Add(newStartupProject);
                 db.SaveChanges();
@@ -367,8 +354,14 @@ namespace EoS.Controllers
 
                 //if &&!model.Locked {               
 
-                if (UpdateActiveTab(startupProject, projectPostModel))
+                //bool wrongAnswerInFundingDivisionPercentages = false;
+
+                if (UpdateActiveTab(startupProject, projectPostModel)) //, ref wrongAnswerInFundingDivisionPercentages)
                 {
+                    //if (wrongAnswerInFundingDivisionPercentages)
+                    //TempData["message"] = "In tab BudgetI \"How will the funding be spent?\" the sum of the percentages can't be over 100!";
+                    //TempData["wrong_answer"] = "FundingDivisionPercentages";
+                    //
                     startupProject.LastSavedDate = DateTime.Now.Date;
                     db.Entry(startupProject).State = EntityState.Modified;
                     db.SaveChanges();
@@ -383,7 +376,6 @@ namespace EoS.Controllers
 
                 //if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit")) return RedirectToAction("ProjectDetails", new { id = model.StartupID });
                                                                                                 //return RedirectToAction("Index");
-
                 //}
                 //else ModelState.AddModelError("Locked", "Form locked, not possible to change anything in it, please contact Admin by the contact form.");
             }
@@ -628,7 +620,7 @@ namespace EoS.Controllers
             return outcomeViewModels;
         }
 
-        private bool UpdateActiveTab(Models.IdeaCarrier.Startup startupProject, StartupProjectPostViewModel projectPostModel)
+        private bool UpdateActiveTab(Models.IdeaCarrier.Startup startupProject, StartupProjectPostViewModel projectPostModel) //, ref bool wrongAnswerInFundingDivisionPercentages
         {
             bool updated = false;
 
@@ -636,7 +628,7 @@ namespace EoS.Controllers
             {
                 case "tab_Project": updated = UpdateTabProject(startupProject, projectPostModel); break;
                 case "tab_Funding": updated = UpdateTabFunding(startupProject, projectPostModel); break;
-                case "tab_Budget": updated = UpdateTabBudget(startupProject, projectPostModel); break;
+                case "tab_Budget": updated = UpdateTabBudget(startupProject, projectPostModel); break; //, wrongAnswerInFundingDivisionPercentages)
                 case "tab_Team": updated = UpdateTabTeam(startupProject, projectPostModel); break;
                 case "tab_Outcome": updated = UpdateTabOutcome(startupProject, projectPostModel); break;
                 default: break;
@@ -799,7 +791,7 @@ namespace EoS.Controllers
             return updated;
         }
 
-        private bool UpdateTabBudget(Models.IdeaCarrier.Startup startupProject, StartupProjectPostViewModel projectPostModel)
+        private bool UpdateTabBudget(Models.IdeaCarrier.Startup startupProject, StartupProjectPostViewModel projectPostModel) //, ref bool wrongAnswerInFundingDivisionPercentages)
         {
             bool updated = false;
 
@@ -832,7 +824,7 @@ namespace EoS.Controllers
             return updated;
         }
 
-        private bool UpdateFundingDivisionPercentages(string[] fundingDivisionPercentages, Models.IdeaCarrier.Startup startupProject)
+        private bool UpdateFundingDivisionPercentages(string[] fundingDivisionPercentages, Models.IdeaCarrier.Startup startupProject) //, ref bool wrongAnswer)
         {
             bool updated = false;
 
@@ -866,6 +858,7 @@ namespace EoS.Controllers
                     }
                 } 
                 else TempData["message"] = "In tab BudgetI \"How will the funding be spent?\" the sum of the percentages can't be over 100!";
+                //wrongAnswer = true; return false;
             }
             else //if (fundingDivisionPercentages == null)
             {
@@ -1075,7 +1068,7 @@ namespace EoS.Controllers
             if (string.IsNullOrEmpty(startupProject.StartupName))
             {
                 TempData["message"] = "Project name can't be empty!";
-                TempData["unanswered"] = "ProjectName";
+                TempData["unanswered"] = "ProjectName"; //"no_answer"
                 return Redirect(Url.Action("ProjectForm", new { id }) + "#Project");
             }
             if (!startupProject.ProjectDomainID.HasValue)
@@ -1289,19 +1282,20 @@ namespace EoS.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Models.IdeaCarrier.Startup startup = db.Startups.Find(id);
-            if (startup == null)
+            Models.IdeaCarrier.Startup startupProject = db.Startups.Find(id);
+            if (startupProject == null)
             {
                 return HttpNotFound();
             }
-            return View(startup);
+
+            return View(startupProject);
         }
 
         // POST: Startups/RemoveProject/5
         [Authorize(Roles = "Admin, IdeaCarrier")]
         [HttpPost, ActionName("RemoveProject")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(string id) //
+        public ActionResult DeleteConfirmed(string id)
         {   
             Models.IdeaCarrier.Startup startupProject = db.Startups.Find(id);
 
@@ -1312,14 +1306,16 @@ namespace EoS.Controllers
             //    DeleteDocument(document.DocId, document.DocURL, null);
             //}
 
-            //startup.ProjectFundingDivisions.Clear(); //<-----??
+            //startup.Documents.Clear();
 
-            //foreach (var projectFundingDivision in startup.ProjectFundingDivisions) //projectFundingDivisions
-            //{
-            //    if (db.FundingDivisionStartups.Contains(projectFundingDivision))
-            //        db.FundingDivisionStartups.Remove(projectFundingDivision);
-            //}
-            
+            List<FundingDivisionStartup> fundingDivisions = startupProject.ProjectFundingDivisions.ToList();
+
+            foreach (var fundingDivision in fundingDivisions)
+            {
+                //if (db.FundingDivisionStartups.Contains(fundingDivision))
+                db.FundingDivisionStartups.Remove(fundingDivision);
+            }
+
             //db.AllowedInvestors (virtual) X
             //db.FundingPhase X
             //db.InnovationLevel X
@@ -1328,6 +1324,7 @@ namespace EoS.Controllers
             //db.Scalability X
 
             db.Startups.Remove(startupProject);
+
             db.SaveChanges();
 
             return RedirectToAction("Index");
@@ -1835,7 +1832,7 @@ namespace EoS.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public ActionResult Unlock(string id, string redirect = "")
+        public ActionResult Unlock(string id, string redirect = "") //string userName?
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -1861,6 +1858,8 @@ namespace EoS.Controllers
                 if (redirect.ToUpper().Contains("DETAILS")) return RedirectToAction("ProjectDetails", new { id });
                 else return RedirectToAction(redirect, new { id });
             }
+
+            //ViewBag.UserName = userName; ?
 
             return RedirectToAction("Index");
         }

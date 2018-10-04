@@ -296,10 +296,10 @@
                         @Html.ActionLink("Pay for this profile", "Contact", "Home", new { subject = "Payment for " + Model.InvestmentID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" });
                     }
                 }
-                @*else
+                else
                 {
-                    Html.Raw("Role: " + ViewBag.UserRole);
-                }*@
+                    @Html.DisplayFor(model => model.DueDate)
+                }
             </dd>
         }
         else //if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
@@ -356,16 +356,7 @@
 
         @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
         {
-
-            if (Model.Locked && Model.Active && (!Model.DueDate.HasValue || Model.DueDate.HasValue && Model.DueDate.Value > DateTime.Now))
-            {
-                <dt class="hidden-print"></dt>
-                <dd class="hidden-print">
-                    @Html.ActionLink("Match with projects", "Motor", "MatchMakings", new { id = Model.InvestmentID }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
-                </dd>
-            }
-            
-            <dt class="hidden-print">
+            <dt>
                 @Html.Raw("This Profile form")
             </dt>
             if (Model.Locked)
@@ -374,7 +365,7 @@
                     @Html.ActionLink("Unlock it", "Unlock", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
                 </dd>
             }
-            else /*if (!Model.Locked)*/
+            else if (!Model.Locked)
             {
                 <dd>
                     @*@Html.Raw(DateTime.Now.Subtract(Model.LastSavedDate).Days)
@@ -432,6 +423,13 @@
                 }
             </dd>*@
 
+            if (Model.Locked && Model.Active && (!Model.DueDate.HasValue || Model.DueDate.HasValue && Model.DueDate.Value > DateTime.Now))
+            {
+                <dt class="hidden-print"></dt>
+                <dd class="hidden-print">
+                    @Html.ActionLink("Match with projects", "Motor", "MatchMakings", new { id = Model.InvestmentID }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
+                </dd>
+            }
         }
         else //if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
         {
@@ -487,6 +485,10 @@
                         @Html.ActionLink("Activate", "Activate", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-success hidden-print", @style = "height:25px;padding:1px" })
                     }
                 }
+                else
+                {
+                    @Html.DisplayFor(model => model.Active)
+                }
             </div>
         </dd>
 
@@ -494,23 +496,23 @@
 </div>
 
 <p class="hidden-print">
-    @Html.ActionLink("Back to your Investment profiles", "Index")
-
-    @*@if (!Model.Locked && ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
+    @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
     {
-        <text>|</text>
-        @Html.ActionLink("Profile form", "ProfileForm", new { id = Model.InvestmentID })
+        @Html.ActionLink("Back to Investment profiles", "Index", new { id = Model.UserId })
     }
-    else*@
+    else
+    {
+        @Html.ActionLink("Back to your Investment profiles", "Index", new { id = Model.UserId })
+    }
 
     @if (Model.DueDate.HasValue && ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
     {
         <text>|</text>
-        @Html.ActionLink("Edit", "EditAdmin", new { id = Model.InvestmentID }) 
+        @Html.ActionLink("Edit", "EditAdmin", new { id = Model.InvestmentID })
     }
     @if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString() && Model.DueDate.HasValue)
     {
         <text>|</text>
-        @Html.ActionLink("Remove", "RemoveProfile", new { id = Model.InvestmentID }, new { @style = "color:red" } )
+        @Html.ActionLink("Remove", "RemoveProfile", new { id = Model.InvestmentID }, new { @style = "color:red" })
     }
 </p>

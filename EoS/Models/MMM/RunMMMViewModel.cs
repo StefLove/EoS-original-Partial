@@ -11,14 +11,14 @@ namespace EoS.Models.MMM
     {
         [Required(ErrorMessage = "*")]
         [Display(Name = "Investment profile")]
-        public string InvestmentId { get; set; }
-        public SelectList Investments { get; set; }
+        public string InvestmentProfileId { get; set; }
+        public SelectList InvestmentProfileList { get; set; }
 
         [Display(Name = "Startup project")] //When not selected all startups will be matched
-        public string StartupId { get; set; }
-        public SelectList Startups { get; set; }
+        public string StartupProjectId { get; set; }
+        public SelectList StartupProjectList { get; set; }
 
-        [Display(Name = "Project domain")]
+        [Display(Name = "Domain")]
         public bool ProjectDomainSelected { get; set; } //1
 
         [Display(Name = "Funding phase")]

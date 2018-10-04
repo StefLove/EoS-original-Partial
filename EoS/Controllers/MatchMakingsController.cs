@@ -165,35 +165,48 @@ namespace EoS.Controllers
         // GET: MatchMakings/Run (Create)
         public ActionResult Motor(string Id) // Id==investmentId or InvestorId
         {
-            SelectList investments;
+            SelectList investmentProfileList;
 
             if (!string.IsNullOrEmpty(Id))
             {
                 if (Id.ToUpper().StartsWith("IV")) //InvestmentId
                 {
-                    investments = new SelectList(db.Investments.Where(i => i.InvestmentID == Id && i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID");
+                    investmentProfileList = new SelectList(db.Investments.Where(i => i.InvestmentID == Id), "InvestmentID", "InvestmentID");
+                    //investmentProfileList = new SelectList(db.Investments.Where(i => i.InvestmentID == Id && i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID");
                     //if (investments.Count() == 1) investments.FirstOrDefault().Selected = true;
                 }
                 else //InvestorId
                 {
-                    investments = investments = new SelectList(db.Investments.Where(i => i.UserId == Id && i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID");
+                    investmentProfileList = new SelectList(db.Investments.Where(i => i.UserId == Id), "InvestmentID", "InvestmentID");
+                    //investmentProfileList = new SelectList(db.Investments.Where(i => i.UserId == Id && i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID");
                 }
             }
             else //All
             {
-                investments = new SelectList(db.Investments.Where(i => i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID");
+                investmentProfileList = new SelectList(db.Investments.Where(i => i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID");
             }
 
-            SelectList startups = new SelectList(db.Startups.Where(s => s.Locked && s.Approved && (DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID), "StartupID", "StartupID");
+            SelectList startupProjectList = new SelectList(db.Startups.Where(s => s.Locked && s.Approved && (DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID), "StartupID", "StartupID");
             //if (startups.Count() == 1) startups.FirstOrDefault().Selected = true;
 
             RunMMMViewModel model = new RunMMMViewModel
             {
+                //Project
                 ProjectDomainSelected = true,
+                //Funding
+                FundingPhaseSelected = false,
                 FundingAmountSelected = true,
-                Investments = investments,
-                //InvestmentId = Id,
-                Startups = startups
+                //Budget
+                EstimatedExitPlanSelected = false,
+                //Team
+                TeamSkillsSelected = false,
+                //Outcome
+                OutcomesSelected = false,
+                InnovationLevelSelected = false,
+                ScalabilitySelected = false,
+                       
+                InvestmentProfileList = investmentProfileList,
+                StartupProjectList = startupProjectList
             };
 
             return View(model);
@@ -209,61 +222,63 @@ namespace EoS.Controllers
         {
             if (ModelState.IsValid) //(&& matched)
             {
-                int NoOfFailures = 0; //<------------------------------------------
+                int NoOfFailures = 0; //<--------
 
                 MatchMaking matchMaking = new MatchMaking();
 
-                /*
-                 List<Investment> investmentss;
-                 if (string.IsNullOrEmpty(model.InvestmentId))
-                    {
-                        investments = db.Investments.Where(i => i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID).ToList(); //All investments selected
-                    }
-                 */
+                //List<Investment> investmentsProfiles;
+                //if (string.IsNullOrEmpty(model.InvestmentProfileId)
+                //{
+                //    investmentProfiles = db.Investments.Where(i => i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID).ToList(); //All investments selected
+                //}
+                 
                 //else
-                var investment = db.Investments.Where(i => i.InvestmentID == model.InvestmentId).FirstOrDefault(); //investment
 
-                List<Models.IdeaCarrier.Startup> startups;
+                Investment investmentProfile = db.Investments.Where(i => i.InvestmentID == model.InvestmentProfileId).FirstOrDefault(); //investment
 
-                if (string.IsNullOrEmpty(model.StartupId))
+                List<Models.IdeaCarrier.Startup> startupProjects;
+
+                if (string.IsNullOrEmpty(model.StartupProjectId))
                 {
-                    startups = db.Startups.Where(s => s.Locked && s.Approved && (!s.DeadlineDate.HasValue || s.DeadlineDate.HasValue && DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID).ToList(); //All startups selected
+                    startupProjects = db.Startups.Where(s => s.Locked && s.Approved && (!s.DeadlineDate.HasValue || s.DeadlineDate.HasValue && DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID).ToList(); //All startups selected
                 }
                 else
                 {
-                    startups = db.Startups.Where(s => s.StartupID == model.StartupId).ToList();
+                    startupProjects = db.Startups.Where(s => s.StartupID == model.StartupProjectId).ToList();
                 }
 
                 DateTime matchedDateTime = DateTime.Now; //default(DateTime);
 
                 //MMM
 
-                //foreach (Investment investment in investments) matchMaking.InvestmentId = investment.InvestmentID;
+                //foreach (Investment profile in investmentProfiles) 
+                //{ 
+                // //matchMaking.InvestmentId = investment.InvestmentID;
 
-                foreach (Models.IdeaCarrier.Startup startup in startups)
+                foreach (Models.IdeaCarrier.Startup project in startupProjects)
                 {
                     //var existingMatchMaking s= investment.MatchMakings.Where(mm => mm.StartupId == startup.StartupID).ToList();
 
-                    if (!investment.MatchMakings.Where(mm => mm.StartupId == startup.StartupID).Any()) //already matched
+                    if (!investmentProfile.MatchMakings.Where(mm => mm.StartupId == project.StartupID).Any()) //already matched
                     {
-                        matchMaking.StartupId = startup.StartupID;
-                        matchMaking.InvestmentId = investment.InvestmentID;
+                        matchMaking.StartupId = project.StartupID;
+                        matchMaking.InvestmentId = investmentProfile.InvestmentID;
 
                         if (model.ProjectDomainSelected)
                         {
-                            if (investment.ProjectDomain.ProjectDomainName == startup.ProjectDomain.ProjectDomainName) //investment.ExtraProjectDomains (of type string)
+                            if (investmentProfile.ProjectDomain.ProjectDomainName == project.ProjectDomain.ProjectDomainName) //investment.ExtraProjectDomains (of type string)
                             {
                                 matchMaking.ProjectDomainMatched = true;
                                 matchMaking.NoOfMatches++;
 
-                                if (model.FundingAmountSelected && investment.FundingAmounts.Contains(startup.FundingAmount))
+                                if (model.FundingAmountSelected && investmentProfile.FundingAmounts.Contains(project.FundingAmount))
                                 {
                                     matchMaking.FundingAmountMatched = true;
                                     matchMaking.NoOfMatches++;
 
                                     //if (!investment.DueDate.HasValue) investment.DueDate = DateTime.Now;
 
-                                    Match(investment, startup, ref matchMaking, ref NoOfFailures, model); //Match the rest
+                                    Match(investmentProfile, project, ref matchMaking, ref NoOfFailures, model); //Match the rest
 
                                     matchMaking.MatchMakingDate = matchedDateTime;
 
@@ -294,14 +309,14 @@ namespace EoS.Controllers
                         }
                         else if (model.FundingAmountSelected)
                         {
-                            if (investment.FundingAmounts.Contains(startup.FundingAmount))
+                            if (investmentProfile.FundingAmounts.Contains(project.FundingAmount))
                             {
                                 matchMaking.FundingAmountMatched = true;
                                 matchMaking.NoOfMatches++;
 
                                 //if (!investment.DueDate.HasValue) investment.DueDate = DateTime.Now;
 
-                                Match(investment, startup, ref matchMaking, ref NoOfFailures, model); //Match the rest
+                                Match(investmentProfile, project, ref matchMaking, ref NoOfFailures, model); //Match the rest
 
                                 matchMaking.MatchMakingDate = matchedDateTime;
 
@@ -318,7 +333,7 @@ namespace EoS.Controllers
                         }
                         else
                         {
-                            if (Match(investment, startup, ref matchMaking, ref NoOfFailures, model)) //Match the rest <---------------model saknas
+                            if (Match(investmentProfile, project, ref matchMaking, ref NoOfFailures, model)) //Match the rest <---------------model saknas
                             {
                                 matchMaking.MatchMakingDate = matchedDateTime;
 
@@ -341,14 +356,15 @@ namespace EoS.Controllers
                         //model.Investments = new SelectList(db.Investments.Where(i => i.Locked && i.Active), "InvestmentID", "InvestmentID");
                         //model.Startups = new SelectList(db.Startups.Where(s => s.Locked && s.Active && s.Approved), "StartupID", "StartupID");
                         //ViewBag.Message = "Investment " + investment.InvestmentID + " and Startup " + startup.StartupID + " has already been matched, delete the post from MatchMakings if you want to redo it !";
-                        int startupIndex = db.MatchMakings.ToList().FindIndex(mm => mm.StartupId == startup.StartupID);
-                        ViewBag.Message += "<a href=\"~MatcMakings/Details\"" + startupIndex + "/>Investment " + investment.InvestmentID + " and Startup " + startup.StartupID + "</a> is already matched, delete the record from the MatchMakings if you want to redo it !<br />";
+
+                        int startupIndex = db.MatchMakings.ToList().FindIndex(mm => mm.StartupId == project.StartupID);
+                        ViewBag.Message += "<a href=\"~MatcMakings/Details\"" + startupIndex + "/>Investment " + investmentProfile.InvestmentID + " and Startup " + project.StartupID + "</a> is already matched, delete the record from the MatchMakings if you want to redo it !<br />";
                         ModelState.AddModelError("", "No list of Startups exists. There is nothing to be matched.");
                         //return View(model);
                     }
                 }
 
-                if (startups.Any())
+                if (startupProjects.Any())
                 {
                     ViewBag.Message += " The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.<br />";
                     ModelState.AddModelError("", "The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.");
@@ -368,8 +384,8 @@ namespace EoS.Controllers
 
             model.ProjectDomainSelected = true;
             model.FundingAmountSelected = true;
-            model.Investments = new SelectList(db.Investments.Where(i => i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID", model.InvestmentId); //<---remove model.InvestmentId later
-            model.Startups = new SelectList(db.Startups.Where(s => s.Locked && s.Approved && (DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID), "StartupID", "StartupID");
+            model.InvestmentProfileList = new SelectList(db.Investments.Where(i => i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID"/*, model.InvestmentProfileId*/);
+            model.StartupProjectList = new SelectList(db.Startups.Where(s => s.Locked && s.Approved && (DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID), "StartupID", "StartupID");
             //ViewBag.Message = "Model state is not valid.";
             return View(model);
         }

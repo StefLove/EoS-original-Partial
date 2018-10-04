@@ -69,10 +69,10 @@ else
                 @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.CountryID)@Html.Raw("</span>")
                 @Html.ActionLink(Html.DisplayNameFor(model => model.CountryID).ToString(), "Index", new { orderBy = "Country" }, htmlAttributes: new { title = "Order by Country", @class = "hidden-print" })
             </th>
-            <th>
+            @*<th>
                 @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.SwedishRegionID)@Html.Raw("</span>")
                 @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayNameFor(model => model.SwedishRegion).ToString()), "Index", new { orderBy = "SwedishRegion" }, htmlAttributes: new { title = "Order by Swedish region (län)", @class = "hidden-print" })
-            </th>
+            </th>*@
         }
         <th>
             @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.ProjectDomainID)@Html.Raw("</span>")
@@ -88,7 +88,7 @@ else
         </th>
         <th>
             @Html.Raw("<span class=\"visible-print\">Form</span>")
-            @Html.ActionLink("Project form", "Index", new { orderBy = "LastSavedDate" }, htmlAttributes: new { title = "Order by Last saved date" })
+            @Html.ActionLink("Project form", "Index", new { orderBy = "LastSavedDate" }, htmlAttributes: new { title = "Order by Last saved date", @class = "hidden-print" })
         </th>
         <th>
             @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.DeadlineDate)@Html.Raw("</span>")
@@ -124,12 +124,12 @@ else
                 <td>
                     @Html.DisplayFor(modelItem => item.Country.CountryAbbreviation)
                 </td>
-                <td>
+                @*<td>
                     @if (item.SwedishRegionID.HasValue)
                     {
                         @Html.DisplayFor(modelItem => item.SwedishRegion.RegionName)
                     }
-                </td>
+                </td>*@
                 <td>
                     @Html.DisplayFor(modelItem => item.ProjectDomain.ProjectDomainName)
                 </td>

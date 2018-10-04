@@ -1246,26 +1246,27 @@ namespace EoS.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Investment investment = db.Investments.Find(id);
+            Investment investmentProfile = db.Investments.Find(id);
 
-            if (investment == null)
+            if (investmentProfile == null)
             {
                 return HttpNotFound();
             }
 
-            if (!investment.DueDate.HasValue)
+            if (!investmentProfile.DueDate.HasValue)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);  //RedirectToAction("ProfileDetails", new { id });  //<---Doesn't work?
             }
 
-            InvestmentEditAdminViewModel model = new InvestmentEditAdminViewModel //ProfileFormAdminViewModel
+            InvestmentEditAdminViewModel editAdminmodel = new InvestmentEditAdminViewModel //ProfileFormAdminViewModel
             {
-                InvestmentId = investment.InvestmentID,
-                InvestorName = investment.User.UserName,
-                DueDate = investment.DueDate
+                InvestmentId = investmentProfile.InvestmentID,
+                InvestorName = investmentProfile.User.UserName,
+                DueDate = investmentProfile.DueDate,
+                Locked = investmentProfile.Locked
             };
 
-            return View(model);
+            return View(editAdminmodel);
         }
 
         // POST: Investments/EditAdmin/5
@@ -1300,7 +1301,7 @@ namespace EoS.Controllers
                     updated = true;
                 }
 
-                if (investmentProfile.Locked =! model.Locked)
+                if (investmentProfile.Locked != model.Locked)
                 {
                     investmentProfile.Locked = model.Locked;
                     updated = true;
@@ -1314,6 +1315,7 @@ namespace EoS.Controllers
 
                 return RedirectToAction("ProfileDetails", new { id = investmentProfile.InvestmentID });
             }
+
             return View(model);
         }
 
@@ -2253,13 +2255,13 @@ namespace EoS.Controllers
 
             if (!string.IsNullOrWhiteSpace(redirect))
             {
-                if (redirect.ToUpper().Contains("DETAILS")) return RedirectToAction("ProjectDetails", new { id }); //<-----------------Changed
+                if (redirect.ToUpper().Contains("DETAILS")) return RedirectToAction("ProfileDetails", new { id }); //<-----------------Changed
 
                 /*if (redirect == "Details")*/
                 //return RedirectToAction(, new { id }); 
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index"); //<---check user
         }
 
         // GET: Investments/Reminder

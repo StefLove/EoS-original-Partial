@@ -19,6 +19,7 @@
     }*@
 
     <div class="form-horizontal">
+
         @*<h4>MatchMaking</h4>*@
         <hr />
         @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -40,20 +41,21 @@
                 </div>
             </div>*@
 
-        @if (Model.Investments.Any())
+        @if (Model.InvestmentProfileList.Any())
         {
             <div class="form-group">
-                @Html.LabelFor(model => model.InvestmentId, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.InvestmentProfileId, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @if (Model.Investments.Count() > 1)
+                    @if (Model.InvestmentProfileList.Any())
                     {
-                        @Html.DropDownListFor(model => model.InvestmentId, (SelectList)Model.Investments, "All", new { @class = "form-control" }) @*"All"*@
+                        @Html.DropDownListFor(model => model.InvestmentProfileId, Model.InvestmentProfileList, @*"All",*@ new { @class = "form-control" }) @*"All"*@
                     }
                     else
                     {
-                        @Html.DropDownListFor(model => model.InvestmentId, (SelectList)Model.Investments, new { @class = "form-control" })
+                        @Html.Raw("No Investment profiles")
+                        @*@Html.DropDownListFor(model => model.InvestmentProfileId, Model.InvestmentProfileList, new { @class = "form-control" })*@
                     }
-                    @Html.ValidationMessageFor(model => model.InvestmentId, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.InvestmentProfileId, "", new { @class = "text-danger" })
                 </div>
             </div>
         }
@@ -62,20 +64,21 @@
             @Html.Raw("<h4 class=\"text-danger\">There are no Investment profiles to be matched with.</h4>")
         }
 
-        @if (Model.Startups.Any())
+        @if (Model.StartupProjectList.Any())
         {
             <div class="form-group">
-                @Html.LabelFor(model => model.StartupId, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.StartupProjectId, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @if (Model.Startups.Count() > 1)
+                    @if (Model.StartupProjectList.Any())
                     {
-                        @Html.DropDownListFor(model => model.StartupId, (SelectList)Model.Startups, "All", new { @class = "form-control" })
+                        @Html.DropDownListFor(model => model.StartupProjectId, Model.StartupProjectList, "All", new { @class = "form-control" })
                     }
                     else
                     {
-                        @Html.DropDownListFor(model => model.StartupId, (SelectList)Model.Startups, new { @class = "form-control" })
+                        @Html.Raw("No Startup projects")
+                        @*@Html.DropDownListFor(model => model.StartupProjectId, Model.StartupProjectList, new { @class = "form-control" })*@
                     }
-                    @Html.ValidationMessageFor(model => model.StartupId, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.StartupProjectId, "", new { @class = "text-danger" })
                 </div>
             </div>
         }
@@ -125,6 +128,16 @@
         </div>
 
         <div class="form-group"> @*5*@
+            @Html.LabelFor(model => model.TeamSkillsSelected, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.CheckBoxFor(model => model.TeamSkillsSelected)
+                    @Html.ValidationMessageFor(model => model.TeamSkillsSelected, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group"> @*6*@
             @Html.LabelFor(model => model.OutcomesSelected, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
@@ -135,7 +148,7 @@
         </div>
 
 
-        <div class="form-group"> @*6*@
+        <div class="form-group"> @*7*@
             @Html.LabelFor(model => model.InnovationLevelSelected, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
@@ -145,7 +158,7 @@
             </div>
         </div>
 
-        <div class="form-group"> @*7*@
+        <div class="form-group"> @*8*@
             @Html.LabelFor(model => model.ScalabilitySelected, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
@@ -155,17 +168,7 @@
             </div>
         </div>
 
-        <div class="form-group"> @*8*@
-            @Html.LabelFor(model => model.TeamSkillsSelected, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.CheckBoxFor(model => model.TeamSkillsSelected)
-                    @Html.ValidationMessageFor(model => model.TeamSkillsSelected, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-
-        @if (Model.Investments.Any() && Model.Startups.Any())
+        @if (Model.InvestmentProfileList.Any() && Model.StartupProjectList.Any())
         {
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">

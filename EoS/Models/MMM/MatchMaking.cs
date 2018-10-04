@@ -11,7 +11,8 @@ namespace EoS.Models.MMM
     {
         public MatchMaking()
         {
-            MaxNoOfMatches = this.GetType().GetMembers().Count() - 7; //<-------------
+            MaxNoOfMatches = 8; // this.GetType().GetMembers().Count() - 7;
+            NoOfMatches = 0;
         }
 
         [Key]
@@ -22,35 +23,37 @@ namespace EoS.Models.MMM
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd HH:mm:ss}")]
         public DateTime MatchMakingDate { get; internal set; }
 
+        [Display(Name = "Investment profile")]
         public string InvestmentId { get; set; }
         public virtual Investor.Investment Investment { get; set; }
 
+        [Display(Name = "Startup project")]
         public string StartupId { get; set; }
         public virtual IdeaCarrier.Startup Startup { get; set; }
 
         [Display(Name = "Project domain")] //1
-        public bool? ProjectDomainMatched { get; set; } //ProjectDomainsMatch
+        public bool? ProjectDomainMatched { get; set; }
 
         [Display(Name = "Funding phase")] //2
-        public bool? FundingPhaseMatched { get; set; } //FundingPhasesMatch
+        public bool? FundingPhaseMatched { get; set; }
 
         [Display(Name = "Funding amount")] //3
-        public bool? FundingAmountMatched { get; set; } //FundingAmountsMatch
+        public bool? FundingAmountMatched { get; set; }
 
         [Display(Name = "Estimated exit plan")] //4
-        public bool? EstimatedExitPlanMatched { get; set; } //EstimatedExitPlansMatch
+        public bool? EstimatedExitPlanMatched { get; set; }
 
-        [Display(Name = "Outcomes")] //5
-        public bool? OutcomesMatched { get; set; } //OutcomesMatch
+        [Display(Name = "Team skills")] //5
+        public bool? TeamSkillsMatched { get; set; }
 
-        [Display(Name = "Level of innovation")] //6
-        public bool? InnovationLevelMatched { get; set; } //InnovationLevelsMatch
+        [Display(Name = "Outcomes")] //6
+        public bool? OutcomesMatched { get; set; }
 
-        [Display(Name = "Required scalability")] //7
-        public bool? ScalabilityMatched { get; set; } //ScalabilitiesMatch
+        [Display(Name = "Level of innovation")] //7
+        public bool? InnovationLevelMatched { get; set; }
 
-        [Display(Name = "Team skills")] //8
-        public bool? TeamSkillsMatched { get; set; } //TeamSkillsMatch
+        [Display(Name = "Required scalability")] //8
+        public bool? ScalabilityMatched { get; set; }
 
         [Display(Name = "Number of matches")]
         public int NoOfMatches { get; internal set; }

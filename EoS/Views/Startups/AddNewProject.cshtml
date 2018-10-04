@@ -19,10 +19,11 @@
         <div class="form-group">
             @*@Html.LabelFor(model => model.ProjectSummary, htmlAttributes: new { @class = "control-label col-md-2" })*@
             <div class="col-md-10 col-md-offset-1">
-               @Html.TextArea("myTextArea", Model.IdeaCarrierMessage, 15, 150, new { @class = "form-control" })
+                @Html.Raw(Model.IdeaCarrierMessage)
             </div>
         </div>
 
+        <hr />
         <div class="form-group">
             <div class="col-md-offset-2">   @*ProjectName*@
                 @Html.LabelFor(model => model.StartupName, htmlAttributes: new { @class = "control-label col-md-2" })

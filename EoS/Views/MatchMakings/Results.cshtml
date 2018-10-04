@@ -57,7 +57,7 @@
             @Html.DisplayFor(modelItem => item.FundingAmountMatched)
         </td>*@
         <td>
-            @Html.DisplayFor(modelItem => item.NoOfMatches) (of @Html.DisplayNameFor(model => model.MaxNoOfMatches))
+            @Html.DisplayFor(modelItem => item.NoOfMatches) @*(of @Html.DisplayFor(modelItem => item.MaxNoOfMatches))*@
         </td>
         @*<th>
             @Html.DisplayNameFor(model => model.MaxNoOfMatches)
@@ -74,8 +74,8 @@
         }
 
             <td class="hidden-print">
-                @Html.ActionLink("Details", "Details", new { id = item.MatchMakingId }) @*|
-                @Html.ActionLink("Delete", "Delete", new { id=item.MatchMakingId }, new { @style = "color:red" })*@
+                @Html.ActionLink("Details", "Details", new { id = item.MatchMakingId }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.MatchMakingId }, new { @style = "color:red" })
             </td>
     </tr>
 }

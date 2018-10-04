@@ -409,8 +409,7 @@
                     @Html.Raw("This Project form")
                 </dt>
                 <dd>
-                    @Html.Raw("is locked&nbsp;")
-                    @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + Model.StartupID }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
+                    @Html.Raw("is locked&nbsp;") @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + Model.StartupID }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
                 </dd>
             }
             else
@@ -419,8 +418,7 @@
                     @Html.Raw("This Project form")
                 </dt>
                 <dd>
-                    @Html.Raw("is not finished.&nbsp;")
-                    @Html.ActionLink("Finish it", "ProjectForm", new { id = Model.StartupID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
+                    @Html.Raw("is not finished.&nbsp;") @Html.ActionLink("Finish it", "ProjectForm", new { id = Model.StartupID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
                 </dd>
             }
         }
@@ -446,6 +444,19 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Approved)
+            <span class="hidden-print">
+                @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && Model.Locked)
+                {
+                    if (Model.Approved)
+                    {
+                        @Html.ActionLink("Disapprove", "ChangeApproval", new { id = Model.StartupID, redirect = "Details" }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Approve", "ChangeApproval", new { id = Model.StartupID, redirect = "Details" }, new { @class = "btn btn-success", @style = "height:25px;padding:1px" })
+                    }
+                }
+            </span>
         </dd>
 
         <dt>@Html.Raw("Documents")</dt>
@@ -453,28 +464,14 @@
     </dl>
 </div>
 
-<div class="hidden-print">
-    @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && Model.Locked)
-    {
-        if (Model.Approved)
-        {
-            @Html.ActionLink("Disapprove", "ChangeApproval", new { id = Model.StartupID, redirect = "Details" }, new { @class = "btn btn-danger" })
-        }
-        else
-        {
-            @Html.ActionLink("Approve", "ChangeApproval", new { id = Model.StartupID, redirect = "Details" }, new { @class = "btn btn-success" })
-        }
-    }
-</div>
-
 <p class="hidden-print">
     @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
     {
-        @Html.ActionLink("Back to Startup projects", "Index")
+        @Html.ActionLink("Back to Startup projects", "Index", new { id = Model.UserID })
     }
     else
     {
-        @Html.ActionLink("Back to your Startup projects", "Index")
+        @Html.ActionLink("Back to your Startup projects", "Index", new { id = Model.UserID})
     }
     @* &&!ViewBag.TheOnlyProject*@
     @if (!Model.Locked && ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString())

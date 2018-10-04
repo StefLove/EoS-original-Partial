@@ -143,13 +143,8 @@ else
                 <td>
                     @Html.DisplayFor(modelItem => item.User.UserName)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.InvestmentID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProfileName)
-                </td>
-                <td>
+                
+                @*<td>
                     @Html.DisplayFor(modelItem => item.Country.CountryAbbreviation)
                 </td>
                 <td>
@@ -157,17 +152,17 @@ else
                     {
                         @Html.DisplayFor(modelItem => item.SwedishRegion.RegionName)
                     }
-                </td>
+                </td>*@
             }
-            else if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
-            {
+            @*else if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
+            {*@
                 <td>
                     @Html.DisplayFor(modelItem => item.InvestmentID)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ProfileName)
                 </td>
-            }
+            @*}*@
             <td>
                 @Html.DisplayFor(modelItem => item.ProjectDomain.ProjectDomainName)
             </td>
@@ -180,7 +175,7 @@ else
                     @if (item.Locked && item.Active && (!item.DueDate.HasValue || item.DueDate.HasValue && item.DueDate.Value.Date > DateTime.Now.Date))
                     {
                         @Html.Raw("<span class=\"visible-print\">Matchable&nbsp;</span>")
-                        @Html.ActionLink("Match", "Motor", "MatchMakings", new { id = item.InvestmentID }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
+                        @Html.ActionLink("Matchable", "Motor", "MatchMakings", new { id = item.InvestmentID }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
                     }
                     else
                     {
@@ -234,6 +229,9 @@ else
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Active)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastSavedDate)
                 </td>
             }
             else //Investor
