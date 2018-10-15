@@ -23,8 +23,8 @@ namespace EoS.Models.IdeaCarrier
         [Display(Name = "URL")]
         public string DocURL { get; set; }
 
-        public string UserId { get; set; }
-        public virtual ApplicationUser User { get; set; }
+        public string UserId { get; set; } //<---Remove?
+        public virtual ApplicationUser User { get; set; } //<---Remove?
 
         public string StartupID { get; set; }
         public virtual Startup Startup { get; set; }

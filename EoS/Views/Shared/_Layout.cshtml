@@ -50,19 +50,20 @@
             </div>
         </div>
     </div>
-    <hr />
-    @if (!User.IsInRole("Admin"))
-    {
-        <div class="container body-content">
-            @RenderBody()
-            <hr />
-            <footer>
-                <p>&copy; @DateTime.Now.Year - Enablers Of Sweden</p>
-            </footer>
-        </div>
 
-    }
-    else if (User.IsInRole("Admin"))
+    @*@if (!User.IsInRole("Admin"))
+        {
+            <div class="container body-content">
+                @RenderBody()
+                <hr />
+                <footer>
+                    <p>&copy; @DateTime.Now.Year - Enablers Of Sweden</p>
+                </footer>
+            </div>
+
+        }
+        else*@
+    @if (User.IsInRole("Admin"))
     {
         <nav class="navbar navbar-inverse" role="navigation">
             <div class="container-fluid">
@@ -125,15 +126,24 @@
                 </div>
             </div>
         </nav>
-        <hr /><br />
-        <div class="main">
-            @RenderBody()
-            <hr />
-            <footer>
-                <p>&copy; @DateTime.Now.Year - Enablers Of Sweden</p>
-            </footer>
-        </div>
+        @*<hr /><br />*@
+        @*<div class="main">
+                @RenderBody()
+                <hr />
+                <footer>
+                    <p>&copy; @DateTime.Now.Year - Enablers Of Sweden</p>
+                </footer>
+            </div>*@
     }
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Enablers Of Sweden</p>
+            <button class="btn btn-primary hidden-print" style="height:25px;padding:1px" onclick="print()">Print page</button>
+        </footer>
+    </div>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")

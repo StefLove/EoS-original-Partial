@@ -291,3 +291,6 @@ __pycache__/
 /EoS/Migrations/201806061500041_Init.resx
 /EoS/Migrations/201806061500041_Init.cs
 /EoS/Migrations/201806061500041_Init.Designer.cs
+/EoS/Migrations/201810071925240_Update.cs
+/EoS/Migrations/201810071925240_Update.resx
+/EoS/Migrations/201810071925240_Update.Designer.cs

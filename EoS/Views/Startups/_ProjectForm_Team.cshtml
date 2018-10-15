@@ -1,6 +1,6 @@
 ﻿@model EoS.Models.IdeaCarrier.StartupProjectViewModel
 
-<div class="@(ViewBag.Unanswered == "TeamMemberSize" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "TeamMemberSize" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.TeamMemberSize, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.TeamMemberSize, new { htmlAttributes = new { @class = "form-control", @placeholder = "1 to 10" } })
@@ -8,7 +8,7 @@
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "TeamExperience" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "TeamExperience" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.TeamExperience, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.TeamExperience, new { htmlAttributes = new { @class = "form-control", @placeholder = "Collective yearly knowledge, #years ", Title = "Collective yearly knowledge benefiting project, #years " } })
@@ -20,8 +20,10 @@
     @Html.LabelFor(model => model.TeamVisionShared, htmlAttributes: new { @class = "control-label col-md-4", @style = "text-align:left" })
     <div class="col-md-4 col-md-offset-0">
         <div class="checkbox">
-            @Html.EditorFor(model => model.TeamVisionShared)
-            @Html.ValidationMessageFor(model => model.TeamVisionShared, "", new { @class = "text-danger" })
+            @*@Html.EditorFor(model => model.TeamVisionShared)*@
+            @Html.RadioButton("TeamVisionShared", "Yes", Model.TeamVisionShared) Yes&nbsp;&nbsp; @*Model.TeamVisionShared.HasValue ? Model.TeamVisionShared.Value : false*@
+            @Html.RadioButton("TeamVisionShared", "No", !Model.TeamVisionShared) No              @*Model.TeamVisionShared.HasValue ? !Model.TeamVisionShared.Value : false*@
+            @*@Html.ValidationMessageFor(model => model.TeamVisionShared, "", new { @class = "text-danger" })*@
         </div>
     </div>
 </div>
@@ -30,13 +32,15 @@
     @Html.LabelFor(model => model.HaveFixedRoles, htmlAttributes: new { @class = "control-label col-md-4", @style = "text-align:left" })
     <div class="col-md-5 col-md-offset-0">
         <div class="checkbox">
-            @Html.EditorFor(model => model.HaveFixedRoles)
-            @Html.ValidationMessageFor(model => model.HaveFixedRoles, "", new { @class = "text-danger" })
+            @*@Html.EditorFor(model => model.HaveFixedRoles)*@
+            @Html.RadioButton("HaveFixedRoles", "Yes", Model.HaveFixedRoles) Yes&nbsp;&nbsp; @*Model.HaveFixedRoles.HasValue ? Model.HaveFixedRoles.Value : false*@
+            @Html.RadioButton("HaveFixedRoles", "No", !Model.HaveFixedRoles) No              @*Model.HaveFixedRoles.HasValue ? !Model.HaveFixedRoles.Value : false*@
+            @*@Html.ValidationMessageFor(model => model.HaveFixedRoles, "", new { @class = "text-danger" })*@
         </div>
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "TeamWeaknesses" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "TeamWeaknesses" ? "form-group warning" : "form-group")">
     <label class="control-label col-md-4" style="text-align:left">Weaknesses of the team</label>
     <div class="col-md-8" style="margin-left:inherit">
         <table class="borderless">
@@ -44,7 +48,7 @@
                 @{
                     foreach (var teamWeakness in Model.TeamWeaknesses)
                     {
-                        <td><input type="checkbox" name="SelectedTeamWeaknessIDs" value="@teamWeakness.WeaknessID" @(teamWeakness.Assigned ? "checked=\"checked\"" : "") /> @teamWeakness.WeaknessName</td>
+                        <td><input type="checkbox" name="TeamWeaknessIDs" value="@teamWeakness.WeaknessID" @(teamWeakness.Assigned ? "checked=\"checked\"" : "") /> @teamWeakness.WeaknessName</td>
                         @:</tr><tr>
                     }
                 }
@@ -57,26 +61,27 @@
     @Html.LabelFor(model => model.LookingForActiveInvestors, htmlAttributes: new { @class = "control-label col-md-4", @style = "text-align:left" })
     <div class="col-md-5 col-md-offset-0">
         <div class="checkbox">
-            @Html.EditorFor(model => model.LookingForActiveInvestors)
-            @Html.ValidationMessageFor(model => model.LookingForActiveInvestors, "", new { @class = "text-danger" })
+            @*@Html.EditorFor(model => model.LookingForActiveInvestors)*@
+            @Html.RadioButton("LookingForActiveInvestors", "Yes", Model.LookingForActiveInvestors) Yes&nbsp;&nbsp; @*Model.LookingForActiveInvestors.HasValue ? Model.LookingForActiveInvestors.Value : false*@
+            @Html.RadioButton("LookingForActiveInvestors", "No", !Model.LookingForActiveInvestors) No              @*Model.LookingForActiveInvestors.HasValue ? !Model.LookingForActiveInvestors.Value : false*@
+            @*@Html.ValidationMessageFor(model => model.LookingForActiveInvestors, "", new { @class = "text-danger" })*@
         </div>
     </div>
 </div>
 
-<hr />
-@if (string.IsNullOrEmpty(ViewBag.Unanswered))
+<hr class="hidden-print"/>
+@if (string.IsNullOrEmpty(Model.UnansweredQuestion))
 {
-    <div class="col-md-offset-4">
+    <div class="col-md-offset-4 hidden-print">
         <input type="button" value="Save your answers for the questions in this tab Team" class="btn btn-warning btn-sm" style="color:black;max-width:500px" onclick="SaveData()" />
     </div>
-    <div class="col-md-offset-2">
+    <div class="col-md-offset-2 hidden-print">
         <h5 class="text-danger">You have to answer all the necessary questions in all tabs before you may submit the form.</h5>
     </div>
 }
 else
 {
-    <div class="col-md-offset-4">
+    <div class="col-md-offset-4 hidden-print">
         @Html.ActionLink("Cancel submission of form", "SubmitProjectForm", new { id = Model.StartupID, cancel = true, redirect = "ProjectForm", redirectTab = "Team" }, new { @id = "cancelProjectFormSubmission", @class = "btn btn-danger" })
     </div>
 }
-

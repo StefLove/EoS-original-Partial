@@ -85,7 +85,7 @@ namespace EoS.Controllers
                         ViewBag.Matchable = false;
                         investmentProfiles = db.Investments.Where(i => !i.Locked || !i.Active || (i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) <= 0)).OrderBy(i => i.InvestmentID).ToList();
                     }
-                    //.UserRole = Role.Admin.ToString();
+                    //ViewBag.UserRole = Role.Admin.ToString();
                     //return View(investmentProfiles);
                 }
             }
@@ -112,9 +112,9 @@ namespace EoS.Controllers
                     case "INVESTMENTID": return View(investmentProfiles.OrderBy(iv => iv.InvestmentID));
                     case "PROFILENAME": return View(investmentProfiles.OrderBy(iv => iv.ProfileName));
                     case "COUNTRY": return View(investmentProfiles.OrderBy(iv => iv.Country.CountryName));
-                    case "SWEDISHREGION": return View(investmentProfiles.OrderBy(iv => iv.SwedishRegion?.RegionName));
-                    case "PROFILEDOMAINNAME": return View(investmentProfiles.OrderBy(iv => iv.ProjectDomain?.ProjectDomainName));
-                    case "MATCHMAKINGCOUNT": return View(investmentProfiles.OrderBy(iv => iv.MatchMakings?.Count()));
+                    //case "SWEDISHREGION": return View(investmentProfiles.OrderBy(iv => iv.SwedishRegion.RegionName));
+                    case "PROFILEDOMAINNAME": return View(investmentProfiles.OrderBy(iv => iv.ProjectDomain.ProjectDomainName));
+                    case "MATCHMAKINGCOUNT": return View(investmentProfiles.OrderByDescending(iv => iv.MatchMakings.Count()));
                     case "LASTSAVEDDATE": return View(investmentProfiles.OrderByDescending(iv => iv.LastSavedDate));
                     case "DUEDATE": return View(investmentProfiles.OrderByDescending(iv => iv.DueDate));
                     case "CREATEDDATE": return View(investmentProfiles.OrderByDescending(iv => iv.CreatedDate));
@@ -162,17 +162,12 @@ namespace EoS.Controllers
 
             AddNewProfileViewModel newProfileModel = new AddNewProfileViewModel()
             {
+                ProfileName = "",
                 InvestorMessage = db.InvestorMessages.FirstOrDefault().Text,
                 CountryList = new SelectList(db.Countries, "CountryID", "CountryName"),
                 SwedishCountryID = db.Countries.Where(c => c.CountryName == "Sweden").Select(u => u.CountryID).Single(),
                 SwedishRegionList = new SelectList(db.SwedishRegions, "RegionID", "RegionName")
             };
-
-            //these ViewBags for dropdownlist for create view that handle the selection options
-            //ViewBag.CountryId = new SelectList(db.Countries, "CountryID", "CountryName");
-            //ViewBag.RegionsId = new SelectList(db.SwedishRegions, "RegionID", "RegionName");
-            //ViewBag.SwedishCountryId = db.Countries.Where(c => c.CountryName == "Sweden").Select(u => u.CountryID).Single();
-            //ViewBag.InvestorMessage = db.InvestorMessages.Where(m => m.Id == 1).Select(m => m.Text).Single().ToString();
 
             return View(newProfileModel);
         }
@@ -186,13 +181,6 @@ namespace EoS.Controllers
         //public async Task<ActionResult> AddNewProfile([Bind(Include = "ProfileName,CountryID,SwedishRegionID")] Investment investment, string submitCommand)
         public async Task<ActionResult> AddNewProfile(AddNewProfileViewModel newProfileModel, string submit_command)
         {
-            //if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit"))
-            //{   //if user submit the form, lock it for editable
-            //this must be before ModelState.IsValid
-            //    investment.Locked = true;
-            //    TryValidateModel(investment);
-            //}
-
             if (ModelState.IsValid)
             {
                 string countryAbbreviation = db.Countries.Find(newProfileModel.CountryID).CountryAbbreviation;
@@ -222,18 +210,10 @@ namespace EoS.Controllers
                     Active = true
                 };
                                
-                //var userInvestments = db.Investments.Where(i => i.UserId == UserId);
                 if (db.Investments.Where(i => i.UserId == UserId).Any()) newInvestmentProfile.DueDate = DateTime.Now.Date.AddDays(-1);
 
                 db.Investments.Add(newInvestmentProfile);
                 db.SaveChanges();
-            
-                //if (investment.Active) //<--------remove
-                //{
-                    //if (investment.Locked) ?
-                    //investment.DueDate = DateTime.Now;
-
-                //SendEmailToAdmins();
 
                     var smtpClients = db.SmtpClients.ToList();
 
@@ -281,6 +261,7 @@ namespace EoS.Controllers
 
                 if (!string.IsNullOrEmpty(submit_command) && submit_command.StartsWith("Proceed")) //<-----------"Proceed to the Profile form"
                 {
+                    //TempData["is_new_profile"] = true;
                     return RedirectToAction("ProfileForm", new { id = newInvestmentProfile.InvestmentID }); // "Investments",
                 }
                 else
@@ -289,13 +270,8 @@ namespace EoS.Controllers
                 }
             }
 
-            //these ViewBags for dropdownlist for create view that handle the selection options
-            //model.CountryId = new SelectList(db.Countries, "CountryID", "CountryName");
-            //model.RegionsId = new SelectList(db.SwedishRegions, "RegionID", "RegionName");
-            //model.SwedishCountryId = db.Countries.Where(c => c.CountryName == "Sweden").Select(u => u.CountryID).Single();
-            //model.InvestorMessage = db.InvestorMessages.Where(m => m.Id == 1).Select(m => m.Text).Single().ToString();
-
-            newProfileModel.InvestorMessage = db.InvestorMessages.Where(m => m.Id == 1).Select(m => m.Text).Single().ToString();
+            newProfileModel.ProfileName = "";
+            newProfileModel.InvestorMessage = db.InvestorMessages.FirstOrDefault().Text;
             newProfileModel.CountryList = new SelectList(db.Countries, "CountryID", "CountryName");
             newProfileModel.SwedishCountryID = db.Countries.Where(c => c.CountryName == "Sweden").Select(u => u.CountryID).Single();
             newProfileModel.SwedishRegionList = new SelectList(db.SwedishRegions, "RegionID", "RegionName");
@@ -305,7 +281,7 @@ namespace EoS.Controllers
 
         // GET: Investments/ProfileForm/5
         [Authorize(Roles = "Admin, Investor")]
-        public ActionResult ProfileForm(string id) //, string tab = "Profile")
+        public ActionResult ProfileForm(string id)
         {
             if (User.IsInRole(Role.Admin.ToString())) return RedirectToAction("EditAdmin", new { id });
 
@@ -321,27 +297,21 @@ namespace EoS.Controllers
             }
 
             if (investmentProfile.Locked) return RedirectToAction("ProfileDetails", new { id });
-            
-            ViewBag.Message = "";
-            //ViewBag.Tab = "";
-            ViewBag.Unanswered = "";
+
+            string message = "";
+            string unansweredQuestion = "";
+            //bool isNewProfile = false; //<----------??
 
             if (TempData.Any())
             {
-                if (TempData.ContainsKey("message")) ViewBag.Message = TempData["message"] as string;
+                if (TempData.ContainsKey("message")) message = TempData["message"] as string;
                 //if (TempData.ContainsKey("tab")) ViewBag.Tab = TempData["tab"] as string;
-                if (TempData.ContainsKey("unanswered")) ViewBag.Unanswered = TempData["unanswered"] as string;
+                if (TempData.ContainsKey("unanswered")) unansweredQuestion = TempData["unanswered"] as string;
+                //if (TempData.ContainsKey("is_new_profile")) isNewProfile = TempData["is_new_profile"] as bool? ?? false;
                 TempData.Clear();
             }
 
-            //These viewBags to handel the current values of the investment properties if exist and provide by other selections
-            //ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", investment.ProjectDomainID != null ? investment.ProjectDomainID : null);
-
-            //Get the already checked value if it exists
-            //PopulateAssignedCheckBoxsData(investment); //<------to be removed
-
-            //return View(investment);
-            return View(GetInvestmentProfileViewModel(investmentProfile));
+            return View(GetInvestmentProfileViewModel(investmentProfile, false, message, unansweredQuestion/*, isNewProfile*/));
         }
 
         // POST: Investments/ProfileForm/5
@@ -349,52 +319,10 @@ namespace EoS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Investor")] //CreatedDate,
-        //public ActionResult ProfileForm([Bind(Include = "InvestmentID,UserId,CountryID,SwedishRegionID,ProfileName,ProjectDomainID,FutureFundingNeeded,EstimatedBreakEven,TeamMemberSizeMoreThanOne,TeamHasExperience,ActiveInvestor,PossibleIncomeStreams,LastSavedDate,DueDate,Locked,LastLockedDate,Active")] Investment investment,
-        //    string[] SelectedFundingPhases, string[] SelectedFundingAmounts, string[] SelectedEstimatedExitPlans, string[] SelectedTeamSkills, string[] SelectedOutcomes, string[] SelectedInnovationLevels, string[] SelectedScalabilities, string ActiveTab/*, string submitCommand*/)
+        [Authorize(Roles = "Investor")]
         public ActionResult ProfileForm(InvestmentProfilePostViewModel profilePostModel)
         {
-            //Investment currentInvestment = db.Investments.Find(investment.InvestmentID);
-            //if (db.Investments.Find(investment.InvestmentID).Locked)
-            //if (IsLocked(investment.InvestmentID)) return RedirectToAction("ProfileDetails", new { id = investment.InvestmentID }); //<----------
-
-            //if (!string.IsNullOrEmpty(submitCommand) && submitCommand.ToUpper().StartsWith("SUBMIT"))
-            //{   //if user submit the form, lock it for editable
-            //this must be before ModelState.IsValid
-
-            //  investment.Locked = true;
-
-            //
-            //   if (selectedFundingAmount == null) //!selectedFundingAmount.Any()
-            //   {
-            //       ModelState.AddModelError("FundingAmounts", "Select at least one Funding amount");
-            //   }
-            //   if (selectedFundingPhases == null)
-            //   {
-            //       ModelState.AddModelError("FundingPhases", "Select at least one Funding phase");
-            //   }
-            //   if (selectedOutcomes == null)
-            //   {
-            //       ModelState.AddModelError("Outcomes", "Select at least one Outcome");
-            //   }
-            //   if (selectedInnovationLevels == null)
-            //   {
-            //       ModelState.AddModelError("InnovationLevels", "Select at least one Level of innovation");
-            //   }
-            //   if (selectedScalabilities == null)
-            //   {
-            //       ModelState.AddModelError("Scalabilities", "Select at least one Scalability");
-            //   }
-            //   if (selectedEstimatedExitPlans == null)
-            //   {
-            //       ModelState.AddModelError("EstimatedExitPlans", "Select at least one Estimated exit plan");
-            //   } 
-            //   TryValidateModel(investment);
-            //}
-
-            //InvestmentProfileGetViewModel getModel = new InvestmentProfileGetViewModel();
-
-            bool updated = false;
+            bool updated = true;
 
             Investment investmentProfile = db.Investments.Find(profilePostModel.InvestmentID);
 
@@ -404,128 +332,223 @@ namespace EoS.Controllers
                 {
                     investmentProfile.LastSavedDate = DateTime.Now.Date;
                     db.Entry(investmentProfile).State = EntityState.Modified;
-                    db.SaveChanges();
-                    updated = true;
+
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Message = ex.Message;
+                        updated = false;
+                    }
                 }
 
-
-                //Funding
-                //UpdateFundingPhases(selectedFundingPhases, investmentProfile);
-                //UpdateFundingAmount(selectedFundingAmount, investmentProfile);
-                //Budget
-                //UpdateEstimatedExitPlans(selectedEstimatedExitPlans, investmentProfile);
-                //Team
-                //UpdateTeamSkills(selectedTeamSkills, investmentProfile)
-                //Outcome
-                //UpdateInnovationLevels(selectedInnovationLevels, investmentProfile);
-                //UpdateScalabilities(selectedScalabilities, investmentProfile);
-
-                //To be removed
-                //UpdateInvestmentCheckBoxesData(SelectedTeamSkills, SelectedFundingAmounts, SelectedFundingPhases, SelectedOutcomes, SelectedInnovationLevels, SelectedScalabilities, SelectedEstimatedExitPlans, investment);
-                //selectedFundingPhases, selectedFundingAmount, selectedEstimatedExitPlans, selectedTeamSkills, selectedOutcomes, selectedInnovationLevels, selectedScalabilities))
-                //DateTime currentDate = DateTime.Now.Date;
-
-                //db.Entry(investmentProfile).State = EntityState.Modified;
-                //db.SaveChanges();
-
-                //if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit"))
-                //currentInvestment = db.Investments.Find(investment.InvestmentID);
-
-                //if (db.Investments.Find(investment.InvestmentID).Locked) return RedirectToAction("ProfileDetails", new { id = investment.InvestmentID });
-
             }
-            else ModelState.AddModelError("", "Validation Error !!");
+            else
+            {
+                ModelState.AddModelError("", "Validation Error !!");
+                updated = false;
+            }
 
-            //if (IsLocked(investment.InvestmentID)) return RedirectToAction("ProfileDetails", new { id = investment.InvestmentID });
-
-            //ViewBag.Message = "";
-            //ViewBag.Tab = profilePostModel.ActiveTab; //<-------------
-            //ViewBag.Unanswered = "";
-
-            //These viewBags to handel the current values of the investment properties if exist and provide by other selections
-
-            //ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", investment.ProjectDomainID != null ? investment.ProjectDomainID : null); //<-------------simplify!!
-            //getModel.ProjectDomainIdSelectList = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", investment.ProjectDomainID);
-
-            //Get the already checked value again if it exists to pass the ViewBags
-            //PopulateAssignedCheckBoxsData(investment, SelectedTeamSkills, SelectedFundingAmounts, SelectedFundingPhases, SelectedOutcomes, SelectedInnovationLevels, SelectedScalabilities, SelectedEstimatedExitPlans); //<--to be removed
-
-            //return View(investment);
-
-            return View(GetInvestmentProfileViewModel(investmentProfile, updated)); //, profilePostModel.ActiveTab, updated) //db.Investments.Find(profilePostModel.InvestmentID)
+            return View(GetInvestmentProfileViewModel(investmentProfile, updated));
         }
 
-        private InvestmentProfileViewModel GetInvestmentProfileViewModel(Investment investmentProfile, bool updated = false) //, string ActiveTab, bool updated = false)
+        private InvestmentProfileViewModel GetInvestmentProfileViewModel(Investment investmentProfile, bool updated = false, string message = "", string unansweredQuestion = ""/*, bool isNewProfile = false*/)
         {
             if (investmentProfile == null) return new InvestmentProfileViewModel(); //return empty ViewModel
             
-            return new InvestmentProfileViewModel() //InvestmentProfileGetViewModel()
+            return new InvestmentProfileViewModel()
             {
                 InvestmentID = investmentProfile.InvestmentID,
 
                 //Profile
                 ProfileName = investmentProfile.ProfileName,
                 ProfileDomainID = investmentProfile.ProjectDomainID,
-                ProfileDomainList = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName"/*, investment.ProjectDomainID*/),
+                ProfileDomainList = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName"),
 
                 //Funding
                 FundingPhases = GetFundingPhases(investmentProfile),
-                //FundingPhasesUnanswered = !investmentProfile.FundingPhases.Any(),
                 FundingAmounts = GetFundingAmounts(investmentProfile),
-                //FundingAmountsUnanswered = !investmentProfile.FundingAmounts.Any(),
-                FutureFundingNeeded = investmentProfile.FutureFundingNeeded,
+                FutureFundingNeeded = investmentProfile.FutureFundingNeeded, //!isNewProfile ? investmentProfile.FutureFundingNeeded : null,
 
                 //Budget
                 EstimatedExitPlans = GetEstimatedExitPlans(investmentProfile),
-                //EstimatedExitPlansUnanswered = !investmentProfile.EstimatedExitPlans.Any(),
                 EstimatedBreakEven = investmentProfile.EstimatedBreakEven,
                 PossibleIncomeStreams = investmentProfile.PossibleIncomeStreams,
 
                 //Team
-                TeamHasExperience = investmentProfile.TeamHasExperience,
-                TeamMemberSizeMoreThanOne = investmentProfile.TeamMemberSizeMoreThanOne,
-                ActiveInvestor = investmentProfile.ActiveInvestor,
+                TeamMemberSizeMoreThanOne = investmentProfile.TeamMemberSizeMoreThanOne, //!isNewProfile ? investmentProfile.TeamMemberSizeMoreThanOne : null,
+                TeamHasExperience = investmentProfile.TeamHasExperience, //!isNewProfile ? investmentProfile.TeamHasExperience : null,
+                ActiveInvestor = investmentProfile.ActiveInvestor, //!isNewProfile ? investmentProfile.ActiveInvestor : null,
                 TeamSkills = GetTeamSkills(investmentProfile),
-                //TeamSkillsUnanswered = !investmentProfile.TeamSkills.Any(),
 
                 //Outcome
                 Outcomes = GetOutcomes(investmentProfile),
-                //OutcomesUnanswered = !investmentProfile.Outcomes.Any(),
                 InnovationLevels = GetInnovationLevels(investmentProfile),
-                //InnovationLevelsUnanswered = !investmentProfile.InnovationLevels.Any(),
                 Scalabilities = GetScalabilities(investmentProfile),
-                //ScalabiltiesUnanswered = !investmentProfile.investmentProfile.Scalabilities.Any(),
 
-                Updated = updated
+                Updated = updated,
 
-                //AllQuestionsAnswered = GetAllQuestionsAnswered(investmentProfile)
+                Message = message,
+                UnansweredQuestion = unansweredQuestion
             };
         }
 
-        //private bool GetAllQuestionsAnswered(Investment investmentProfile)
-        //{
-        //    return //investmentProfile.DueDate.HasValue &&
+        //Funding
+        private List<InvestorFundingPhaseViewModel> GetFundingPhases(Investment investmentProfile)
+        {
+            List<InvestorFundingPhaseViewModel> fundingPhaseViewModels = new List<InvestorFundingPhaseViewModel>();
 
-        //        !string.IsNullOrEmpty(investmentProfile.ProfileName) &&
-        //        investmentProfile.ProjectDomainID.HasValue; //&&
+            List<int> profileFundingPhaseIDList = investmentProfile.FundingPhases.Select(fp => fp.FundingPhaseID).ToList();
 
-        //        //investmentProfile.FundingPhases.Any() &&
-        //        //investmentProfile.FundingAmounts.Any() &&
-        //        ////investmentProfile.FutureFundingNeeded.HasValue &&
+            List<FundingPhase> fundingPhases = db.FundingPhases.ToList();
+            foreach (var phase in fundingPhases)
+            {
+                fundingPhaseViewModels.Add(new InvestorFundingPhaseViewModel
+                {
+                    FundingPhaseID = phase.FundingPhaseID,
+                    FundingPhaseName = phase.FundingPhaseName,
+                    //Assigned = currentFundingPhaseIDList.Contains(phase.FundingPhaseID)
+                    Assigned = profileFundingPhaseIDList.Any() ? profileFundingPhaseIDList.Contains(phase.FundingPhaseID) : false
+                });
+            }
+            //}
 
-        //        //investmentProfile.EstimatedExitPlans.Any() &&
-        //        //investmentProfile.EstimatedBreakEven.HasValue &&               
-        //        //investmentProfile.PossibleIncomeStreams.HasValue &&
+            return fundingPhaseViewModels;
+        }
+        private List<InvestorFundingAmountViewModel> GetFundingAmounts(Investment investmentProfile)
+        {
+            List<InvestorFundingAmountViewModel> fundingAmountViewModels = new List<InvestorFundingAmountViewModel>();
 
-        //        ////investmentProfile.TeamMemberSizeMoreThanOne.HasValue &&
-        //        ////investmentProfile.TeamHasExperience.HasValue &&
-        //        ////investmentProfile.ActiveInvestor.HasValue &&
-        //        //investmentProfile.TeamSkills.Any() &&
+            List<int> profileFundingAmountIDList = investmentProfile.FundingAmounts.Select(fa => fa.FundingAmountID).ToList();
 
-        //        //investmentProfile.Outcomes.Any() &&
-        //        //investmentProfile.InnovationLevels.Any() &&
-        //        //investmentProfile.Scalabilities.Any();
-        //}
+            List<FundingAmount> fundingAmounts = db.FundingAmounts.ToList();
+            foreach (var amount in fundingAmounts)
+            {
+                fundingAmountViewModels.Add(new InvestorFundingAmountViewModel
+                {
+                    FundingAmountID = amount.FundingAmountID,
+                    FundingAmountValue = amount.FundingAmountValue,
+                    //Assigned = currentFundingAmountIDList.Contains(amount.FundingAmountID)
+                    Assigned = profileFundingAmountIDList.Any() ? profileFundingAmountIDList.Contains(amount.FundingAmountID) : false
+                });
+            }
+            //}
+
+            return fundingAmountViewModels;
+        }
+
+        //Budget
+        private List<InvestorEstimatedExitPlanViewModel> GetEstimatedExitPlans(Investment investmentProfile)
+        {
+            List<InvestorEstimatedExitPlanViewModel> estimatedExitPlanViewModels = new List<InvestorEstimatedExitPlanViewModel>();
+
+            List<int> profileEstimatedExitPlanIDList = investmentProfile.EstimatedExitPlans.Select(eep => eep.EstimatedExitPlanID).ToList();
+
+            List<EstimatedExitPlan> estimatedExitPlans = db.EstimatedExitPlans.ToList();
+            foreach (var exitPlan in estimatedExitPlans)
+            {
+                estimatedExitPlanViewModels.Add(new InvestorEstimatedExitPlanViewModel
+                {
+                    EstimatedExitPlanID = exitPlan.EstimatedExitPlanID,
+                    EstimatedExitPlanName = exitPlan.EstimatedExitPlanName,
+                    //Assigned = currentEstimatedExitPlanIDList.Contains(exitPlan.EstimatedExitPlanID)
+                    Assigned = profileEstimatedExitPlanIDList.Any() ? profileEstimatedExitPlanIDList.Contains(exitPlan.EstimatedExitPlanID) : false
+                });
+            }
+            //}
+
+            return estimatedExitPlanViewModels;
+        }
+
+        //Team
+        private List<TeamSkillViewModel> GetTeamSkills(Investment investmentProfile)
+        {
+            List<TeamSkillViewModel> teamSkillViewModels = new List<TeamSkillViewModel>();
+
+            List<int> profileTeamSkillIDList = investmentProfile.TeamSkills.Select(ts => ts.SkillID).ToList();
+
+            List<TeamSkill> teamSkills = db.TeamSkills.ToList();
+            foreach (var teamSkill in teamSkills)
+            {
+                teamSkillViewModels.Add(new TeamSkillViewModel
+                {
+                    SkillID = teamSkill.SkillID,
+                    SkillName = teamSkill.SkillName,
+                    //Assigned = currentTeamSkillIDList.Contains(skill.SkillID)
+                    Assigned = profileTeamSkillIDList.Any() ? profileTeamSkillIDList.Contains(teamSkill.SkillID) : false
+                });
+            }
+            //}
+
+            return teamSkillViewModels;
+        }
+
+        //Outcome
+        private List<InvestorOutcomeViewModel> GetOutcomes(Investment investmentProfile)
+        {
+            List<InvestorOutcomeViewModel> outcomeViewModels = new List<InvestorOutcomeViewModel>();
+
+            List<int> profileOutcomeIDList = investmentProfile.Outcomes.Select(o => o.OutcomeID).ToList();
+
+            List<Models.Shared.Outcome> outcomes = db.Outcomes.ToList();
+            foreach (var outcome in outcomes)
+            {
+                outcomeViewModels.Add(new InvestorOutcomeViewModel
+                {
+                    OutcomeID = outcome.OutcomeID,
+                    OutcomeName = outcome.OutcomeName,
+                    //Assigned = currentOutcomeIDList.Contains(outcome.OutcomeID)
+                    Assigned = profileOutcomeIDList.Any() ? profileOutcomeIDList.Contains(outcome.OutcomeID) : false
+                });
+            }
+            //}
+
+            return outcomeViewModels;
+        }
+        private List<InvestorInnovationLevelViewModel> GetInnovationLevels(Investment investmentProfile)
+        {
+            List<InvestorInnovationLevelViewModel> innovationLevelViewModels = new List<InvestorInnovationLevelViewModel>();
+
+            List<int> profileInnovationLevelIDList = investmentProfile.InnovationLevels.Select(il => il.InnovationLevelID).ToList();
+
+            List<InnovationLevel> innovationLevels = db.InnovationLevels.ToList();
+            foreach (var innovationlevel in innovationLevels)
+            {
+                innovationLevelViewModels.Add(new InvestorInnovationLevelViewModel
+                {
+                    InnovationLevelID = innovationlevel.InnovationLevelID,
+                    InnovationLevelName = innovationlevel.InnovationLevelName,
+                    //Assigned = currentInnovationLevelIDList.Contains(innovationlevel.InnovationLevelID)
+                    Assigned = profileInnovationLevelIDList.Any() ? profileInnovationLevelIDList.Contains(innovationlevel.InnovationLevelID) : false
+                });
+            }
+            //}
+
+            return innovationLevelViewModels;
+        }
+        private List<InvestorScalabilityViewModel> GetScalabilities(Investment investmentProfile)
+        {
+            List<InvestorScalabilityViewModel> scalabilityViewModels = new List<InvestorScalabilityViewModel>();
+
+            List<int> profileScalabilityIDList = investmentProfile.Scalabilities.Select(sc => sc.ScalabilityID).ToList();
+
+            List<Scalability> scalabilities = db.Scalabilities.ToList();
+            foreach (var scalability in scalabilities)
+            {
+                scalabilityViewModels.Add(new InvestorScalabilityViewModel
+                {
+                    ScalabilityID = scalability.ScalabilityID,
+                    ScalabilityName = scalability.ScalabilityName,
+                    //Assigned = currentScalabilityIDList.Contains(scalability.ScalabilityID)
+                    Assigned = profileScalabilityIDList.Any() ? profileScalabilityIDList.Contains(scalability.ScalabilityID) : false
+                });
+            }
+            //}
+
+            return scalabilityViewModels;
+        }
 
         private bool UpdateActiveTab(Investment investmentProfile, InvestmentProfilePostViewModel profilePostModel)
         {
@@ -569,31 +592,50 @@ namespace EoS.Controllers
         {
             bool updated = false;
             
-            updated = UpdateFundingPhases(profilePostModel.SelectedFundingPhaseIDs, investmentProfile);
-            //if (UpdateTeamSkills(profilePostModel.SelectedTeamSkillIDs, investmentProfile) && !updated) updated = true;
-           if(UpdateFundingAmounts(profilePostModel.SelectedFundingAmountIDs, investmentProfile) && !updated) updated= true;
+            updated = UpdateFundingPhases(profilePostModel.FundingPhaseIDs, investmentProfile);
+            
+            if (UpdateFundingAmounts(profilePostModel.FundingAmountIDs, investmentProfile) && !updated) updated= true;
 
-            if (investmentProfile.FutureFundingNeeded != profilePostModel.FutureFundingNeeded)
+            if (!string.IsNullOrEmpty(profilePostModel.FutureFundingNeeded))
             {
-                investmentProfile.FutureFundingNeeded = profilePostModel.FutureFundingNeeded;
+                bool postedFutureFundingNeeded = profilePostModel.FutureFundingNeeded.ToUpper() == "YES";
+                if (postedFutureFundingNeeded && !investmentProfile.FutureFundingNeeded) // && profilePostModel.FutureFundingNeeded.HasValue && !profilePostModel.FutureFundingNeeded.Value
+                {
+                    investmentProfile.FutureFundingNeeded = true;
+                    updated = true;
+                }
+                else if (!postedFutureFundingNeeded && investmentProfile.FutureFundingNeeded) // && profilePostModel.FutureFundingNeeded.HasValue && !profilePostModel.FutureFundingNeeded.Value
+                {
+                    investmentProfile.FutureFundingNeeded = false;
+                    updated = true;
+                }
+            }
+            else if (investmentProfile.FutureFundingNeeded) //!profilePostModel.FutureFundingNeeded.HasValue (bool?)
+            {
+                investmentProfile.FutureFundingNeeded = false; //profilePostModel.FutureFundingNeeded = null;
                 updated = true;
             }
+            //if (investmentProfile.FutureFundingNeeded != profilePostModel.FutureFundingNeeded)
+            //{
+            //    investmentProfile.FutureFundingNeeded = profilePostModel.FutureFundingNeeded;
+            //     updated = true;
+            //}
 
             return updated;
         }
 
-        private bool UpdateFundingPhases(string[] selectedFundingPhaseIDs, Investment investmentProfile) //<-----------finished
+        private bool UpdateFundingPhases(string[] postedFundingPhaseIDs, Investment investmentProfile) //<-----------finished
         {
             bool updated = false;
 
-            if (selectedFundingPhaseIDs != null)
+            if (postedFundingPhaseIDs != null)
             {
-                List<int> selectedFundingPhaseIDList = Array.ConvertAll(selectedFundingPhaseIDs, s => int.Parse(s)).ToList();
+                List<int> postedFundingPhaseIDList = Array.ConvertAll(postedFundingPhaseIDs, s => int.Parse(s)).ToList();
 
                 List<FundingPhase> profileFundingPhases = investmentProfile.FundingPhases.ToList();
                 foreach (FundingPhase profileFundingPhase in profileFundingPhases)
                 {
-                    if (!selectedFundingPhaseIDList.Contains(profileFundingPhase.FundingPhaseID))
+                    if (!postedFundingPhaseIDList.Contains(profileFundingPhase.FundingPhaseID))
                     {
                         investmentProfile.FundingPhases.Remove(profileFundingPhase);
                         updated = true;
@@ -602,9 +644,9 @@ namespace EoS.Controllers
 
                 List<FundingPhase> fundingPhases = db.FundingPhases.ToList();
                 FundingPhase fundingPhase = null;
-                foreach (int selectedFundingPhaseID in selectedFundingPhaseIDList)
+                foreach (int postedFundingPhaseID in postedFundingPhaseIDList)
                 {
-                    fundingPhase = fundingPhases.Where(fa => fa.FundingPhaseID == selectedFundingPhaseID).FirstOrDefault();
+                    fundingPhase = fundingPhases.Where(fa => fa.FundingPhaseID == postedFundingPhaseID).FirstOrDefault();
 
                     if (!investmentProfile.FundingPhases.Contains(fundingPhase))
                     {
@@ -613,56 +655,27 @@ namespace EoS.Controllers
                     }
                 }
             }
-            else //if (selectedFundingPhaseIDs == null)
+            else //if (postedFundingPhaseIDs == null)
             {
                 investmentProfile.FundingPhases.Clear();
                 updated = true;
             }
 
-            //if (selectedFundingPhaseIDs != null)
-            //{
-            //    List<int> selectedFundingPhaseIDList = Array.ConvertAll(selectedFundingPhaseIDs, s => int.Parse(s)).ToList();
-
-            //    List<int> currentFundingPhaseIDList = investmentProfile.FundingPhases.Select(fp => fp.FundingPhaseID).ToList();
-
-            //    List<Models.Shared.FundingPhase> fundingPhases = db.FundingPhases.ToList();
-
-            //    foreach (var phase in fundingPhases)
-            //    {
-            //        if (selectedFundingPhaseIDList.Contains(phase.FundingPhaseID) && !currentFundingPhaseIDList.Contains(phase.FundingPhaseID))
-            //        {
-            //            investmentProfile.FundingPhases.Add(phase);
-            //            updated = true;
-            //        }
-            //        else if (currentFundingPhaseIDList.Contains(phase.FundingPhaseID) && investmentProfile.FundingPhases.Remove(phase))
-            //            updated = true;
-            //    }
-            //}
-            //else if (investmentProfile.FundingPhases.Any())
-            //{
-            //    List<Models.Shared.FundingPhase> fundingPhases = db.FundingPhases.ToList();
-
-            //    foreach (var phase in fundingPhases)
-            //    {
-            //        if (investmentProfile.FundingPhases.Remove(phase)) updated = true;
-            //    }
-            //}
-
             return updated;
         }
 
-        private bool UpdateFundingAmounts(string[] selectedFundingAmountIDs, Investment investmentProfile) //<---------finished
+        private bool UpdateFundingAmounts(string[] postedFundingAmountIDs, Investment investmentProfile) //<---------finished
         {
             bool updated = false;
 
-            if (selectedFundingAmountIDs != null)
+            if (postedFundingAmountIDs != null)
             {
-                List<int> selectedFundingAmountIDList = Array.ConvertAll(selectedFundingAmountIDs, s => int.Parse(s)).ToList();
+                List<int> postedFundingAmountIDList = Array.ConvertAll(postedFundingAmountIDs, s => int.Parse(s)).ToList();
 
                 List<FundingAmount> profileFundingAmounts = investmentProfile.FundingAmounts.ToList();
                 foreach (FundingAmount profileFundingAmount in profileFundingAmounts)
                 {
-                    if (!selectedFundingAmountIDList.Contains(profileFundingAmount.FundingAmountID))
+                    if (!postedFundingAmountIDList.Contains(profileFundingAmount.FundingAmountID))
                     {
                         investmentProfile.FundingAmounts.Remove(profileFundingAmount);
                         updated = true;
@@ -671,9 +684,9 @@ namespace EoS.Controllers
 
                 List<FundingAmount> fundingAmounts = db.FundingAmounts.ToList();
                 FundingAmount fundingAmount = null;
-                foreach (int selectedFundingAmountID in selectedFundingAmountIDList)
+                foreach (int postedFundingAmountID in postedFundingAmountIDList)
                 {
-                    fundingAmount = fundingAmounts.Where(fa => fa.FundingAmountID == selectedFundingAmountID).FirstOrDefault();
+                    fundingAmount = fundingAmounts.Where(fa => fa.FundingAmountID == postedFundingAmountID).FirstOrDefault();
 
                     if (!investmentProfile.FundingAmounts.Contains(fundingAmount))
                     {
@@ -682,49 +695,20 @@ namespace EoS.Controllers
                     }
                 }
             }
-            else //if (selectedFundingAmountIDs == null)
+            else //if (postedFundingAmountIDs == null)
             {
                 investmentProfile.FundingAmounts.Clear();
                 updated = true;
             }
 
-            //if (selectedFundingAmountIDs != null)
-            //{
-            //    List<int> selectedFundingAmountIDList = Array.ConvertAll(selectedFundingAmountIDs, s => int.Parse(s)).ToList();
-
-            //    List<int> currentFundingAmountIDList = investmentProfile.FundingAmounts.Select(fa => fa.FundingAmountID).ToList();
-
-            //    List<Models.Shared.FundingAmount> fundingAmounts = db.FundingAmounts.ToList();
-
-            //    foreach (var amount in fundingAmounts)
-            //    {
-            //        if (selectedFundingAmountIDList.Contains(amount.FundingAmountID) && !currentFundingAmountIDList.Contains(amount.FundingAmountID))
-            //        {
-            //            investmentProfile.FundingAmounts.Add(amount);
-            //            updated = true;
-            //        }
-            //        else if (currentFundingAmountIDList.Contains(amount.FundingAmountID) && investmentProfile.FundingAmounts.Remove(amount))
-            //            updated = true;
-            //    }
-            //}
-            //else if (investmentProfile.FundingAmounts.Any())
-            //{
-            //    List<Models.Shared.FundingAmount> fundingAmounts = db.FundingAmounts.ToList();
-
-            //    foreach (var amount in fundingAmounts)
-            //    {
-            //        if (investmentProfile.FundingAmounts.Remove(amount)) updated = true;
-            //    }
-            //}
-
             return updated;
         }
 
-        private bool UpdateTabBudget(Investment investmentProfile, InvestmentProfilePostViewModel profilePostModel/*, string[] selectedEstimatedExitPlans*/)
+        private bool UpdateTabBudget(Investment investmentProfile, InvestmentProfilePostViewModel profilePostModel/*, string[] postedEstimatedExitPlans*/)
         {
             bool updated = false;
             
-            updated = UpdateEstimatedExitPlans(profilePostModel.SelectedEstimatedExitPlanIDs, investmentProfile);
+            updated = UpdateEstimatedExitPlans(profilePostModel.EstimatedExitPlanIDs, investmentProfile);
 
             if (investmentProfile.EstimatedBreakEven != profilePostModel.EstimatedBreakEven)
             {
@@ -741,18 +725,18 @@ namespace EoS.Controllers
             return updated;
         }
 
-        private bool UpdateEstimatedExitPlans(string[] selectedEstimatedExitPlanIDs, Investment investmentProfile) //<-------finished
+        private bool UpdateEstimatedExitPlans(string[] postedEstimatedExitPlanIDs, Investment investmentProfile) //<-------finished
         {
             bool updated = false;
 
-            if (selectedEstimatedExitPlanIDs != null)
+            if (postedEstimatedExitPlanIDs != null)
             {
-                List<int> selectedEstimatedExitplanIDList = Array.ConvertAll(selectedEstimatedExitPlanIDs, s => int.Parse(s)).ToList();
+                List<int> postedEstimatedExitplanIDList = Array.ConvertAll(postedEstimatedExitPlanIDs, s => int.Parse(s)).ToList();
 
                 List<EstimatedExitPlan> profileEstimatedExitplans = investmentProfile.EstimatedExitPlans.ToList();
                 foreach (EstimatedExitPlan profileEstimatedExitplan in profileEstimatedExitplans)
                 {
-                    if (!selectedEstimatedExitplanIDList.Contains(profileEstimatedExitplan.EstimatedExitPlanID))
+                    if (!postedEstimatedExitplanIDList.Contains(profileEstimatedExitplan.EstimatedExitPlanID))
                     {
                         investmentProfile.EstimatedExitPlans.Remove(profileEstimatedExitplan);
                         updated = true;
@@ -761,9 +745,9 @@ namespace EoS.Controllers
 
                 List<EstimatedExitPlan> estimatedExitplans = db.EstimatedExitPlans.ToList();
                 EstimatedExitPlan estimatedExitplan = null;
-                foreach (int selectedEstimatedExitplanID in selectedEstimatedExitplanIDList)
+                foreach (int postedEstimatedExitplanID in postedEstimatedExitplanIDList)
                 {
-                    estimatedExitplan = estimatedExitplans.Where(eep => eep.EstimatedExitPlanID == selectedEstimatedExitplanID).FirstOrDefault();
+                    estimatedExitplan = estimatedExitplans.Where(eep => eep.EstimatedExitPlanID == postedEstimatedExitplanID).FirstOrDefault();
 
                     if (!investmentProfile.EstimatedExitPlans.Contains(estimatedExitplan))
                     {
@@ -772,40 +756,11 @@ namespace EoS.Controllers
                     }
                 }
             }
-            else //if (selectedEstimatedExitPlanIDs == null)
+            else //if (postedEstimatedExitPlanIDs == null)
             {
                 investmentProfile.EstimatedExitPlans.Clear();
                 updated = true;
             }
-
-            //if (selectedEstimatedExitPlanIDs != null)
-            //{
-            //    List<int> selectedEstimatedExitPlanIDList = Array.ConvertAll(selectedEstimatedExitPlanIDs, s => int.Parse(s)).ToList();
-
-            //    List<int> currentEstimatedExitPlanIDList = investmentProfile.EstimatedExitPlans.Select(eep => eep.EstimatedExitPlanID).ToList();
-
-            //    List<Models.Shared.EstimatedExitPlan> estimatedExitPlans = db.EstimatedExitPlans.ToList();
-
-            //    foreach (var exitPlan in estimatedExitPlans)
-            //    {
-            //        if (selectedEstimatedExitPlanIDList.Contains(exitPlan.EstimatedExitPlanID) && !currentEstimatedExitPlanIDList.Contains(exitPlan.EstimatedExitPlanID))
-            //        {
-            //            investmentProfile.EstimatedExitPlans.Add(exitPlan);
-            //            updated = true;
-            //        }
-            //        else if (currentEstimatedExitPlanIDList.Contains(exitPlan.EstimatedExitPlanID) && investmentProfile.EstimatedExitPlans.Remove(exitPlan))
-            //            updated = true;
-            //    }
-            //}
-            //else if (investmentProfile.EstimatedExitPlans.Any())
-            //{
-            //    List<Models.Shared.EstimatedExitPlan> estimatedExitPlans = db.EstimatedExitPlans.ToList();
-
-            //    foreach (var plan in estimatedExitPlans)
-            //    {
-            //        if (investmentProfile.EstimatedExitPlans.Remove(plan)) updated = true;
-            //    }
-            //}
 
             return updated;
         }
@@ -814,41 +769,98 @@ namespace EoS.Controllers
         {
             bool updated = false;
 
-            if (investmentProfile.TeamMemberSizeMoreThanOne != profilePostModel.TeamMemberSizeMoreThanOne)
+            if (!string.IsNullOrEmpty(profilePostModel.TeamMemberSizeMoreThanOne))
             {
-                investmentProfile.TeamMemberSizeMoreThanOne = profilePostModel.TeamMemberSizeMoreThanOne;
+                bool postedTeamMemberSizeMoreThanOne = profilePostModel.TeamMemberSizeMoreThanOne.ToUpper() == "YES";
+                if (postedTeamMemberSizeMoreThanOne && !investmentProfile.TeamMemberSizeMoreThanOne) // && profilePostModel.TeamMemberSizeMoreThanOne.HasValue && !profilePostModel.TeamMemberSizeMoreThanOne.Value
+                {
+                    investmentProfile.TeamMemberSizeMoreThanOne = true;
+                    updated = true;
+                }
+                else if (!postedTeamMemberSizeMoreThanOne && investmentProfile.TeamMemberSizeMoreThanOne) // && profilePostModel.TeamMemberSizeMoreThanOne.HasValue && !profilePostModel.TeamMemberSizeMoreThanOne.Value
+                {
+                    investmentProfile.TeamMemberSizeMoreThanOne = false;
+                    updated = true;
+                }
+            }
+            else if (investmentProfile.FutureFundingNeeded) //!profilePostModel.TeamMemberSizeMoreThanOne.HasValue (bool?)
+            {
+                investmentProfile.FutureFundingNeeded = false; //profilePostModel.TeamMemberSizeMoreThanOne = null;
                 updated = true;
             }
+            //if (investmentProfile.TeamMemberSizeMoreThanOne != profilePostModel.TeamMemberSizeMoreThanOne)
+            //{
+            //    investmentProfile.TeamMemberSizeMoreThanOne = profilePostModel.TeamMemberSizeMoreThanOne;
+            //    updated = true;
+            //}
 
-            if (investmentProfile.TeamHasExperience != profilePostModel.TeamHasExperience)
+            if (!string.IsNullOrEmpty(profilePostModel.TeamHasExperience))
             {
-                investmentProfile.TeamHasExperience = profilePostModel.TeamHasExperience;
+                bool postedTeanHasExperience = profilePostModel.TeamHasExperience.ToUpper() == "YES";
+                if (postedTeanHasExperience && !investmentProfile.TeamHasExperience) // && profilePostModel.TeamHasExperience.HasValue && !profilePostModel..ValueTeamHasExperience
+                {
+                    investmentProfile.TeamHasExperience = true;
+                    updated = true;
+                }
+                else if (!postedTeanHasExperience && investmentProfile.TeamHasExperience) // && profilePostModel.TeamHasExperience.HasValue && !profilePostModel.TeamHasExperience.Value
+                {
+                    investmentProfile.TeamHasExperience = false;
+                    updated = true;
+                }
+            }
+            else if (investmentProfile.TeamHasExperience) //!profilePostModel.TeamHasExperience.HasValue (bool?)
+            {
+                investmentProfile.TeamHasExperience = false; //profilePostModel.TeamHasExperience = null;
                 updated = true;
             }
+            //if (investmentProfile.TeamHasExperience != profilePostModel.TeamHasExperience)
+            //{
+            //    investmentProfile.TeamHasExperience = profilePostModel.TeamHasExperience;
+            //    updated = true;
+            //}
 
-            if (investmentProfile.ActiveInvestor != profilePostModel.ActiveInvestor)
+            if (!string.IsNullOrEmpty(profilePostModel.ActiveInvestor))
             {
-                investmentProfile.ActiveInvestor = profilePostModel.ActiveInvestor;
+                bool postedActiveInvestor = profilePostModel.ActiveInvestor.ToUpper() == "YES";
+                if (postedActiveInvestor && !investmentProfile.ActiveInvestor) // && profilePostModel..ActiveInvestor.HasValue && !profilePostModel..ActiveInvestor.Value
+                {
+                    investmentProfile.ActiveInvestor = true;
+                    updated = true;
+                }
+                else if (!postedActiveInvestor && investmentProfile.ActiveInvestor) // && profilePostModel..ActiveInvestor.HasValue && !profilePostModel..Value.ActiveInvestor
+                {
+                    investmentProfile.ActiveInvestor = false;
+                    updated = true;
+                }
+            }
+            else if (investmentProfile.ActiveInvestor) //!profilePostModel.ActiveInvestor.HasValue (bool?)
+            {
+                investmentProfile.ActiveInvestor = false; //profilePostModel.ActiveInvestor = null;
                 updated = true;
             }
+            //if (investmentProfile.ActiveInvestor != profilePostModel.ActiveInvestor)
+            //{
+            //    investmentProfile.ActiveInvestor = profilePostModel.ActiveInvestor;
+            //    updated = true;
+            //}
 
-            if (UpdateTeamSkills(profilePostModel.SelectedTeamSkillIDs, investmentProfile) && !updated) updated = true;
+            if (UpdateTeamSkills(profilePostModel.TeamSkillIDs, investmentProfile) && !updated) updated = true;
 
             return updated;
         }
 
-        private bool UpdateTeamSkills(string[] selectedTeamSkillIDs, Investment investmentProfile) //<---------finished
+        private bool UpdateTeamSkills(string[] postedTeamSkillIDs, Investment investmentProfile) //<---------finished
         {
             bool updated = false;
             
-            if (selectedTeamSkillIDs != null)
+            if (postedTeamSkillIDs != null)
             {
-                List<int> selectedTeamSkillIDList = Array.ConvertAll(selectedTeamSkillIDs, s => int.Parse(s)).ToList();
+                List<int> postedTeamSkillIDList = Array.ConvertAll(postedTeamSkillIDs, s => int.Parse(s)).ToList();
 
                 List<TeamSkill> profileTeamSkills = investmentProfile.TeamSkills.ToList();
                 foreach (TeamSkill profileTeamSkill in profileTeamSkills)
                 {
-                    if (!selectedTeamSkillIDList.Contains(profileTeamSkill.SkillID))
+                    if (!postedTeamSkillIDList.Contains(profileTeamSkill.SkillID))
                     {
                         investmentProfile.TeamSkills.Remove(profileTeamSkill);
                         updated = true;
@@ -857,9 +869,9 @@ namespace EoS.Controllers
 
                 List<TeamSkill> teamSkills = db.TeamSkills.ToList();
                 TeamSkill teamSkill = null;
-                foreach (int selectedTeamSkillID in selectedTeamSkillIDList)
+                foreach (int postedTeamSkillID in postedTeamSkillIDList)
                 {
-                    teamSkill = teamSkills.Where(ts => ts.SkillID == selectedTeamSkillID).FirstOrDefault();
+                    teamSkill = teamSkills.Where(ts => ts.SkillID == postedTeamSkillID).FirstOrDefault();
 
                     if (!investmentProfile.TeamSkills.Contains(teamSkill))
                     {
@@ -868,7 +880,7 @@ namespace EoS.Controllers
                     }
                 }
             }
-            else //if (selectedTeamSkillIDs == null)
+            else //if (postedTeamSkillIDs == null)
             {
                 investmentProfile.TeamSkills.Clear();
                 updated = true;
@@ -881,27 +893,27 @@ namespace EoS.Controllers
         {
             bool updated = false;
 
-            updated = UpdateOutcomes(profilePostModel.SelectedOutcomeIDs, investmentProfile);
+            updated = UpdateOutcomes(profilePostModel.OutcomeIDs, investmentProfile);
 
-            if (UpdateInnovationLevels(profilePostModel.SelectedInnovationLevelIDs, investmentProfile) && !updated) updated = true;
+            if (UpdateInnovationLevels(profilePostModel.InnovationLevelIDs, investmentProfile) && !updated) updated = true;
 
-            if (UpdateScalabilities(profilePostModel.SelectedScalabilityIDs, investmentProfile) && !updated) updated = true;
+            if (UpdateScalabilities(profilePostModel.ScalabilityIDs, investmentProfile) && !updated) updated = true;
 
             return updated;
         }
 
-        private bool UpdateOutcomes(string[] selectedOutcomeIDs, Investment investmentProfile) //<-------finished
+        private bool UpdateOutcomes(string[] postedOutcomeIDs, Investment investmentProfile) //<-------finished
         {
             bool updated = false;
 
-            if (selectedOutcomeIDs != null)
+            if (postedOutcomeIDs != null)
             {
-                List<int> selectedOutcomeIDList = Array.ConvertAll(selectedOutcomeIDs, s => int.Parse(s)).ToList();
+                List<int> postedOutcomeIDList = Array.ConvertAll(postedOutcomeIDs, s => int.Parse(s)).ToList();
 
                 List<Models.Shared.Outcome> profileOutcomes = investmentProfile.Outcomes.ToList();
                 foreach (Models.Shared.Outcome profileOutcome in profileOutcomes)
                 {
-                    if (!selectedOutcomeIDList.Contains(profileOutcome.OutcomeID))
+                    if (!postedOutcomeIDList.Contains(profileOutcome.OutcomeID))
                     {
                         investmentProfile.Outcomes.Remove(profileOutcome);
                         updated = true;
@@ -910,9 +922,9 @@ namespace EoS.Controllers
                 
                 List<Models.Shared.Outcome> outcomes = db.Outcomes.ToList();
                 Models.Shared.Outcome outcome = null;
-                foreach (int selectedOutcomeID in selectedOutcomeIDList)
+                foreach (int postedOutcomeID in postedOutcomeIDList)
                 {
-                    outcome = outcomes.Where(o => o.OutcomeID == selectedOutcomeID).FirstOrDefault();
+                    outcome = outcomes.Where(o => o.OutcomeID == postedOutcomeID).FirstOrDefault();
 
                     if (!investmentProfile.Outcomes.Contains(outcome))
                     {
@@ -921,59 +933,27 @@ namespace EoS.Controllers
                     }
                 }
             }
-            else //if (selectedOutcomeIDs == null)
+            else //if (postedOutcomeIDs == null)
             {
                 investmentProfile.Outcomes.Clear();
                 updated = true;
             }
 
-            //if (selectedOutcomeIDs != null)
-            //{
-            //    List<int> selectedOutcomeIDList = Array.ConvertAll(selectedOutcomeIDs, s => int.Parse(s)).ToList();
-
-            //    List<int> currentOutcomeIDList = investmentProfile.Outcomes.Select(o => o.OutcomeID).ToList();
-
-            //    List<Models.Shared.Outcome> outcomes = db.Outcomes.ToList();
-
-            //    foreach (var outcome in outcomes)
-            //    {
-            //        if (selectedOutcomeIDList.Contains(outcome.OutcomeID) && !currentOutcomeIDList.Contains(outcome.OutcomeID))
-            //        {
-            //            investmentProfile.Outcomes.Add(outcome);
-            //            updated = true;
-            //            //}
-            //        }
-            //        else if (currentOutcomeIDList.Contains(outcome.OutcomeID) && investmentProfile.Outcomes.Remove(outcome))
-            //        {
-            //            updated = true;
-            //        }
-            //    }
-            //}
-            //else if (investmentProfile.Outcomes.Any())
-            //{
-            //    List<Models.Shared.Outcome> outcomes = db.Outcomes.ToList();
-
-            //    foreach (var outcome in outcomes)
-            //    {
-            //        if (investmentProfile.Outcomes.Remove(outcome)) updated = true;
-            //    }
-            //}
-
             return updated;
         }
 
-        private bool UpdateInnovationLevels(string[] selectedInnovationLevelIDs, Investment investmentProfile) //<------finished
+        private bool UpdateInnovationLevels(string[] postedInnovationLevelIDs, Investment investmentProfile) //<------finished
         {
             bool updated = false;
 
-            if (selectedInnovationLevelIDs != null)
+            if (postedInnovationLevelIDs != null)
             {
-                List<int> selectedInnovationLevelIDList = Array.ConvertAll(selectedInnovationLevelIDs, s => int.Parse(s)).ToList();
+                List<int> postedInnovationLevelIDList = Array.ConvertAll(postedInnovationLevelIDs, s => int.Parse(s)).ToList();
 
                 List<InnovationLevel> profileInnovationLevels = investmentProfile.InnovationLevels.ToList();
                 foreach (InnovationLevel profileInnovationLevel in profileInnovationLevels)
                 {
-                    if (!selectedInnovationLevelIDList.Contains(profileInnovationLevel.InnovationLevelID))
+                    if (!postedInnovationLevelIDList.Contains(profileInnovationLevel.InnovationLevelID))
                     {
                         investmentProfile.InnovationLevels.Remove(profileInnovationLevel);
                         updated = true;
@@ -982,9 +962,9 @@ namespace EoS.Controllers
 
                 List<InnovationLevel> innovationLevels = db.InnovationLevels.ToList();
                 InnovationLevel innovationLevel = null;
-                foreach (int selectedInnovationLevelID in selectedInnovationLevelIDList)
+                foreach (int postedInnovationLevelID in postedInnovationLevelIDList)
                 {
-                    innovationLevel = innovationLevels.Where(il => il.InnovationLevelID == selectedInnovationLevelID).FirstOrDefault();
+                    innovationLevel = innovationLevels.Where(il => il.InnovationLevelID == postedInnovationLevelID).FirstOrDefault();
 
                     if (!investmentProfile.InnovationLevels.Contains(innovationLevel))
                     {
@@ -993,60 +973,27 @@ namespace EoS.Controllers
                     }
                 }
             }
-            else //if (selectedInnovationLevelIDs == null)
+            else //if (postedInnovationLevelIDs == null)
             {
                 investmentProfile.InnovationLevels.Clear();
                 updated = true;
             }
 
-            //if (selectedInnovationLevelIDs != null) //==> UpdateSelectedInnovationLevels(Investment investmentProfile)
-            //{
-            //    List<int> selectedInnovationLevelIDList = Array.ConvertAll(selectedInnovationLevelIDs, s => int.Parse(s)).ToList();
-
-            //    //this is the current or previous saved selections
-            //    //Investment currentInnovationLevelsInvestment = db.Investments.Include(nl => nl.InnovationLevels).Where(i => i.InvestmentID == investmentProfile.InvestmentID).Single();
-
-            //    List<int> currentInnovationLevelIDList = investmentProfile.InnovationLevels.Select(il => il.InnovationLevelID).ToList();
-
-            //    List<Models.Shared.InnovationLevel> innovationLevels = db.InnovationLevels.ToList();
-
-            //    foreach (var innovationLevel in innovationLevels)
-            //    {
-            //        if (selectedInnovationLevelIDList.Contains(innovationLevel.InnovationLevelID) && !currentInnovationLevelIDList.Contains(innovationLevel.InnovationLevelID))
-            //        {
-            //            investmentProfile.InnovationLevels.Add(innovationLevel);
-            //            updated = true;
-            //            //}
-            //        }
-            //        else if (currentInnovationLevelIDList.Contains(innovationLevel.InnovationLevelID) && investmentProfile.InnovationLevels.Remove(innovationLevel))
-            //            updated = true;
-            //    }
-            //}
-            //else if (investmentProfile.InnovationLevels != null && investmentProfile.InnovationLevels.Any()) //<---2018-08-08 remove?
-            //{
-            //    List<Models.Shared.InnovationLevel> innovationLevels = db.InnovationLevels.ToList();
-
-            //    foreach (var innovationLevel in innovationLevels)
-            //    {
-            //        if (investmentProfile.InnovationLevels.Remove(innovationLevel)) updated = true;
-            //    }
-            //}
-
             return updated;
         }
 
-        private bool UpdateScalabilities(string[] selectedScalabilityIDs, Investment investmentProfile) //<-------finished
+        private bool UpdateScalabilities(string[] postedScalabilityIDs, Investment investmentProfile) //<-------finished
         {
             bool updated = false;
 
-            if (selectedScalabilityIDs != null)
+            if (postedScalabilityIDs != null)
             {
-                List<int> selectedScalabilityIDList = Array.ConvertAll(selectedScalabilityIDs, s => int.Parse(s)).ToList();
+                List<int> postedScalabilityIDList = Array.ConvertAll(postedScalabilityIDs, s => int.Parse(s)).ToList();
 
                 List<Scalability> profileScalabilities = investmentProfile.Scalabilities.ToList();
                 foreach (Scalability profileScalibility in profileScalabilities)
                 {
-                    if (!selectedScalabilityIDList.Contains(profileScalibility.ScalabilityID))
+                    if (!postedScalabilityIDList.Contains(profileScalibility.ScalabilityID))
                     {
                         investmentProfile.Scalabilities.Remove(profileScalibility);
                         updated = true;
@@ -1055,9 +1002,9 @@ namespace EoS.Controllers
 
                 List<Scalability> scalabilities = db.Scalabilities.ToList();
                 Scalability scalability = null;
-                foreach (int selectedScalabilityID in selectedScalabilityIDList)
+                foreach (int postedScalabilityID in postedScalabilityIDList)
                 {
-                    scalability = scalabilities.Where(s => s.ScalabilityID == selectedScalabilityID).FirstOrDefault();
+                    scalability = scalabilities.Where(s => s.ScalabilityID == postedScalabilityID).FirstOrDefault();
 
                     if (!investmentProfile.Scalabilities.Contains(scalability))
                     {
@@ -1066,42 +1013,11 @@ namespace EoS.Controllers
                     }
                 }
             }
-            else //if (selectedScalabilityIDs == null)
+            else //if (postedScalabilityIDs == null)
             {
                 investmentProfile.Scalabilities.Clear();
                 updated = true;
             }
-
-            //if (selectedScalabilityIDs != null)
-            //{
-            //    List<int> selectedScalabilityIDList = Array.ConvertAll(selectedScalabilityIDs, s => int.Parse(s)).ToList();
-
-            //    List<int> currentScalabilitieIDList = investmentProfile.Scalabilities.Select(sc => sc.ScalabilityID).ToList();
-
-            //    List<Models.Shared.Scalability> scalabilities = db.Scalabilities.ToList();
-
-            //    foreach (var scalability in scalabilities)
-            //    {
-            //        if (selectedScalabilityIDList.Contains(scalability.ScalabilityID) && !currentScalabilitieIDList.Contains(scalability.ScalabilityID))
-            //        {
-            //            investmentProfile.Scalabilities.Add(scalability);
-            //            updated = true;
-            //        }
-            //        else if (currentScalabilitieIDList.Contains(scalability.ScalabilityID) && investmentProfile.Scalabilities.Remove(scalability))
-            //        {
-            //            updated = true;
-            //        }
-            //    }
-            //}
-            //else if (investmentProfile.Scalabilities != null && investmentProfile.Scalabilities.Any()) //2018-08-08
-            //{
-            //    List<Models.Shared.Scalability> scalabilities = db.Scalabilities.ToList();
-
-            //    foreach (var scalability in scalabilities)
-            //    {
-            //        if (investmentProfile.Scalabilities.Remove(scalability)) updated = true;
-            //    }
-            //}
 
             return updated;
         }
@@ -1112,7 +1028,7 @@ namespace EoS.Controllers
         {
             if (cancel)
             {
-                TempData["message"] = "Submission of form cancelled!";
+                //TempData["message"] = "Submission of form cancelled!";
                 //TempData["tab"] = redirectTab;
                 if (string.IsNullOrEmpty(redirectTab)) return RedirectToAction("ProfileForm", new { id });
                 else return Redirect(Url.Action("ProfileForm", new { id }) + "#" + redirectTab);
@@ -1260,8 +1176,9 @@ namespace EoS.Controllers
 
             InvestmentEditAdminViewModel editAdminmodel = new InvestmentEditAdminViewModel //ProfileFormAdminViewModel
             {
-                InvestmentId = investmentProfile.InvestmentID,
-                InvestorName = investmentProfile.User.UserName,
+                InvestmentID = investmentProfile.InvestmentID,
+                InvestorUserID = investmentProfile.UserId,
+                InvestorUserName = investmentProfile.User.UserName,
                 DueDate = investmentProfile.DueDate,
                 Locked = investmentProfile.Locked
             };
@@ -1277,21 +1194,11 @@ namespace EoS.Controllers
         {
             if (ModelState.IsValid)
             {
-                Investment investmentProfile = db.Investments.Find(model.InvestmentId);
+                Investment investmentProfile = db.Investments.Find(model.InvestmentID);
                 if (investmentProfile == null)
                 {
                     return HttpNotFound();
                 }
-
-                //if (model.DueDate.HasValue) investment.DueDate = model.DueDate.Value.Date;
-                //else if (investment.DueDate.HasValue) investment.DueDate = null;
-
-                //if (investment.DueDate != model.DueDate) //<---------------------------------!!!!
-                //{
-                //    investment.DueDate = model.DueDate;
-                //    db.Entry(investment).State = EntityState.Modified;
-                //    db.SaveChanges();
-                //}
 
                 bool updated = false;
 
@@ -1346,824 +1253,9 @@ namespace EoS.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
-  
-        
-        //bool  to be deleted
-        //private void UpdateInvestmentCheckBoxesData(string[] selectedFundingPhases, string[] selectedFundingAmounts, string[] selectedEstimatedExitPlans,
-        //    string[] selectedTeamSkills, string[] selectedOutcomes, string[] selectedInnovationLevels, string[] selectedScalabilities, Investment investment)
-        //{
-        //    //bool updated = false;
-
-        //    //if (activeTab =="tab_Budget") {
-
-        //    if (selectedEstimatedExitPlans != null) //==> UpdateSelectedEstimatedExitPlans(Investment investmentProfile)
-        //    {
-        //        //this is the new selection list
-        //        var selectedEstimatedExitPlansHS = new HashSet<string>(selectedEstimatedExitPlans);
-        //        //List<int> selectedEstimatedExitPlanIDs = Array.ConvertAll(SelectedEstimatedExitPlans, s => int.Parse(s)).ToList();
-        //        //this is the current or previous saved selections
-        //        Investment currentEstimatedExitPlansInvestment = db.Investments.Include(e => e.EstimatedExitPlans).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-        //        var investmentCurrentEstimatedExitPlans = new HashSet<int>(currentEstimatedExitPlansInvestment.EstimatedExitPlans.Select(e => e.EstimatedExitPlanID));
-
-        //        foreach (var plan in db.EstimatedExitPlans)
-        //        {
-        //            if (selectedEstimatedExitPlansHS.Contains(plan.EstimatedExitPlanID.ToString()))
-        //            {
-        //                //if the selection not in previous selections, add it
-        //                if (!investmentCurrentEstimatedExitPlans.Contains(plan.EstimatedExitPlanID))
-        //                {
-        //                    investment.EstimatedExitPlans.Add(plan);
-        //                    //updated = true;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                //if the selection in previous selections but not in the new selected list, remove it 
-        //                if (investmentCurrentEstimatedExitPlans.Contains(plan.EstimatedExitPlanID))
-        //                {
-        //                    investment.EstimatedExitPlans.Remove(plan);
-        //                    //updated = true;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else if (investment.EstimatedExitPlans != null) //2018-08-08 <--------------------???
-        //    {
-        //        //Delete Any previous selection if any
-        //        //this is the current or previous saved selections
-        //        //var currentEstimatedExitPlans = db.Investments.Include(e => e.EstimatedExitPlans).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-        //        //var investomentCurrentEstimatedExitPlans = new HashSet<int>(currentEstimatedExitPlans.EstimatedExitPlans.Select(e => e.EstimatedExitPlanID));
-
-        //        foreach (var plan in db.EstimatedExitPlans)
-        //        {
-        //            investment.EstimatedExitPlans.Remove(plan);
-        //            //updated = true;
-        //        }
-        //    }
-    
-        //    //********************************************************************************//
-
-        //    //if (activeTab = "tab_Funding")
-
-        //    if (selectedFundingPhases != null) //==> UpdateSelectedFundingPhases(Investment investmentProfile)
-        //    {
-        //        //this is the new selection list
-        //        var selectedFundingPhasestHS = new HashSet<string>(selectedFundingPhases);
-        //        //List<int> selectedFundingPhaseIDs = Array.ConvertAll(SelectedFundingPhases, s => int.Parse(s)).ToList();
-        //        //this is the current or previous saved selections
-        //        Investment currentFundingPhasesInvestment = db.Investments.Include(f => f.FundingPhases).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-        //        var investomentCurrentFundingPhaseIDs = new HashSet<int>(currentFundingPhasesInvestment.FundingPhases.Select(f => f.FundingPhaseID));
-
-        //        foreach (var phase in db.FundingPhases)
-        //        {
-        //            if (selectedFundingPhasestHS.Contains(phase.FundingPhaseID.ToString())) //<----------
-        //            {
-        //                //if the selection not in previous selections, add it
-        //                if (!investomentCurrentFundingPhaseIDs.Contains(phase.FundingPhaseID))
-        //                {
-        //                    investment.FundingPhases.Add(phase);
-        //                    //updated = true;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                //if the selection in previous selections but not in the new selected list, remove it 
-        //                if (investomentCurrentFundingPhaseIDs.Contains(phase.FundingPhaseID))
-        //                {
-        //                    investment.FundingPhases.Remove(phase);
-        //                    //updated = true;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else if (investment.FundingPhases != null) //2018-08-08
-        //    {
-        //        //Delete Any previous selection if any
-        //        //this is the current or previous saved selections
-        //        //var currentFundingPhases = db.Investments.Include(f => f.FundingPhases).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-        //        //var investomentCurrentFundingPhases = new HashSet<int>(currentFundingPhases.FundingPhases.Select(f => f.FundingPhaseID));
-
-        //        foreach (var phase in db.FundingPhases)
-        //        {
-
-        //            investment.FundingPhases.Remove(phase);
-        //            //updated = true;
-        //        }
-        //    }
-
-        //    //if (activeTab = "tab_Funding")
-
-        //    if (selectedFundingAmounts != null) //==> UpdateSelectedFundingAmounts(Investment investmentProfile)
-        //    {
-        //        //this is the new selection list
-        //        var selectedFundingAmountHS = new HashSet<string>(selectedFundingAmounts);
-        //        //List<int> selectedFundingAmountIDs = Array.ConvertAll(SelectedFundingAmounts, s => int.Parse(s)).ToList();
-        //        //this is the current or previous saved selections
-        //        Investment currentFundingAmountsInvestment = db.Investments.Include(f => f.FundingAmounts).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-        //        var investomentCurrentFundingAmountIDs = new HashSet<int>(currentFundingAmountsInvestment.FundingAmounts.Select(f => f.FundingAmountID));
-
-        //        foreach (var amount in db.FundingAmounts)
-        //        {
-        //            if (selectedFundingAmountHS.Contains(amount.FundingAmountID.ToString()))
-        //            {
-        //                //if the selection not in previous selections, add it
-        //                if (!investomentCurrentFundingAmountIDs.Contains(amount.FundingAmountID))
-        //                {
-        //                    investment.FundingAmounts.Add(amount);
-        //                    //updated = true;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                //if the selection in previous selections but not in the new selected list, remove it 
-        //                if (investomentCurrentFundingAmountIDs.Contains(amount.FundingAmountID))
-        //                {
-        //                    investment.FundingAmounts.Remove(amount);
-        //                    //updated = true;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else if (investment.FundingAmounts != null) //2018-08-08
-        //    {
-        //        //Delete Any previous selection if any
-        //        //this is the current or previous saved selections
-        //        //var currentFundingAmount = db.Investments.Include(f => f.FundingAmounts).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-        //        //var investmentCurrentFundingAmount = new HashSet<int>(currentFundingAmount.FundingAmounts.Select(f => f.FundingAmountID));
-
-        //        foreach (var amount in db.FundingAmounts)
-        //        {
-                    
-        //            investment.FundingAmounts.Remove(amount);
-        //            //updated = true;
-        //        }
-        //    }
-
-        //    //********************************************************************************//
-
-        //    //if (activeTab == "tab_Team") <---------------------------Added
-        //    if (selectedTeamSkills != null) //==> UpdateSelectedTeamSkills(Investment investmentProfile)
-        //    {
-        //        //this is the new selection list
-        //        var selectedTeamSkillsHS = new HashSet<string>(selectedTeamSkills);
-        //        //List<int> selectedTeamSkillIDs = Array.ConvertAll(SelectedTeamSkills, s => int.Parse(s)).ToList();
-        //        Investment currentSkillsInvestment = db.Investments.Include(w => w.TeamSkills).Where(s => s.InvestmentID == investment.InvestmentID).Single();
-        //        var investmentCurrentSkillIDs = new HashSet<int>(currentSkillsInvestment.TeamSkills.Select(w => w.SkillID));
-
-        //        foreach (var skill in db.TeamSkills)
-        //        {
-        //            if (selectedTeamSkillsHS.Contains(skill.SkillID.ToString()))
-        //            {
-        //                //if the selection not in previous selections, add it
-        //                if (!investmentCurrentSkillIDs.Contains(skill.SkillID))
-        //                {
-        //                    investment.TeamSkills.Add(skill);
-        //                    //updated = true;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                //if the selection in previous selections but not in the new selected list, remove it
-        //                if (investmentCurrentSkillIDs.Contains(skill.SkillID))
-        //                {
-        //                    investment.TeamSkills.Remove(skill);
-        //                    //updated = true;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else if (investment.TeamSkills != null) //<--------2018-08-08
-        //    {
-        //        //Delete Any previous selection if any
-        //        //this is the current or previous saved selections
-        //        //var currentSkillsInvestment = db.Investments.Include(w => w.TeamSkills).Where(s => s.InvestmentID == investment.InvestmentID).Single();
-        //        //var investmentSkillIDs = new HashSet<int>(currentSkillsInvestment.TeamSkills.Select(w => w.SkillID));
-
-        //        foreach (var skill in db.TeamSkills)
-        //        {
-        //            investment.TeamSkills.Remove(skill);
-        //            //updated = true;
-        //        }
-        //    }
-
-        //    // if (activeTab == "tab_Outcome")
-
-        //    if (selectedOutcomes != null) //==> UpdateSelectedOutcomes(Investment investmentProfile)
-        //    {
-        //        //this is the new selection list
-        //        var selectedOutcomesHS = new HashSet<string>(selectedOutcomes);
-        //        //List<int> selectedOutcomeIDs = Array.ConvertAll(SelectedOutcomes, s => int.Parse(s)).ToList();
-        //        //this is the current or previous saved selections
-        //        Investment currentInvestmentOutcomesInvestment = db.Investments.Include(o => o.Outcomes).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-        //        var investmentCurrentOutcomeIDs = new HashSet<int>(currentInvestmentOutcomesInvestment.Outcomes.Select(o => o.OutcomeID));
-
-        //        foreach (var outcome in db.Outcomes)
-        //        {
-        //            if (selectedOutcomesHS.Contains(outcome.OutcomeID.ToString()))
-        //            {
-        //                //if the selection not in previous selections, add it
-        //                if (!investmentCurrentOutcomeIDs.Contains(outcome.OutcomeID))
-        //                {
-        //                    investment.Outcomes.Add(outcome);
-        //                    //updated = true;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                //if the selection in previous selections but not in the new selected list, remove it
-        //                if (investmentCurrentOutcomeIDs.Contains(outcome.OutcomeID))
-        //                {
-        //                    investment.Outcomes.Remove(outcome);
-        //                    //updated = true;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else if (investment.Outcomes != null) //2018-08-08
-        //    {
-        //        //Delete Any previous selection if any
-        //        //this is the current or previous saved selections
-        //        //var currentInvestmentOutcomes = db.Investments.Include(o => o.Outcomes).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-        //        //var investmentCurrentOutcomes = new HashSet<int>(currentInvestmentOutcomes.Outcomes.Select(o => o.OutcomeID));
-
-        //        foreach (var outcome in db.Outcomes)
-        //        {
-        //            investment.Outcomes.Remove(outcome);
-        //            //updated = true;
-        //        }
-        //    }
-
-        //    //********************************************************************************//
-
-        //    // if (activeTab == "tab_Outcome")
-
-        //    if (selectedInnovationLevels != null) //==> UpdateSelectedInnovationLevels(Investment investmentProfile)
-        //    {
-        //        //this is the new selection list
-        //        var selectedInnovationLevelsHS = new HashSet<String>(selectedInnovationLevels);
-        //        //List<int> selectedInnovationLevelIDs = Array.ConvertAll(SelectedInnovationLevels, s => int.Parse(s)).ToList();
-        //        //this is the current or previous saved selections
-        //        Investment currentInnovationLevelsInvestment = db.Investments.Include(nl => nl.InnovationLevels).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-        //        var investmentCurrentInnovationLevelIDs = new HashSet<int>(currentInnovationLevelsInvestment.InnovationLevels.Select(nl => nl.InnovationLevelID));
-
-        //        foreach (var level in db.InnovationLevels)
-        //        {
-        //            if (selectedInnovationLevelsHS.Contains(level.InnovationLevelID.ToString()))
-        //            {
-        //                //if the selection not in previous selections, add it
-        //                if (!investmentCurrentInnovationLevelIDs.Contains(level.InnovationLevelID))
-        //                {
-        //                    investment.InnovationLevels.Add(level);
-        //                    //updated = true;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                //if the selection in previous selections but not in the new selected list, remove it 
-        //                if (investmentCurrentInnovationLevelIDs.Contains(level.InnovationLevelID))
-        //                {
-        //                    investment.InnovationLevels.Remove(level);
-        //                    //updated = true;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else if (investment.InnovationLevels != null) //2018-08-08
-        //    {
-        //        //Delete Any previous selection if any
-        //        //this is the current or previous saved selections
-        //        //var currentInnovationLevels = db.Investments.Include(nl => nl.InnovationLevels).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-        //        //var investomentCurrentInnovationLevels = new HashSet<int>(currentInnovationLevels.InnovationLevels.Select(nl => nl.InnovationLevelID));
-
-        //        foreach (var level in db.InnovationLevels)
-        //        {
-
-        //            investment.InnovationLevels.Remove(level);
-        //            //updated = true;
-        //        }
-        //    }
-
-        //    // if (activeTab == "tab_Outcome")
-
-        //    if (selectedScalabilities != null) //==> UpdateSelectedScalabilities(Investment investmentProfile)
-        //    {
-        //        //this is the new selection list
-        //        var selectedScalabilitiesHS = new HashSet<String>(selectedScalabilities);
-        //        //List<int> selectedScalabilityIDs = Array.ConvertAll(SelectedScalabilities, s => int.Parse(s)).ToList();
-        //        //this is the current or previous saved selections
-        //        Investment currentScalabilitiesInvestment = db.Investments.Include(s => s.Scalabilities).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-        //        var investmentCurrentScalabilitieIDs = new HashSet<int>(currentScalabilitiesInvestment.Scalabilities.Select(s => s.ScalabilityID));
-
-        //        foreach (var scalability in db.Scalabilities)
-        //        {
-        //            if (selectedScalabilitiesHS.Contains(scalability.ScalabilityID.ToString()))
-        //            {
-        //                //if the selection not in previous selections, add it
-        //                if (!investmentCurrentScalabilitieIDs.Contains(scalability.ScalabilityID))
-        //                {
-        //                    investment.Scalabilities.Add(scalability);
-        //                    //updated = true;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                //if the selection in previous selections but not in the new selected list, remove it 
-        //                if (investmentCurrentScalabilitieIDs.Contains(scalability.ScalabilityID))
-        //                {
-        //                    investment.Scalabilities.Remove(scalability);
-        //                    //updated = true;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else if (investment.Scalabilities != null) //2018-08-08
-        //    {
-        //        //Delete Any previous selection if any
-        //        //this is the current or previous saved selections
-        //        //var currentScalabilities = db.Investments.Include(s => s.Scalabilities).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-        //        //var investomentCurrentScalabilities = new HashSet<int>(currentScalabilities.Scalabilities.Select(s => s.ScalabilityID));
-
-        //        foreach (var scalability in db.Scalabilities)
-        //        {
-
-        //            investment.Scalabilities.Remove(scalability);
-        //            //updated = true;
-        //        }
-        //    }
-
-        //    //********************************************************************************//
-
-        //    //return updated;
-        //}
-
-        //-----------------------------------------------------------------------------------
-        //Funding
-        private List<InvestorFundingPhaseViewModel> GetFundingPhases(Investment investmentProfile)
-        {
-            List<InvestorFundingPhaseViewModel> fundingPhaseViewModels = new List<InvestorFundingPhaseViewModel>();
-
-            List<int> profileFundingPhaseIDList = investmentProfile.FundingPhases.Select(fp => fp.FundingPhaseID).ToList();
-
-            //if (investmentProfile.FundingPhases != null && investmentProfile.FundingPhases.Any())
-            //{
-            //    currentFundingPhaseIDList = investmentProfile.FundingPhases.Select(fp => fp.FundingPhaseID).ToList();
-            //}
-            //var currentFundingPhaseInvestment = db.Investments.Include(fpi => fpi.FundingPhases).Where(i => i.InvestmentID == investmentID).Single();
-            //var investmentFundingPhases = new HashSet<int>(currentFundingPhaseInvestment.FundingPhases.Select(fp => fp.FundingPhaseID)); //Why HasSet?
-
-            List<FundingPhase> fundingPhases = db.FundingPhases.ToList();
-            foreach (var phase in fundingPhases)
-            {
-                fundingPhaseViewModels.Add(new InvestorFundingPhaseViewModel
-                {
-                    FundingPhaseID = phase.FundingPhaseID,
-                    FundingPhaseName = phase.FundingPhaseName,
-                    //Assigned = currentFundingPhaseIDList.Contains(phase.FundingPhaseID)
-                    Assigned = profileFundingPhaseIDList.Any() ? profileFundingPhaseIDList.Contains(phase.FundingPhaseID) : false
-                });
-            }
-            //}
-
-            return fundingPhaseViewModels;
-        }
-        private List<InvestorFundingAmountViewModel> GetFundingAmounts(Investment investmentProfile)
-        {
-            List<InvestorFundingAmountViewModel> fundingAmountViewModels = new List<InvestorFundingAmountViewModel>();
-
-            List<int> profileFundingAmountIDList = investmentProfile.FundingAmounts.Select(fa => fa.FundingAmountID).ToList();
-
-            //if (investmentProfile.FundingAmounts != null && investmentProfile.FundingAmounts.Any())
-            //{
-            //    currentFundingAmountIDList = investmentProfile.FundingAmounts.Select(fa => fa.FundingAmountID).ToList();
-            //}
-            //var currentFundingAmountInvestment = db.Investments.Include(fai => fai.FundingAmounts).Where(i => i.InvestmentID == investmentID).Single();
-            //var investmentFundingAmounts = new HashSet<int>(currentFundingAmountInvestment.FundingAmounts.Select(fa => fa.FundingAmountID));
-
-            List<FundingAmount> fundingAmounts = db.FundingAmounts.ToList();
-            foreach (var amount in fundingAmounts)
-            {
-                fundingAmountViewModels.Add(new InvestorFundingAmountViewModel
-                {
-                    FundingAmountID = amount.FundingAmountID,
-                    FundingAmountValue = amount.FundingAmountValue,
-                    //Assigned = currentFundingAmountIDList.Contains(amount.FundingAmountID)
-                    Assigned = profileFundingAmountIDList.Any() ? profileFundingAmountIDList.Contains(amount.FundingAmountID) : false
-                });
-            }
-            //}
-
-            return fundingAmountViewModels;
-        }
-
-        //Budget
-        private List<InvestorEstimatedExitPlanViewModel> GetEstimatedExitPlans(Investment investmentProfile)
-        {
-            List<InvestorEstimatedExitPlanViewModel> estimatedExitPlanViewModels = new List<InvestorEstimatedExitPlanViewModel>();
-
-            List<int> profileEstimatedExitPlanIDList = investmentProfile.EstimatedExitPlans.Select(eep => eep.EstimatedExitPlanID).ToList();
-
-            //if (investmentProfile.EstimatedExitPlans != null && investmentProfile.EstimatedExitPlans.Any())
-            //{
-            //    currentEstimatedExitPlanIDList = investmentProfile.EstimatedExitPlans.Select(eep => eep.EstimatedExitPlanID).ToList();
-            //}
-            //var currentEstimatedExitPlanInvestment = db.Investments.Include(eepi => eepi.EstimatedExitPlans).Where(i => i.InvestmentID == investmentID).Single();
-            //var investmentEstimatedExitPlans = new HashSet<int>(currentEstimatedExitPlanInvestment.EstimatedExitPlans.Select(eep => eep.EstimatedExitPlanID));
-
-            List<EstimatedExitPlan> estimatedExitPlans = db.EstimatedExitPlans.ToList();
-            foreach (var exitPlan in estimatedExitPlans)
-            {
-                estimatedExitPlanViewModels.Add(new InvestorEstimatedExitPlanViewModel
-                {
-                    EstimatedExitPlanID = exitPlan.EstimatedExitPlanID,
-                    EstimatedExitPlanName = exitPlan.EstimatedExitPlanName,
-                    //Assigned = currentEstimatedExitPlanIDList.Contains(exitPlan.EstimatedExitPlanID)
-                    Assigned = profileEstimatedExitPlanIDList.Any() ? profileEstimatedExitPlanIDList.Contains(exitPlan.EstimatedExitPlanID) : false
-                });
-            }
-            //}
-
-            return estimatedExitPlanViewModels;
-        }
-
-        //Team
-        private List<TeamSkillViewModel> GetTeamSkills(Investment investmentProfile)
-        {
-            List<TeamSkillViewModel> teamSkillViewModels = new List<TeamSkillViewModel>();
-
-            List<int> profileTeamSkillIDList = investmentProfile.TeamSkills.Select(ts => ts.SkillID).ToList();
-
-            //if (investmentProfile.TeamSkills != null && investmentProfile.TeamSkills.Any())
-            //{
-            //    currentTeamSkillIDList = investmentProfile.TeamSkills.Select(ts => ts.SkillID).ToList();
-            //}
-            //var currentTeamSkillsInvestment = db.Investments.Include(tsi => tsi.TeamSkills).Where(i => i.InvestmentID == investmentID).Single();
-            //var investmentTeamSkills = new HashSet<int>(currentTeamSkillsInvestment.TeamSkills.Select(ts => ts.SkillID));
-
-            List<TeamSkill> teamSkills = db.TeamSkills.ToList();
-            foreach (var teamSkill in teamSkills)
-            {
-                teamSkillViewModels.Add(new TeamSkillViewModel
-                {
-                    SkillID = teamSkill.SkillID,
-                    SkillName = teamSkill.SkillName,
-                    //Assigned = currentTeamSkillIDList.Contains(skill.SkillID)
-                    Assigned = profileTeamSkillIDList.Any() ? profileTeamSkillIDList.Contains(teamSkill.SkillID) : false
-                });
-            }
-            //}
-
-            return teamSkillViewModels;
-        }
-
-        //Outcome
-        private List<InvestorOutcomeViewModel> GetOutcomes(Investment investmentProfile)
-        {
-            List<InvestorOutcomeViewModel> outcomeViewModels = new List<InvestorOutcomeViewModel>();
-
-            List<int> profileOutcomeIDList = investmentProfile.Outcomes.Select(o => o.OutcomeID).ToList();
-
-            //if (investmentProfile.Outcomes != null && investmentProfile.Outcomes.Any())
-            //{
-            //    currentOutcomeIDList = investmentProfile.Outcomes.Select(o => o.OutcomeID).ToList();
-            //}
-
-            //var currentOutcomeInvestment = db.Investments.Include(oi => oi.Outcomes).Where(i => i.InvestmentID == investmentID).Single();
-            //var investmentOutcomes = new HashSet<int>(currentOutcomeInvestment.Outcomes.Select(o => o.OutcomeID));
-
-            List<Models.Shared.Outcome> outcomes = db.Outcomes.ToList();
-            foreach (var outcome in outcomes)
-            {
-                outcomeViewModels.Add(new InvestorOutcomeViewModel
-                {
-                    OutcomeID = outcome.OutcomeID,
-                    OutcomeName = outcome.OutcomeName,
-                    //Assigned = currentOutcomeIDList.Contains(outcome.OutcomeID)
-                    Assigned = profileOutcomeIDList.Any() ? profileOutcomeIDList.Contains(outcome.OutcomeID) : false
-                });
-            }
-            //}
-
-            return outcomeViewModels;
-        }
-        private List<InvestorInnovationLevelViewModel> GetInnovationLevels(Investment investmentProfile)
-        {
-            List<InvestorInnovationLevelViewModel> innovationLevelViewModels = new List<InvestorInnovationLevelViewModel>();
-
-            List<int> profileInnovationLevelIDList = investmentProfile.InnovationLevels.Select(il => il.InnovationLevelID).ToList();
-
-            //if (investmentProfile.InnovationLevels != null && investmentProfile.InnovationLevels.Any())
-            //{
-            //    currentInnovationLevelIDList = investmentProfile.InnovationLevels.Select(il => il.InnovationLevelID).ToList();
-            //}
-
-            //var currentInnovationLevelInvestment = db.Investments.Include(ili => ili.InnovationLevels).Where(i => i.InvestmentID == investmentID).Single();
-            //var investmentInnovationLevels = new HashSet<int>(currentInnovationLevelInvestment.InnovationLevels.Select(il => il.InnovationLevelID));
-
-            List<InnovationLevel> innovationLevels = db.InnovationLevels.ToList();
-            foreach (var innovationlevel in innovationLevels)
-            {
-                innovationLevelViewModels.Add(new InvestorInnovationLevelViewModel
-                {
-                    InnovationLevelID = innovationlevel.InnovationLevelID,
-                    InnovationLevelName = innovationlevel.InnovationLevelName,
-                    //Assigned = currentInnovationLevelIDList.Contains(innovationlevel.InnovationLevelID)
-                    Assigned = profileInnovationLevelIDList.Any() ? profileInnovationLevelIDList.Contains(innovationlevel.InnovationLevelID) : false
-                });
-            }
-            //}
-
-            return innovationLevelViewModels;
-        }
-        private List<InvestorScalabilityViewModel> GetScalabilities(Investment investmentProfile)
-        {
-            List<InvestorScalabilityViewModel> scalabilityViewModels = new List<InvestorScalabilityViewModel>();
-
-            List<int> profileScalabilityIDList = investmentProfile.Scalabilities.Select(sc => sc.ScalabilityID).ToList();
-
-            //if (investmentProfile.Scalabilities != null && investmentProfile.Scalabilities.Any())
-            //{
-            //    currentScalabilityIDList = investmentProfile.Scalabilities.Select(sc => sc.ScalabilityID).ToList();
-            //}
-            //var currentScalabilityInvestment = db.Investments.Include(si => si.Scalabilities).Where(i => i.InvestmentID == investmentID).Single();
-            //var investmentScalabilities = new HashSet<int>(currentScalabilityInvestment.Scalabilities.Select(s => s.ScalabilityID));
-
-            List<Scalability> scalabilities = db.Scalabilities.ToList();
-            foreach (var scalability in scalabilities)
-            {
-                scalabilityViewModels.Add(new InvestorScalabilityViewModel
-                {
-                    ScalabilityID = scalability.ScalabilityID,
-                    ScalabilityName = scalability.ScalabilityName,
-                    //Assigned = currentScalabilityIDList.Contains(scalability.ScalabilityID)
-                    Assigned = profileScalabilityIDList.Any() ? profileScalabilityIDList.Contains(scalability.ScalabilityID) : false
-                });
-            }
-            //}
-
-            return scalabilityViewModels;
-        }
-
 
         //---------------------------------------------------------------
-        //<-----Remove
-        private void PopulateAssignedCheckBoxsData(Investment investment)
-        {
-            //private List<TeamSkillViewModel> GetTeamSkills(int investmentID) {
-            var allSkills = db.TeamSkills; //
-            var currentSkillsInvestment = db.Investments.Include(s => s.TeamSkills).Where(i => i.InvestmentID == investment.InvestmentID).Single(); //<----------Added
-            var investmentSkills = new HashSet<int>(currentSkillsInvestment.TeamSkills.Select(w => w.SkillID));
-            var skillsViewModel = new List<TeamSkillViewModel>();
-            foreach (var skill in allSkills) //<-----------------------------Added
-            {
-                skillsViewModel.Add(new TeamSkillViewModel
-                {
-                    SkillID = skill.SkillID,
-                    SkillName = skill.SkillName,
-                    Assigned = investmentSkills.Contains(skill.SkillID)
-                });
-            }
-            ViewBag.skillsViewModel = skillsViewModel; //return skillsViewModel; }
-            //----------------------------------------
-            //private List<InvestorFundingAmountViewModel> GetFundingAmounts(int investmentID) {
-            var allFundingAmounts = db.FundingAmounts;
-            var currentInvestmentFundingAmount = db.Investments.Include(f => f.FundingAmounts).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-            var investmentFundingAmount = new HashSet<int>(currentInvestmentFundingAmount.FundingAmounts.Select(F => F.FundingAmountID));
-            var fundingAmountViewModel = new List<InvestorFundingAmountViewModel>();
-            foreach (var amount in allFundingAmounts)
-            {
-                fundingAmountViewModel.Add(new InvestorFundingAmountViewModel
-                {
-                    FundingAmountID = amount.FundingAmountID,
-                    FundingAmountValue = amount.FundingAmountValue,
-                    Assigned = investmentFundingAmount.Contains(amount.FundingAmountID)
-                });
-            }
-            ViewBag.fundingAmountViewModel = fundingAmountViewModel; //return FundingAmountViewModel; }
-            //--------------------------------------
-            //private List<InvestorFundingAmountPhaseModel> GetFundingPhases(int investmentID) {
-            var allFundingPhases = db.FundingPhases;
-            var currentInvestmentFundingPhase = db.Investments.Include(f => f.FundingPhases).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-            var investmentFundingPhase = new HashSet<int>(currentInvestmentFundingPhase.FundingPhases.Select(F => F.FundingPhaseID));
-            var fundingPhaseViewModel = new List<InvestorFundingPhaseViewModel>();
-            foreach (var phase in allFundingPhases)
-            {
-                fundingPhaseViewModel.Add(new InvestorFundingPhaseViewModel
-                {
-                    FundingPhaseID = phase.FundingPhaseID,
-                    FundingPhaseName = phase.FundingPhaseName,
-                    Assigned = investmentFundingPhase.Contains(phase.FundingPhaseID)
-                });
-            }
-            ViewBag.fundingPhaseViewModel = fundingPhaseViewModel; // return FundingPhaseViewModel; }
-            //----------------------------
-            //private List<InvestorOutcomeViewModel> GetOutcomes(int investmentID) {
-            var allOutcomes = db.Outcomes;
-            var currentInvestmentOutcome = db.Investments.Include(o => o.Outcomes).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-            var investmentOutcome = new HashSet<int>(currentInvestmentOutcome.Outcomes.Select(o => o.OutcomeID));
-            var outcomeViewModel = new List<InvestorOutcomeViewModel>();
-            foreach (var outcome in allOutcomes)
-            {
-                outcomeViewModel.Add(new InvestorOutcomeViewModel
-                {
-                    OutcomeID = outcome.OutcomeID,
-                    OutcomeName = outcome.OutcomeName,
-                    Assigned = investmentOutcome.Contains(outcome.OutcomeID)
-                });
-            }
-            ViewBag.outcomeViewModel = outcomeViewModel; // return OutcomeViewModel; } 
-            //--------------------------------------------
-            //private List<InvestorInnovationLevelViewModel> GetInnovationLevels(int investmentID) {
-            var allInnovationLevels = db.InnovationLevels;
-            var currentInnovationLevels = db.Investments.Include(inn => inn.InnovationLevels).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-            var investmentInnovationLevels = new HashSet<int>(currentInnovationLevels.InnovationLevels.Select(inn => inn.InnovationLevelID));
-            var innovationLevelsViewModel = new List<InvestorInnovationLevelViewModel>();
-            foreach (var level in allInnovationLevels)
-            {
-                innovationLevelsViewModel.Add(new InvestorInnovationLevelViewModel
-                {
-                    InnovationLevelID = level.InnovationLevelID,
-                    InnovationLevelName = level.InnovationLevelName,
-                    Assigned = investmentInnovationLevels.Contains(level.InnovationLevelID)
-                });
-            }
-            ViewBag.innovationLevelsViewModel = innovationLevelsViewModel; // return InnovationLevelViewModel; }
-            //--------------------------------------
-            //private List<InvestorScalabilityViewModel> GetScalabilities(int investmentID) {
-            var allScalabilities = db.Scalabilities;
-            var currentInvestorScalabilities = db.Investments.Include(s => s.Scalabilities).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-            var investmentScalabilities = new HashSet<int>(currentInvestorScalabilities.Scalabilities.Select(s => s.ScalabilityID));
-            var scalabilitiesViewModel = new List<InvestorScalabilityViewModel>();
-            foreach (var scalability in allScalabilities)
-            {
-                scalabilitiesViewModel.Add(new InvestorScalabilityViewModel
-                {
-                    ScalabilityID = scalability.ScalabilityID,
-                    ScalabilityName = scalability.ScalabilityName,
-                    Assigned = investmentScalabilities.Contains(scalability.ScalabilityID)
-                });
-            }
-            ViewBag.scalabilitiesViewModel = scalabilitiesViewModel; //return ... }
-            //------------------------------------------------
-            //private List<InvestorEstimatedExitPlanViewModel> GetEstimatedExitPlans(int investmentID) {
-            var allEstimatedExitPlans = db.EstimatedExitPlans;
-            var currentInvestorEstimatedExitPlans = db.Investments.Include(e => e.EstimatedExitPlans).Where(i => i.InvestmentID == investment.InvestmentID).Single();
-            var investmentEstimatedExitPlans = new HashSet<int>(currentInvestorEstimatedExitPlans.EstimatedExitPlans.Select(e => e.EstimatedExitPlanID));
-            var estimatedExitPlanViewModel = new List<InvestorEstimatedExitPlanViewModel>();
-            foreach (var exitPlan in allEstimatedExitPlans)
-            {                                                    
-                estimatedExitPlanViewModel.Add(new InvestorEstimatedExitPlanViewModel
-                {
-                    EstimatedExitPlanID = exitPlan.EstimatedExitPlanID,
-                    EstimatedExitPlanName = exitPlan.EstimatedExitPlanName,
-                    Assigned = investmentEstimatedExitPlans.Contains(exitPlan.EstimatedExitPlanID)
-                });
-            }
-            ViewBag.estimatedExitPlanViewModel = estimatedExitPlanViewModel; // return ...; }
-        }
-
-
-
-        //<-------delete alltogether, will not be used anymore
-        //private void PopulateAssignedCheckBoxsData(Investment investment,string[] selectedSkills, string[] selectedFundingAmount, string[] selectedFundingPhases,
-        //    string[] selectedOutcomes, string[] selectedInnovationLevels, string[] selectedScalabilities, string[] selectedEstimatedExitPlans)
-        //{
-        //    //populate the selected checkbox from selectedstring after validation errors
-        //    //GetTeamSkills(selectedSkills)
-        //    var allSkills = db.TeamSkills; //<-------------------------Added
-        //    var selectedSkillsHS = new HashSet<String>();
-        //    var skillsViewModel = new List<TeamSkillViewModel>();
-        //    if (selectedSkills != null)
-        //    {
-        //        selectedSkillsHS = new HashSet<String>(selectedSkills);
-        //    }
-        //    foreach (var skill in allSkills) //<----------------------------Added
-        //    {
-        //        skillsViewModel.Add(new TeamSkillViewModel
-        //        {
-        //            SkillID = skill.SkillID,
-        //            SkillName = skill.SkillName,
-        //            Assigned = selectedSkillsHS.Contains(skill.SkillID.ToString())
-        //        });
-        //    }
-        //    ViewBag.skillsViewModel = skillsViewModel;
-        //    //---------------------------------------
-        //    //GetFundingAmounts(selectedFundingAmounts)
-        //    var allFundingAmounts = db.FundingAmounts;
-        //    var selectedInvestmentFundingAmountHS = new HashSet<String>();
-        //    var FundingAmountViewModel = new List<InvestorFundingAmountViewModel>();
-        //    if (selectedFundingAmount != null)
-        //    {
-        //        selectedInvestmentFundingAmountHS = new HashSet<String>(selectedFundingAmount);
-        //    }
-        //    foreach (var amount in allFundingAmounts)
-        //    {
-        //        FundingAmountViewModel.Add(new InvestorFundingAmountViewModel
-        //        {
-        //            FundingAmountID = amount.FundingAmountID,
-        //            FundingAmountValue = amount.FundingAmountValue,
-        //            Assigned = selectedInvestmentFundingAmountHS.Contains(amount.FundingAmountID.ToString())
-        //        });
-        //    }
-        //    ViewBag.fundingAmountViewModel = FundingAmountViewModel;
-        //    //--------------------------------------
-        //    //GetFundingPhases(selectedFundingPhases)
-        //    var allFundingPhases = db.FundingPhases;
-        //    var selectedInvestmentFundingPhaseHS = new HashSet<String>();
-        //    var FundingPhaseViewModel = new List<InvestorFundingPhaseViewModel>();
-        //    if (selectedFundingPhases != null)
-        //    {
-        //        selectedInvestmentFundingPhaseHS = new HashSet<String>(selectedFundingPhases);
-        //    }
-        //    foreach (var phase in allFundingPhases)
-        //    {
-        //        FundingPhaseViewModel.Add(new InvestorFundingPhaseViewModel
-        //        {
-        //            FundingPhaseID = phase.FundingPhaseID,
-        //            FundingPhaseName = phase.FundingPhaseName,
-        //            Assigned = selectedInvestmentFundingPhaseHS.Contains(phase.FundingPhaseID.ToString())
-        //        });
-        //    }
-        //    ViewBag.fundingPhaseViewModel = FundingPhaseViewModel;
-        //    //----------------------------
-        //    //GetOutcomes(selectedOutcomes)
-        //    var allOutcomes = db.Outcomes;
-        //    var selectedInvestmentOutcomeHS = new HashSet<String>();
-        //    var OutcomeViewModel = new List<InvestorOutcomeViewModel>();
-        //    if (selectedOutcomes != null)
-        //    {
-        //        selectedInvestmentOutcomeHS = new HashSet<String>(selectedOutcomes);
-        //    }
-        //    foreach (var outcome in allOutcomes)
-        //    {
-        //        OutcomeViewModel.Add(new InvestorOutcomeViewModel
-        //        {
-        //            OutcomeID = outcome.OutcomeID,
-        //            OutcomeName = outcome.OutcomeName,
-        //            Assigned = selectedInvestmentOutcomeHS.Contains(outcome.OutcomeID.ToString())
-        //        });
-        //    }
-        //    ViewBag.outcomeViewModel = OutcomeViewModel;
-        //    //--------------------------------------------
-        //    //GetInnovationlevels(selectedInnovationLevels)
-        //    var allInnovationLevels = db.InnovationLevels;
-        //    var selectedInvestmentInnovationLevelsHS = new HashSet<String>();
-        //    var InnovationLevelsViewModel = new List<InvestorInnovationLevelViewModel>();
-        //    if (selectedInnovationLevels != null)
-        //    {
-        //        selectedInvestmentInnovationLevelsHS = new HashSet<String>(selectedInnovationLevels);
-        //    }
-        //    foreach (var level in allInnovationLevels)
-        //    {
-        //        InnovationLevelsViewModel.Add(new InvestorInnovationLevelViewModel
-        //        {
-        //            InnovationLevelID = level.InnovationLevelID,
-        //            InnovationLevelName = level.InnovationLevelName,
-        //            Assigned = selectedInvestmentInnovationLevelsHS.Contains(level.InnovationLevelID.ToString())
-        //        });
-        //    }
-        //    ViewBag.innovationLevelsViewModel = InnovationLevelsViewModel;
-        //    //--------------------------------------
-        //    //GetScalabilities(selectedScalabilities)
-        //    var allScalabilities = db.Scalabilities;
-        //    var selectedInvestmentScalabilitiesHS = new HashSet<String>();
-        //    var ScalabilitiesViewModel = new List<InvestorScalabilityViewModel>();
-        //    if (selectedScalabilities != null)
-        //    {
-        //        selectedInvestmentScalabilitiesHS = new HashSet<String>(selectedScalabilities);
-        //    }
-        //    foreach (var scalability in allScalabilities)
-        //    {
-        //        ScalabilitiesViewModel.Add(new InvestorScalabilityViewModel
-        //        {
-        //            ScalabilityID = scalability.ScalabilityID,
-        //            ScalabilityName = scalability.ScalabilityName,
-        //            Assigned = selectedInvestmentScalabilitiesHS.Contains(scalability.ScalabilityID.ToString())
-        //        });
-        //    }
-        //    ViewBag.scalabilitiesViewModel = ScalabilitiesViewModel;
-        //    //------------------------------------------------
-        //    //GetEstimatedExitPlans(selectedEstimatedExitPlans)
-        //    var allEstimatedExitPlans = db.EstimatedExitPlans;
-        //    var selectedInvestmentEstimatedExitPlansHS = new HashSet<String>();
-        //    var EstimatedExitPlanViewModel = new List<InvestorEstimatedExitPlanViewModel>();
-        //    if (selectedEstimatedExitPlans != null)
-        //    {
-        //        selectedInvestmentEstimatedExitPlansHS = new HashSet<String>(selectedEstimatedExitPlans);
-        //    }        
-        //    foreach (var exitPlan in allEstimatedExitPlans)
-        //    {
-        //        EstimatedExitPlanViewModel.Add(new InvestorEstimatedExitPlanViewModel
-        //        {
-        //            EstimatedExitPlanID = exitPlan.EstimatedExitPlanID,
-        //            EstimatedExitPlanName = exitPlan.EstimatedExitPlanName,
-        //            Assigned = selectedInvestmentEstimatedExitPlansHS.Contains(exitPlan.EstimatedExitPlanID.ToString())
-        //        });
-        //    }
-        //    ViewBag.estimatedExitPlanViewModel = EstimatedExitPlanViewModel;
-        //}
-
-
-
+       
         [Authorize(Roles = "Investor")]
         public ActionResult Activate(string id, string redirect = "Index") //ActivateOrUnactivate(
         {
@@ -2241,27 +1333,28 @@ namespace EoS.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Investment investment = db.Investments.Find(id);
+            Investment investmentProfile = db.Investments.Find(id);
 
-            if (investment == null)
+            if (investmentProfile == null)
             {
                 return HttpNotFound();
             }
             //try
-            investment.Locked = false;
+            investmentProfile.Locked = false;
             
-            db.Entry(investment).State = EntityState.Modified;
+            db.Entry(investmentProfile).State = EntityState.Modified;
             db.SaveChanges();
 
-            if (!string.IsNullOrWhiteSpace(redirect))
+            if (!string.IsNullOrWhiteSpace(redirect) && redirect.ToUpper() != "INDEX")
             {
-                if (redirect.ToUpper().Contains("DETAILS")) return RedirectToAction("ProfileDetails", new { id }); //<-----------------Changed
-
-                /*if (redirect == "Details")*/
-                //return RedirectToAction(, new { id }); 
+                if (redirect.ToUpper().Contains("DETAILS")) return RedirectToAction("ProfileDetails", new { id });
+                else return RedirectToAction(redirect, new { id });
             }
 
-            return RedirectToAction("Index"); //<---check user
+            if (string.IsNullOrWhiteSpace(redirect) || redirect.ToUpper() == "INDEX")
+                return RedirectToAction("Index", new { id });
+
+            return RedirectToAction("ProfileDetails", new { id });
         }
 
         // GET: Investments/Reminder

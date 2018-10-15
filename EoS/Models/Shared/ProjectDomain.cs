@@ -12,7 +12,7 @@ namespace EoS.Models.Shared
         [Display(Name = "Project domain name")]
         public string ProjectDomainName { get; set; }
 
-        public virtual ICollection<IdeaCarrier.Startup> Startups { get; set; } //<---necessary??
-        public virtual ICollection<Investor.Investment> Investments { get; set; } //<---necessary??
+        public virtual ICollection<IdeaCarrier.Startup> Startups { get; set; }
+        public virtual ICollection<Investor.Investment> Investments { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿@model EoS.Models.IdeaCarrier.StartupEditAdminViewModel
 
 @{
-    ViewBag.Title = "Edit Startup project " + Model.StartupID + " belonging to " + Model.IdeaCarrierName + " (Admin only)";
+    ViewBag.Title = "Edit Startup project " + Model.StartupID + " belonging to " + Model.IdeaCarrierUserName + " (Admin only)";
 }
 
 @using (Html.BeginForm())
@@ -42,7 +42,7 @@
                 @Html.LabelFor(model => model.Approved, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
                 <div class="col-md-9">
                     <div class="checkbox col-md-10">
-                        @Html.EditorFor(model => model.Approved)
+                        @Html.EditorFor(model => model.Approved.Value) &nbsp;(Approved by&nbsp;@Model.ApprovedBy)
                         @Html.ValidationMessageFor(model => model.Approved, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -58,6 +58,8 @@
     </div>
 }
 
-<div class="hidden-print">
-    @Html.ActionLink("Back to Startup projects", "Index")
-</div>
+    <div class="hidden-print">
+        @Html.ActionLink("Back to Investment profiles by this Idea carrier", "Index", new { id = Model.IdeaCarrierUserID }) |
+        @Html.ActionLink("Go to all Investment profiles", "Index") |
+        @Html.ActionLink("Details", "Details", new { id = Model.StartupID })
+    </div>

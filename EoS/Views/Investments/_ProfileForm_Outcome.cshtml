@@ -1,6 +1,6 @@
 ﻿@model EoS.Models.Investor.InvestmentProfileViewModel
 
-<div class="@(ViewBag.Unanswered == "Outcomes" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "Outcomes" ? "form-group warning" : "form-group")">
     <label class="control-label col-md-2" style="text-align:left">The outcomes</label>
     <div class=" col-md-offset-2 col-md-10" style="margin-left:0">
         <table class="borderless">
@@ -8,7 +8,7 @@
                 @{
                     foreach (var outcome in Model.Outcomes)
                     {
-                        <td><input type="checkbox" name="SelectedOutcomeIDs" value="@outcome.OutcomeID" @(outcome.Assigned ? "checked=\"checked\"" : "") /> @outcome.OutcomeName</td>
+                        <td><input type="checkbox" name="OutcomeIDs" value="@outcome.OutcomeID" @(outcome.Assigned ? "checked=\"checked\"" : "") /> @outcome.OutcomeName</td>
                     @:</tr><tr>
                     }
                 }
@@ -17,7 +17,7 @@
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "InnovationLevels" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "InnovationLevels" ? "form-group warning" : "form-group")">
     <label class="control-label col-md-2" style="text-align:left">Levels of innovation</label>
     <div class=" col-md-offset-2 col-md-10" style="margin-left:0">
         <table class="borderless">
@@ -25,7 +25,7 @@
                 @{
                     foreach (var innovationLevel in Model.InnovationLevels)
                     {
-                        <td><input type="checkbox" name="SelectedInnovationLevelIDs" value="@innovationLevel.InnovationLevelID" @(innovationLevel.Assigned ? "checked=\"checked\"" : "") /> @innovationLevel.InnovationLevelName </td>
+                        <td><input type="checkbox" name="InnovationLevelIDs" value="@innovationLevel.InnovationLevelID" @(innovationLevel.Assigned ? "checked=\"checked\"" : "") /> @innovationLevel.InnovationLevelName </td>
                     @:</tr><tr>
                     }
                 }
@@ -34,7 +34,7 @@
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "Scalabilities" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "Scalabilities" ? "form-group warning" : "form-group")">
     <label class="control-label col-md-2" style="text-align:left">Required scalabilities</label>
     <div class=" col-md-offset-2 col-md-10" style="margin-left:0">
         <table class="borderless">
@@ -42,7 +42,7 @@
                 @{
                     foreach (var scalability in Model.Scalabilities)
                     {
-                        <td><input type="checkbox" name="SelectedScalabilityIDs" value="@scalability.ScalabilityID" @(scalability.Assigned ? "checked=\"checked\"" : "") /> @scalability.ScalabilityName</td>
+                        <td><input type="checkbox" name="ScalabilityIDs" value="@scalability.ScalabilityID" @(scalability.Assigned ? "checked=\"checked\"" : "") /> @scalability.ScalabilityName</td>
                     @:</tr><tr>
                     }
                 }
@@ -52,7 +52,7 @@
 </div>
 
 <hr />
-@if (string.IsNullOrEmpty(ViewBag.Unanswered))
+@if (string.IsNullOrEmpty(Model.UnansweredQuestion))
 {
     <div class="col-md-offset-4 hidden-print">
         <input type="button" value="Save your answers for this tab Outcome" class="btn btn-warning btn-sm" style="color:black;max-width:500px" onclick="SaveData()" title="in order to return later" />
@@ -67,4 +67,3 @@ else
         @Html.ActionLink("Cancel submission of form", "SubmitProfileForm", new { id = Model.InvestmentID, cancel = true, redirect = "ProfileForm", redirectTab = "Outcome" }, new { @id = "cancelProfileFormSubmission", @class = "btn btn-danger" })
     </div>
 }
-

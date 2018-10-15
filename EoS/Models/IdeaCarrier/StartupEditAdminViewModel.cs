@@ -13,11 +13,14 @@ namespace EoS.Models.IdeaCarrier
         [Display(Name = "Startup code")]
         public string StartupID { get; set; }
 
-        [Display(Name = "Investor name")]
-        public string IdeaCarrierName { get; set; }
+        [Display(Name = "Investor user ID")]
+        public string IdeaCarrierUserID { get; set; }
 
-        [MaxLength(1500)] //<-----------------increase?
-        //[AllowHtml] //<--------------------------------------------------------------------
+        [Display(Name = "Investor user name")]
+        public string IdeaCarrierUserName { get; set; }
+
+        [MaxLength(1500)]
+        [AllowHtml]
         [Display(Name = "Project summary (max 1500 characters) in plain text or HTML")]
         [RegularExpression("^[^0-9@]+$", ErrorMessage = "No numbers or special characters")]
         public string ProjectSummary { get; set; }
@@ -27,5 +30,8 @@ namespace EoS.Models.IdeaCarrier
 
         [Display(Name = "Approved")]
         public bool? Approved { get; set; }
+
+        [Display(Name = "Approved by")]
+        public string ApprovedBy { get; internal set; }
     }
 }

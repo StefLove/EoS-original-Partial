@@ -7,7 +7,14 @@
 <h2>@ViewBag.Title</h2>
 
 <p class="hidden-print">
-    @Html.ActionLink("Run MMM", "Motor")
+    @Html.ActionLink("Run MMM", "Motor", new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
+    @if (ViewBag.NoOfResults > 0 && ViewBag.NoOfResults < Model.Count())
+    {
+        @:&nbsp;
+        @Html.ActionLink("Show all results", "Results", new { @class = "btn btn-success", @style = "height:25px;padding:1px" })
+        @:&nbsp;
+        @Html.ActionLink("Delete all results", "DeleteAll", new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
+    }
 </p>
 
 <table class="table">

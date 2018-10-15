@@ -12,6 +12,6 @@ namespace EoS.Models.IdeaCarrier
         [Display(Name = "Team weakness name")]
         public string TeamWeaknessName { get; set; }
 
-        public virtual ICollection<Startup> Startups { get; set; } //<---necessary??
+        public virtual ICollection<Startup> Startups { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿@model EoS.Models.Investor.InvestmentProfileViewModel
 
-<div class="@(ViewBag.Unanswered == "EstimatedExitPlans" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "EstimatedExitPlans" ? "form-group warning" : "form-group")">
     <label class="control-label col-md-2" style="text-align:left">Estimated exit plans</label>
     <div class=" col-md-offset-2 col-md-10" style="margin-left:0">
         <table class="borderless">
@@ -8,7 +8,7 @@
                 @{
                     foreach (var estimatedExitPlan in Model.EstimatedExitPlans)
                     {
-                        <td><input type="checkbox" name="SelectedEstimatedExitPlanIDs" value="@estimatedExitPlan.EstimatedExitPlanID" @(estimatedExitPlan.Assigned ? "checked=\"checked\"" : "") /> @estimatedExitPlan.EstimatedExitPlanName </td>
+                        <td><input type="checkbox" name="EstimatedExitPlanIDs" value="@estimatedExitPlan.EstimatedExitPlanID" @(estimatedExitPlan.Assigned ? "checked=\"checked\"" : "") /> @estimatedExitPlan.EstimatedExitPlanName </td>
                         @:</tr><tr>
                     }
                 }
@@ -17,7 +17,7 @@
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "EstimatedBreakEven" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "EstimatedBreakEven" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.EstimatedBreakEven, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.EstimatedBreakEven, new { htmlAttributes = new { @class = "form-control", @placeholder = "In term of years, 10 equals to any number" } })
@@ -25,7 +25,7 @@
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "PossibleIncomeStreams" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "PossibleIncomeStreams" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.PossibleIncomeStreams, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.PossibleIncomeStreams, new { htmlAttributes = new { @class = "form-control", @placeholder = "10 equals to any number" } })
@@ -34,7 +34,7 @@
 </div>
 
 <hr />
-@if (string.IsNullOrEmpty(ViewBag.Unanswered))
+@if (string.IsNullOrEmpty(Model.UnansweredQuestion))
 {
     <div class="col-md-offset-4 hidden-print">
         <input type="button" value="Save your answers for this tab Budget" class="btn btn-warning btn-sm" style="color:black;max-width:500px" onclick="SaveData()" title="in order to return later" />

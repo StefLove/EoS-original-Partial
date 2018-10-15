@@ -11,7 +11,7 @@ namespace EoS.Models.Shared
         [Display(Name = "Outcome name")]
         public string OutcomeName { get; set; }
 
-        public virtual ICollection<IdeaCarrier.Startup> Startups { get; set; } //<---necessary??
-        public virtual ICollection<Investor.Investment> Investments { get; set; } //<---necessary??
+        public virtual ICollection<IdeaCarrier.Startup> Startups { get; set; }
+        public virtual ICollection<Investor.Investment> Investments { get; set; }
     }
 }

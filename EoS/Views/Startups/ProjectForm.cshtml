@@ -17,15 +17,15 @@
     new AjaxOptions
     {
         HttpMethod = "POST",
-        //UpdateTargetId = "StartupProjectForm",
+        @*//UpdateTargetId = "StartupProjectForm",
         //OnBegin = "OnBegin",
-        //OnComplete = "OnComplete",
+        //OnComplete = "OnComplete",*@
         OnSuccess = "OnSuccess",
         OnFailure = "OnFailure",
         LoadingElementId = "Progress",
         InsertionMode = InsertionMode.Replace, 
-        //Confirm = "...",
-        //AllowCache = false
+        @*//Confirm = "...",
+        //AllowCache = false*@
     }, new { @id = "StartupProjectForm" }))
 {
     @Html.AntiForgeryToken()
@@ -34,7 +34,16 @@
 
         <div id="wizard">
 
-            <div id="Message" class="text-danger">Your answers are automatically saved when navigating (on reloading only in Profile tab), but the form is not submitted.</div>
+            <div id="Message" class="text-danger">
+                @if (string.IsNullOrEmpty(Model.Message))
+                {
+                    @Html.Raw("Your answers are automatically saved when you navigate between the tabs, but the form is not submitted")
+                }
+                else
+                {
+                    @Model.Message
+                }
+            </div>
             <hr />
 
             @Html.HiddenFor(model => model.StartupID)
@@ -111,17 +120,17 @@
                     }
                 </div>
 
-            </div> <!-- Tab panes end -->          
-            <hr />
+            </div> <!-- Tab panes end -->
 
             <div class="form-group hidden-print">
-                <div class="col-md-offset-0 col-md-10">
+                <hr />
+                <div class="col-md-offset-0 col-md-10" onclick="">
                     <div style="float:left">
                         <input type="button" name="first" value="First" class="btn button-first btn-info" onclick="SaveData()" />
                         <input type="button" name="previous" value="Previous" class="btn button-previous btn-info" onclick="SaveData()" />
                     </div>
                     <div style="float:unset" class="col-md-offset-5">                       
-                        @Html.ActionLink("Submit & lock the form", "SubmitProjectForm", new { id = Model.StartupID, redirect = "ProjectDetails" }, new { @id = "projectFormSubmission", @class = "btn btn-primary", @style = "width:180px", title = "Do you really wish to submit this form? (It will not be editable any more)" })
+                        @Html.ActionLink("Submit & lock the form", "SubmitProjectForm", new { id = Model.StartupID, redirect = "ProjectDetails" }, new { @id = "projectFormSubmission", @class = "btn btn-primary", @style = "width:180px", onclick = "submitProjectForm()" })
                     </div>
                     <div style="float:right">
                         <input type="button" name="next" value="Next" class="btn button-next btn-info" onclick="SaveData()" />
@@ -144,14 +153,30 @@
 <div class="hidden-print">
     <hr />
     @Html.ActionLink("Back to your Startup projects", "Index") |
-    @Html.ActionLink("Details", "ProjectDetails", new { id = Model.StartupID })
+    @Html.ActionLink("Project details", "ProjectDetails", new { id = Model.StartupID }) |
+    <input type="button" value="Set this tab as start tab" onclick="setNewStartTab()" class="btn btn-primary" style="height:25px;padding:1px" /> |
+    <input type="button" value="Reload page" onclick="reloadPage()" class="btn btn-primary" style="height:25px;padding:1px" />
 </div>
 
 <script type="text/javascript">
 
     window.onload = function (evt) { $("#Progress").hide(); };
-    window.onbeforeunload = function (evt) { SaveData(); };
+    //window.onbeforeunload = function (evt) { SaveData(); };
 
+    function setNewStartTab() {
+        location.href = location.href.split('#')[0] + '#' + $('.active')[0].id.replace('tab_', '');
+    }
+
+    function reloadPage() { //resetData() refreshTab()
+        if (confirm("Do ypu want to save your latest answers before reloading?")) SaveData();
+        location.reload(true);
+    }
+
+    function submitProjectForm() {
+        SaveData();
+        return confirm('Do you really wish to submit this form? (It will be locked for editing');
+    }
+@*
     //function submitProjectForm() {
     //    SaveData();
     //    if (confirm('Do you really wish to submit this form? (It will not be editable any more)')) {
@@ -161,11 +186,11 @@
         //else SaveData();
     //}
 
-    $('a#projectFormSubmission').click(function () {
-        SaveData();
-        if (!confirm('Do you really wish to submit this form? (It will not be editable any more)')) return false;
-        return true;
-    });
+    //$('a#projectFormSubmission').click(function () {
+    //    SaveData();
+    //    if (!confirm('Do you really wish to submit this form? (It will not be editable any more)')) return false;
+    //    return true;
+    //});*@
 
     function SaveData() {
         activateTab($('.active')[0].id);
@@ -173,30 +198,30 @@
     }
 
     function OnSuccess(response) {
-         //$("#Progress").hide();
-        
-        @*if ('@Model.Updated' === 'True') $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.<br />');
+         @*//$("#Progress").hide();
+
+        if ('@Model.Updated' === 'True') $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.<br />');
         else $('#Message').html('There were nothing that needed to be updated in ') + $("input[name='activeTab']")[0].value.replace('_', ' ') + '.';*@
 
          @*if ('@Model.Updated' === 'True') {*@
 
-            message = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.'; // $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.';
-            $('#Message').html(message + '<br /> @ViewBag.Message');
-
+            var successMessage = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.'; // $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.';
+            var message = '@Model.Message';
+            $('#Message').html(successMessage + (message !== '' ? '<br />' + message : ''));
+        @*
         //}
         //else {
         //    message = 'There were nothing that needed to be updated in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + '.'; //+ $("input[name='ActiveTab']")[0].value.replace('_', ' ') + '.';
         //    $('#Message').html(message);
-        //}
+        //}*@
     }
-     
+
     function OnFailure(response) {
-        var errorMessage = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' could not be saved!<br />' + response.responseText;
-        $('#Message').html(errorMessage + '<br /> @ViewBag.Message');
-
-        //$('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' could not be saved!<br />' + response.responseText);
+        var failureMessage = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' could not be saved!<br />' + response.responseText;
+        var message = '@Model.Message';
+        $('#Message').html(failureMessage + (message !== '' ? '<br />' + message : ''));
     }
-
+    @*
     //function OnSuccess(response) { //(data, textStatus, jqXHR)
     //    //document.getElementById("Message").innerHTML = "Data saved and updated";
     //    if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
@@ -209,7 +234,7 @@
     //    if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
     //        $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' could not be saved!');
     //    else $('#Message').html('');
-    //}
+    //}*@
 
     function activateTab(activeTabId) {
         $("input[name='ActiveTab']")[0].value = activeTabId;

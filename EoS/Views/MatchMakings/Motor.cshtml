@@ -6,17 +6,17 @@
 
 <h3>@ViewBag.Title</h3>
 
-@Html.ValidationSummary(true,"", new { @class = "text-danger" })
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
     @*if (!string.IsNullOrEmpty(ViewBag.Message))
-    {
-        <div class="text-danger" style="font-size:22px">@Html.Raw(ViewBag.Message)</div>
-        <br /><text>&nbsp;</text><br />
-    }*@
+        {
+            <div class="text-danger" style="font-size:22px">@Html.Raw(ViewBag.Message)</div>
+            <br /><text>&nbsp;</text><br />
+        }*@
 
     <div class="form-horizontal">
 
@@ -48,7 +48,8 @@
                 <div class="col-md-10">
                     @if (Model.InvestmentProfileList.Any())
                     {
-                        @Html.DropDownListFor(model => model.InvestmentProfileId, Model.InvestmentProfileList, @*"All",*@ new { @class = "form-control" }) @*"All"*@
+                        @Html.DropDownListFor(model => model.InvestmentProfileId, Model.InvestmentProfileList,@*"All",*@                                                                                                                               
+                        new { @class = "form-control" }) @*"All"*@
                     }
                     else
                     {
@@ -87,7 +88,8 @@
             @Html.Raw("<h4 class=\"text-danger\">There are no Startup projects to be matched with.</h4>")
         }
 
-        <div class="form-group"> @*1*@
+        <div class="form-group">
+            @*1*@
             @Html.LabelFor(model => model.ProjectDomainSelected, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
@@ -97,7 +99,8 @@
             </div>
         </div>
 
-        <div class="form-group"> @*2*@
+        <div class="form-group">
+            @*2*@
             @Html.LabelFor(model => model.FundingPhaseSelected, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
@@ -107,7 +110,8 @@
             </div>
         </div>
 
-        <div class="form-group"> @*3*@
+        <div class="form-group">
+            @*3*@
             @Html.LabelFor(model => model.FundingAmountSelected, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
@@ -117,7 +121,8 @@
             </div>
         </div>
 
-        <div class="form-group"> @*4*@
+        <div class="form-group">
+            @*4*@
             @Html.LabelFor(model => model.EstimatedExitPlanSelected, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
@@ -127,7 +132,8 @@
             </div>
         </div>
 
-        <div class="form-group"> @*5*@
+        <div class="form-group">
+            @*5*@
             @Html.LabelFor(model => model.TeamSkillsSelected, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
@@ -137,7 +143,8 @@
             </div>
         </div>
 
-        <div class="form-group"> @*6*@
+        <div class="form-group">
+            @*6*@
             @Html.LabelFor(model => model.OutcomesSelected, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
@@ -148,7 +155,8 @@
         </div>
 
 
-        <div class="form-group"> @*7*@
+        <div class="form-group">
+            @*7*@
             @Html.LabelFor(model => model.InnovationLevelSelected, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
@@ -158,7 +166,8 @@
             </div>
         </div>
 
-        <div class="form-group"> @*8*@
+        <div class="form-group">
+            @*8*@
             @Html.LabelFor(model => model.ScalabilitySelected, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
@@ -168,6 +177,17 @@
             </div>
         </div>
 
+        <hr />
+        <div class="form-group">
+            Select all
+            <div class="col-md-10">
+                @*<input type="button" value="Select all" onclick="selectAll()" class="btn btn-primary" style="height:25px;padding:1px" />&nbsp;
+                <input type="button" value="Deselect all" onclick="deselectAll()" class="btn btn-primary" style="height:25px;padding:1px" />*@
+                <input type="checkbox" id="selectAll" value="SelectAll" onclick="selectAll()" />
+            </div>
+        </div>
+
+        <hr />
         @if (Model.InvestmentProfileList.Any() && Model.StartupProjectList.Any())
         {
             <div class="form-group">
@@ -178,8 +198,41 @@
         }
     </div>
 }
+
 <br />&nbsp;<br />
+
 <div class="hidden-print">
     @Html.ActionLink("To Result list", "Results") |
     @Html.ActionLink("To matchable Investment profiles", "Index", "Investments", new { matchable = true }, null)
 </div>
+
+<script type="text/javascript">
+
+    function selectAll() {
+        if (document.getElementById("selectAll").checked) selectAll2(true);
+        else selectAll2(false);
+    }
+    function selectAll2(allSelected) {
+        if (allSelected) {
+            document.getElementById("ProjectDomainSelected").checked = true;
+            document.getElementById("FundingPhaseSelected").checked = true;
+            document.getElementById("FundingAmountSelected").checked = true;
+            document.getElementById("EstimatedExitPlanSelected").checked = true;
+            document.getElementById("TeamSkillsSelected").checked = true;
+            document.getElementById("OutcomesSelected").checked = true;
+            document.getElementById("InnovationLevelSelected").checked = true;
+            document.getElementById("ScalabilitySelected").checked = true;
+        }
+        else {
+            document.getElementById("ProjectDomainSelected").checked = false;
+            document.getElementById("FundingPhaseSelected").checked = false;
+            document.getElementById("FundingAmountSelected").checked = false;
+            document.getElementById("EstimatedExitPlanSelected").checked = false;
+            document.getElementById("TeamSkillsSelected").checked = false;
+            document.getElementById("OutcomesSelected").checked = false;
+            document.getElementById("InnovationLevelSelected").checked = false;
+            document.getElementById("ScalabilitySelected").checked = false;
+        }
+    }
+
+</script>

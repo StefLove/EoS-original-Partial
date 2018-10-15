@@ -1,6 +1,6 @@
 ﻿@model EoS.Models.Investor.InvestmentProfileViewModel
 
-<div class="@(ViewBag.Unanswered == "ProfileName" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "ProfileName" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.ProfileName, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.ProfileName, new { htmlAttributes = new { @class = "form-control", placeholder = "This is for you only" } })
@@ -8,7 +8,7 @@
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "ProfileDomain" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "ProfileDomain" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.ProfileDomainID, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.DropDownListFor(model => model.ProfileDomainID, Model.ProfileDomainList, "Select:", new { @class = "form-control" })
@@ -17,7 +17,7 @@
 </div>
 
 <hr />
-@if (string.IsNullOrEmpty(ViewBag.Unanswered))
+@if (string.IsNullOrEmpty(Model.UnansweredQuestion))
 {
     <div class="col-md-offset-4 hidden-print">
         <input type="button" value="Save your answers for this tab Profile" class="btn btn-warning btn-sm" style="color:black;;max-width:500px" onclick="SaveData()" title="in order to return later" />
@@ -32,4 +32,3 @@ else
         @Html.ActionLink("Cancel submission of form", "SubmitProfileForm", new { id = Model.InvestmentID, cancel = true, redirect = "ProfileForm", redirectTab = "Profile" }, new { @id = "cancelProfileFormSubmission", @class = "btn btn-danger" })
     </div>
 }
-

@@ -84,7 +84,7 @@ else
         </th>
         <th>
             @Html.Raw("<span class=\"visible-print\">#Matches</span>")
-            @Html.ActionLink("Matches", "Index", new { orderBy = "MatchMakingCount" }, htmlAttributes: new { title = "Order by Match making count", @class = "hidden-print" })
+            @Html.ActionLink("#Matches", "Index", new { orderBy = "MatchMakingCount" }, htmlAttributes: new { title = "Order by Match making count", @class = "hidden-print" })
         </th>
         <th>
             @Html.Raw("<span class=\"visible-print\">Form</span>")

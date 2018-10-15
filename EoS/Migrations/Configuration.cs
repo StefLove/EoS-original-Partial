@@ -286,7 +286,7 @@ namespace EoS.Migrations
                 );
             context.SaveChanges();
 
-            context.TeamSkills.AddOrUpdate(
+            context.TeamSkills.AddOrUpdate( //Sequence contains more than one element
                 ts => ts.SkillName,
                 new TeamSkill { SkillName = "M & A" },
                 new TeamSkill { SkillName = "R & D" },

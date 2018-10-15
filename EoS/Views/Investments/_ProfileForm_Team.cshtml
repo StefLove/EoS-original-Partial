@@ -4,8 +4,10 @@
     @Html.LabelFor(model => model.TeamMemberSizeMoreThanOne, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-9">
         <div class="checkbox col-md-10">
-            @Html.EditorFor(model => model.TeamMemberSizeMoreThanOne)
-            @Html.ValidationMessageFor(model => model.TeamMemberSizeMoreThanOne, "", new { @class = "text-danger" })
+            @*@Html.EditorFor(model => model.TeamMemberSizeMoreThanOne)*@
+            @Html.RadioButton("TeamMemberSizeMoreThanOne", "Yes", Model.TeamMemberSizeMoreThanOne) Yes&nbsp;&nbsp; @*Model.TeamMemberSizeMoreThanOne.HasValue ? Model.TeamMemberSizeMoreThanOne.Value : false*@
+            @Html.RadioButton("TeamMemberSizeMoreThanOne", "No", !Model.TeamMemberSizeMoreThanOne) No              @*Model.TeamMemberSizeMoreThanOne.HasValue ? !Model.TeamMemberSizeMoreThanOne.Value : false*@
+            @*@Html.ValidationMessageFor(model => model.TeamMemberSizeMoreThanOne, "", new { @class = "text-danger" })*@
         </div>
     </div>
 </div>
@@ -14,8 +16,10 @@
     @Html.LabelFor(model => model.TeamHasExperience, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-9">
         <div class="checkbox col-md-10">
-            @Html.EditorFor(model => model.TeamHasExperience)
-            @Html.ValidationMessageFor(model => model.TeamHasExperience, "", new { @class = "text-danger" })
+            @*@Html.EditorFor(model => model.TeamHasExperience)*@
+            @Html.RadioButton("TeamHasExperience", "Yes", Model.TeamHasExperience) Yes&nbsp;&nbsp; @*Model.TeamHasExperience.HasValue ? Model.TeamHasExperience.Value : false*@
+            @Html.RadioButton("TeamHasExperience", "No", !Model.TeamHasExperience) No              @*Model.TeamHasExperience.HasValue ? !Model.TeamHasExperience.Value : false*@
+            @*@Html.ValidationMessageFor(model => model.TeamHasExperience, "", new { @class = "text-danger" })*@
         </div>
     </div>
 </div>
@@ -24,15 +28,17 @@
     @Html.LabelFor(model => model.ActiveInvestor, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-9">
         <div class="checkbox col-md-10">
-            @Html.EditorFor(model => model.ActiveInvestor)
-            @Html.ValidationMessageFor(model => model.ActiveInvestor, "", new { @class = "text-danger" })
+            @*@Html.EditorFor(model => model.ActiveInvestor)*@
+            @Html.RadioButton("ActiveInvestor", "Yes", Model.ActiveInvestor) Yes&nbsp;&nbsp; @*Model.ActiveInvestor.HasValue ? Model.ActiveInvestor.Value : false*@
+            @Html.RadioButton("ActiveInvestor", "No", !Model.ActiveInvestor) No              @*Model.ActiveInvestor.HasValue ? !Model.ActiveInvestor.Value : false*@
+            @*@Html.ValidationMessageFor(model => model.ActiveInvestor, "", new { @class = "text-danger" })*@
         </div>
     </div>
 </div>
 
 @if (Model.TeamSkills != null)
 {
-    <div class="@(ViewBag.Unanswered == "TeamSkills" ? "form-group warning" : "form-group")">
+    <div class="@(Model.UnansweredQuestion == "TeamSkills" ? "form-group warning" : "form-group")">
         <label class="control-label col-md-2" style="text-align:left">Skills of the team</label>
         <div class="col-md-offset-2 col-md-10" style="margin-left:0">
             <table class="borderless">
@@ -40,7 +46,7 @@
                     @{
                         foreach (var teamSkill in Model.TeamSkills)
                         {
-                            <td><input type="checkbox" name="SelectedTeamSkillIDs" value="@teamSkill.SkillID" @(teamSkill.Assigned ? "checked=\"checked\"" : "") /> @teamSkill.SkillName</td>
+                            <td><input type="checkbox" name="TeamSkillIDs" value="@teamSkill.SkillID" @(teamSkill.Assigned ? "checked=\"checked\"" : "") /> @teamSkill.SkillName</td>
                         @:</tr><tr>
                         }
                     }
@@ -51,7 +57,7 @@
 }
 
 <hr />
-@if (string.IsNullOrEmpty(ViewBag.Unanswered))
+@if (string.IsNullOrEmpty(Model.UnansweredQuestion))
 {
     <div class="col-md-offset-4 hidden-print">
         <input type="button" value="Save your answers for this tab Team" class="btn btn-warning btn-sm" style="color:black;max-width:500px" onclick="SaveData()" title="in order to return later" />
@@ -66,4 +72,3 @@ else
         @Html.ActionLink("Cancel submission of form", "SubmitProfileForm", new { id = Model.InvestmentID, cancel = true, redirect = "ProfileForm", redirectTab = "Team" }, new { @id = "cancelProfileFormSubmission", @class = "btn btn-danger" })
     </div>
 }
-

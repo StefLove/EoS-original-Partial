@@ -8,13 +8,12 @@
 
 <h3>Are you sure you want to remove this?</h3>
 <div>
-    <h4>Startup project</h4>
+    <h4>Startup project @Model.StartupID</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.StartupName)
         </dt>
-
         <dd>
             @Html.DisplayFor(model => model.StartupName)
         </dd>
@@ -22,20 +21,20 @@
         <dt>
             @Html.DisplayNameFor(model => model.CountryID)
         </dt>
-
         <dd>
             @Html.DisplayFor(model => model.Country.CountryName)
         </dd>
-        @if (Model.SwedishRegionID != null)
+
+        @*@if (Model.SwedishRegionID != null)
         {
         <dt>
             @Html.DisplayNameFor(model => model.SwedishRegionID)
         </dt>
-        
+
         <dd>
             @Html.DisplayFor(model => model.SwedishRegion.RegionName)
         </dd>
-        }
+        }*@
 
         <dt>
             @Html.DisplayNameFor(model => model.ProjectDomainID)
@@ -47,25 +46,41 @@
         <dt>
             @Html.DisplayNameFor(model => model.ProjectSummary)
         </dt>
+        <dd class="hidden-print">
+            @Html.TextAreaFor(model => model.ProjectSummary, new { @readonly = "readonly", @rows = "10", @cols = "150" })
+        </dd>
+        <dd class="visible-print">
+            <hr style="border-color:darkgrey; background-color:darkgrey;" />
+            @Html.Raw(Model.ProjectSummary.Replace("\n", "<br />"))
+            <hr style="border-color:darkgrey; background-color:darkgrey;" />
+        </dd>
 
+        @*<dt>
+            @Html.DisplayNameFor(model => model.FundingPhase.FundingPhaseName)
+        </dt>
         <dd>
-            @Html.DisplayFor(model => model.ProjectSummary)
+            @if (Model.FundingPhase != null)
+            {
+                @Html.DisplayFor(model => model.FundingPhase.FundingPhaseName)
+            }
+            else
+            {
+                @Html.Raw("None")
+            }
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.FundingPhaseID)
+            @Html.DisplayNameFor(model => model.FundingAmount.FundingAmountValue)
         </dt>
-
         <dd>
-            @Html.DisplayFor(model => model.FundingPhase.FundingPhaseName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.FundingAmountID)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.FundingAmount.FundingAmountValue)
+            @if (Model.FundingAmount != null)
+            {
+                @Html.DisplayFor(model => model.FundingAmount.FundingAmountValue)
+            }
+            else
+            {
+                @Html.Raw("None")
+            }
         </dd>
 
         <dt>
@@ -99,14 +114,6 @@
         <dd>
             @Html.DisplayFor(model => model.TeamMemberSize)
         </dd>
-
-        @*<dt>
-            @Html.DisplayNameFor(model => model.GoalTeamSize)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.GoalTeamSize)
-        </dd>*@
 
         <dt>
             @Html.DisplayNameFor(model => model.TeamExperience)
@@ -154,7 +161,7 @@
 
         <dd>
             @Html.DisplayFor(model => model.Scalability.ScalabilityName)
-        </dd>
+        </dd>*@
 
         <dt>
             @Html.DisplayNameFor(model => model.DeadlineDate)
@@ -184,14 +191,30 @@
             @Html.DisplayNameFor(model => model.Locked)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Locked)
+            @(Model.Locked ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.Locked)*@
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastLockedDate)
+        </dt>
+        <dd>
+            @if (Model.LastLockedDate.HasValue)
+            {
+                @Html.DisplayFor(model => model.LastLockedDate)
+            }
+            else
+            {
+                @Html.Raw("None")
+            }
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.Approved)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Approved)
+            @(Model.Approved ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.Approved)*@
         </dd>
 
     </dl>
@@ -199,9 +222,9 @@
     @using (Html.BeginForm()) {
         @Html.AntiForgeryToken()
 
-    <div class="form-actions no-color">
+    <div class="form-actions no-color hidden-print">
         <input type="submit" value="Remove this project" class="btn btn-danger" /> |
-        @Html.ActionLink("Details", "ProjectDetails") |
+        @Html.ActionLink("Project details", "ProjectDetails", new { id = Model.StartupID }) |
         @Html.ActionLink("Back to your Startup projects", "Index")
     </div>
     }

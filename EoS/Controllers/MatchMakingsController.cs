@@ -29,10 +29,12 @@ namespace EoS.Controllers
         public /*async Task<*/ActionResult/*>*/ Results(DateTime? matchedDate, bool? sent/*, bool? sendReports*/)
         {
             List<MatchMaking> matchMakings = db.MatchMakings.ToList();
+            ViewBag.NoOfResults = matchMakings.Count;
 
             if (matchedDate.HasValue)
             {
                 matchMakings = matchMakings.Where(mm => DateTime.Compare(mm.MatchMakingDate, matchedDate.Value) == 0).OrderBy(mm => mm.InvestmentId).ToList();
+                ViewBag.AllResults = false;
             }
 
             if (sent.HasValue)
@@ -227,7 +229,7 @@ namespace EoS.Controllers
                 MatchMaking matchMaking = new MatchMaking();
 
                 //List<Investment> investmentsProfiles;
-                //if (string.IsNullOrEmpty(model.InvestmentProfileId)
+                //if (string.IsNullOrEmpty(model.InvestmentProfileId) //All
                 //{
                 //    investmentProfiles = db.Investments.Where(i => i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID).ToList(); //All investments selected
                 //}
@@ -247,7 +249,7 @@ namespace EoS.Controllers
                     startupProjects = db.Startups.Where(s => s.StartupID == model.StartupProjectId).ToList();
                 }
 
-                DateTime matchedDateTime = DateTime.Now; //default(DateTime);
+                DateTime matchedDateTime = DateTime.Now; 
 
                 //MMM
 
@@ -259,8 +261,8 @@ namespace EoS.Controllers
                 {
                     //var existingMatchMaking s= investment.MatchMakings.Where(mm => mm.StartupId == startup.StartupID).ToList();
 
-                    if (!investmentProfile.MatchMakings.Where(mm => mm.StartupId == project.StartupID).Any()) //already matched
-                    {
+                    //if (!investmentProfile.MatchMakings.Where(mm => mm.StartupId == project.StartupID).Any()) //already matched
+                    //{
                         matchMaking.StartupId = project.StartupID;
                         matchMaking.InvestmentId = investmentProfile.InvestmentID;
 
@@ -344,27 +346,27 @@ namespace EoS.Controllers
                             }
                             else
                             {
-                                ViewBag.Message += "No matches found.<br />"; //for which investment?
+                                //ViewBag.Message += "No matches found.<br />"; //for which investment?
                                 ModelState.AddModelError("", "No matches found.");
                             }
                         }
-                    }
-                    else //already matched
-                    {
+                    //}
+                    //else //already matched
+                    //{
                         //model.ProjectDomainSelected = true;
                         //model.FundingAmountSelected = true;
                         //model.Investments = new SelectList(db.Investments.Where(i => i.Locked && i.Active), "InvestmentID", "InvestmentID");
                         //model.Startups = new SelectList(db.Startups.Where(s => s.Locked && s.Active && s.Approved), "StartupID", "StartupID");
                         //ViewBag.Message = "Investment " + investment.InvestmentID + " and Startup " + startup.StartupID + " has already been matched, delete the post from MatchMakings if you want to redo it !";
 
-                        int startupIndex = db.MatchMakings.ToList().FindIndex(mm => mm.StartupId == project.StartupID);
-                        ViewBag.Message += "<a href=\"~MatcMakings/Details\"" + startupIndex + "/>Investment " + investmentProfile.InvestmentID + " and Startup " + project.StartupID + "</a> is already matched, delete the record from the MatchMakings if you want to redo it !<br />";
-                        ModelState.AddModelError("", "No list of Startups exists. There is nothing to be matched.");
+                      //  int startupIndex = db.MatchMakings.ToList().FindIndex(mm => mm.StartupId == project.StartupID);
+                      //  ViewBag.Message += "<a href=\"~MatcMakings/Details\"" + startupIndex + "/>Investment " + investmentProfile.InvestmentID + " and Startup " + project.StartupID + "</a> is already matched, delete the record from the MatchMakings if you want to redo it !<br />";
+                      //  ModelState.AddModelError("", "No list of Startups exists. There is nothing to be matched.");
                         //return View(model);
-                    }
+                    //}
                 }
 
-                if (startupProjects.Any())
+                if (matchMaking.NoOfMatches == 0) //startupProjects.Any()
                 {
                     ViewBag.Message += " The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.<br />";
                     ModelState.AddModelError("", "The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.");
@@ -514,9 +516,12 @@ namespace EoS.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             MatchMaking matchMaking = db.MatchMakings.Find(id);
-            db.MatchMakings.Remove(matchMaking);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            if (matchMaking != null)
+            {
+                db.MatchMakings.Remove(matchMaking);
+                db.SaveChanges();
+            }
+            return RedirectToAction("Results");
         }
 
         protected override void Dispose(bool disposing)
@@ -526,6 +531,18 @@ namespace EoS.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        // GET: MatchMakings/DeleteAllResults
+        public ActionResult DeleteAll()
+        {
+            List<MatchMaking> matchMakings = db.MatchMakings.ToList(); 
+            if (db.MatchMakings.Any())
+            {
+                foreach (var matchMaking in matchMakings) db.MatchMakings.Remove(matchMaking);
+                db.SaveChanges();
+            }
+            return RedirectToAction("Results");
         }
     }
 }

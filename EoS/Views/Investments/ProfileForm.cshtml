@@ -6,26 +6,26 @@
 
 <h3>@ViewBag.Title</h3>
 
-@if (!string.IsNullOrEmpty(ViewBag.Message))
+@*@if (!string.IsNullOrEmpty(ViewBag.Message))
 {
     <br />
     <span class="text-danger" style="font-size:larger">@Html.Raw(ViewBag.Message)</span>
     <hr />
-}
+}*@
 
 @using (Ajax.BeginForm("ProfileForm", "Investments",
     new AjaxOptions
     {
         HttpMethod = "POST",
-        //UpdateTargetId = "InvestmentProfileForm",
+        @*//UpdateTargetId = "InvestmentProfileForm",
         //OnBegin = "OnBegin",
-        //OnComplete = "OnComplete",
+        //OnComplete = "OnComplete",*@
         OnSuccess = "OnSuccess",
         OnFailure = "OnFailure",
         LoadingElementId = "Progress",
         InsertionMode = InsertionMode.Replace,
-        //Confirm = "...",
-        //AllowCache = false
+        @*//Confirm = "...",
+        //AllowCache = false*@
     }, new { @id = "InvestmentProfileForm" }))
 {
     @Html.AntiForgeryToken()
@@ -34,7 +34,16 @@
 
         <div id="wizard">
 
-            <div id="Message" class="text-danger">Your answers are automatically saved when navigating, but the form is not submitted.</div>
+            <div id="Message" class="text-danger">
+                @if (string.IsNullOrEmpty(Model.Message))
+                {
+                    @Html.Raw("Your answers are automatically saved when you navigate between the tabs, but the form is not submitted")
+                }
+                else
+                {
+                    @Model.Message
+                }
+            </div>
             <hr />
 
             @Html.HiddenFor(model => model.InvestmentID)
@@ -118,7 +127,7 @@
                         <input type="button" name="previous" value="Previous" class="btn button-previous btn-info" onclick="SaveData()" />
                     </div>
                     <div style="float:unset" class="col-md-offset-5">
-                        @Html.ActionLink("Submit & lock the form", "SubmitProfileForm", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @id = "profileFormSubmission", @class = "btn btn-primary", title = "Do you really wish to submit this form? (It will not be editable any more)" })
+                        @Html.ActionLink("Submit & lock the form", "SubmitProfileForm", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @id = "profileFormSubmission", @class = "btn btn-primary", onclick = "submitProfileForm()" })
                     </div>
                     <div style="float:right">
                         <input type="button" name="next" value="Next" class="btn button-next btn-info" onclick="SaveData()" />
@@ -141,14 +150,31 @@
 <div class="hidden-print">
     <hr />
     @Html.ActionLink("Back to your Investment profiles", "Index") |
-    @Html.ActionLink("Details", "ProfileDetails", new { id = Model.InvestmentID })
+    @Html.ActionLink("Profile details", "ProfileDetails", new { id = Model.InvestmentID }) |
+    <input type="button" value="Set this tab as start tab" onclick="setNewStartTab()" class="btn btn-primary" style="height:25px;padding:1px" /> |
+    <input type="button" value="Reload page" onclick="reloadPage()" class="btn btn-primary" style="height:25px;padding:1px" />
 </div>
 
 <script type="text/javascript">
 
     window.onload = function (evt) { $("#Progress").hide(); };
-    window.onbeforeunload = function (evt) { SaveData(); };
+    @*//window.onbeforeunload = function (evt) { SaveData(); };*@
 
+    function setNewStartTab() {
+        location.href = location.href.split('#')[0] + '#' + $('.active')[0].id.replace('tab_', '');
+    }
+
+    function reloadPage() { //resetData() refreshTab()
+        if (confirm("Do ypu want to save your latest answers before reloding?")) SaveData();
+        location.reload(true);
+    }
+
+    function submitProfileForm() {
+        SaveData();
+        return confirm('Do you really wish to submit this form? (It will be locked for editing');
+    }
+
+    @*
     function submitProfileForm() {
         SaveData();
         if (confirm('Do you really wish to submit this form? (It will not be editable any more)')) {
@@ -162,7 +188,7 @@
         SaveData();
         if (!confirm('Do you really wish to submit this form? (It will not be editable any more)')) return false;
         return true;
-    });
+    });*@
 
     function SaveData() { //PostData()
         //$("#Progress").show();
@@ -170,37 +196,39 @@
         //SaveDataInTab($('.active')[0].id);
         $('#InvestmentProfileForm').submit();
     }
-
+    @*
     //function SaveDataInTab(tab) {
         //$("#Progress").show();
         //activateTab(tab);
         //$('#InvestmentProfileForm').submit();
         //$('#_' + tab + '_Form').submit();
-    //}
+    //}*@
 
     function OnSuccess(response) { //(data, textStatus, jqXHR)
 
-        //if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
-        //$("#Progress").hide();
+        @*if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
+        $("#Progress").hide();
 
-        var message = "";
-
-        //if ('@Model.Updated' === 'True') { //'ViewBag.Tab'.replace('_', ' ') + ' || '
-            message = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.'; // $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.';
-            $('#Message').html(message);
-        //}
+        if (' Model.Updated' === 'True') { //'ViewBag.Tab'.replace('_', ' ') + ' || '
+            var successMessage = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.'; // $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.';
+            var message = '@Model.Message';  + (message !== '' ? '<br />' + message : '')*@
+         $('#Message').html(successMessage);
+        @*//}
         //else {
         //    message = 'There were nothing that needed to be updated in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + '.'; //+ $("input[name='ActiveTab']")[0].value.replace('_', ' ') + '.';
         //    $('#Message').html(message);
-        //}
+        //}*@
     }
 
     function OnFailure(response) {
-        //if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
-        //$("#Progress").hide(); $("input[name='ActiveTab']")[0].value.replace('_', ' ')  'ViewBag.Tab'.replace('_', ' ') +
-        var errorMessage = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') +' could not be saved!<br />' + response.responseText;
-        $('#Message').html(errorMessage);
-        //else $('#Message').html('');
+        @*//if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
+        //$("#Progress").hide(); $("input[name='ActiveTab']")[0].value.replace('_', ' ')  'ViewBag.Tab'.replace('_', ' ') +*@
+        var failureMessage = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') +' could not be saved!<br />' + response.responseText;
+        @*var message = '@Model.Message'; + (message !== '' ? '<br />' + message : '')*@
+        $('#Message').html(failureMessage);
+        @*
+        $('#Message').html(failureMessage);
+        //else $('#Message').html('');*@
     }
 
     function activateTab(activeTabName) {

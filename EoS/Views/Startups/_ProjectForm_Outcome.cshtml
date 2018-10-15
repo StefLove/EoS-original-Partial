@@ -1,6 +1,6 @@
 ﻿@model EoS.Models.IdeaCarrier.StartupProjectViewModel
 
-<div class="@(ViewBag.Unanswered == "Outcomes" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "Outcomes" ? "form-group warning" : "form-group")">
     <label class="control-label col-md-2">The outcomes</label>
     <div class=" col-md-offset-2 col-md-10" style="margin-left:inherit">
         <table class="borderless">
@@ -8,7 +8,7 @@
                 @{
                     foreach (var outcome in Model.Outcomes)
                     {
-                        <td><input type="checkbox" name="SelectedOutcomeIDs" value="@outcome.OutcomeID" @(outcome.Assigned ? "checked=\"checked\"" : "") /> @outcome.OutcomeName</td>
+                        <td><input type="checkbox" name="OutcomeIDs" value="@outcome.OutcomeID" @(outcome.Assigned ? "checked=\"checked\"" : "") /> @outcome.OutcomeName</td>
                         @:</tr><tr>
                     }
                 }
@@ -18,7 +18,7 @@
 </div>
 <br />
 
-<div class="@(ViewBag.Unanswered == "InnovationLevel" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "InnovationLevel" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.InnovationLevelID, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.DropDownListFor(model => model.InnovationLevelID, Model.InnovationLevelList, "Select a level of innovation", new { @class = "form-control" })
@@ -26,7 +26,7 @@
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "Scalability" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "Scalability" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.ScalabilityID, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.DropDownListFor(model => model.ScalabilityID, Model.ScalabilityList, "Select a scalability", new { @class = "form-control" })
@@ -34,20 +34,18 @@
     </div>
 </div>
 
-<hr />
-@if (string.IsNullOrEmpty(ViewBag.Unanswered))
+<hr class="hidden-print"/>
+@if (string.IsNullOrEmpty(Model.UnansweredQuestion))
 {
-    <div class="col-md-offset-4">
+    <div class="col-md-offset-4 hidden-print">
         <input type="button" value="Save your answers for the questions in this tab Outcome" class="btn btn-warning btn-sm" style="color:black;max-width:500px" onclick="SaveData()" />
     </div>
-    <div class="col-md-offset-2">
+    <div class="col-md-offset-2 hidden-print">
         <h5 class="text-danger">You have to answer all the necessary questions in all tabs before you may submit the form.</h5>
     </div>
 }
 else
-{   <div class="col-md-offset-4">
+{   <div class="col-md-offset-4 hidden-print">
         @Html.ActionLink("Cancel submission of form", "SubmitProjectForm", new { id = Model.StartupID, cancel = true, redirect = "ProjectForm", redirectTab = "Outcome" }, new { @id = "cancelProjectFormSubmission", @class = "btn btn-danger" })
     </div>
 }
-
-

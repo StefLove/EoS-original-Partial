@@ -13,6 +13,7 @@ using System.IO;
 using EoS.Models.Shared;
 using System.Threading.Tasks;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace EoS.Controllers
 {
@@ -39,7 +40,7 @@ namespace EoS.Controllers
                 if (!string.IsNullOrEmpty(id)) //The Admin looks at a special IdeaCarrier's startup projects
                 {
                     ApplicationUser ideaCarrier = db.Users.Find(id);
-                    if (ideaCarrier != null) //<--------implement Role check?
+                    if (ideaCarrier != null)
                     {
                         ViewBag.IdeaCarrierId = id;
                         ViewBag.IdeaCarrierUserName = ideaCarrier.UserName;
@@ -101,10 +102,10 @@ namespace EoS.Controllers
                     case "USERNAME": return View(startupProjects.OrderBy(su => su.User.UserName)); //break;
                     case "STARTUPID": return View(startupProjects.OrderBy(su => su.StartupID));
                     case "COUNTRY": return View(startupProjects.OrderBy(su => su.Country.CountryName));
-                    case "SWEDISHREGION": return View(startupProjects.OrderBy(su => su.SwedishRegion?.RegionName));
+                    //case "SWEDISHREGION": return View(startupProjects.OrderBy(su => su.SwedishRegion.RegionName));
                     case "PROJECTDOMAINNAME": return View(startupProjects.OrderBy(su => su.ProjectDomain?.ProjectDomainName));
                     case "FUNDINGAMOUNTVALUE": return View(startupProjects.OrderBy(su => su.FundingAmount?.FundingAmountValue));
-                    case "MATCHMAKINGCOUNT": return View(startupProjects.OrderBy(su => su.MatchMakings?.Count()));
+                    case "MATCHMAKINGCOUNT": return View(startupProjects.OrderByDescending(su => su.MatchMakings?.Count()));
                     case "LASTSAVEDDATE": return View(startupProjects.OrderByDescending(su => su.LastSavedDate));
                     case "DEADLINEDDATE": return View(startupProjects.OrderByDescending(su => su.DeadlineDate));
                     case "CREATEDDATE": return View(startupProjects.OrderByDescending(su => su.CreatedDate));
@@ -129,28 +130,53 @@ namespace EoS.Controllers
             }
 
             ViewBag.SwedishRegionName = "";
-            if (startupProject.SwedishRegionID.HasValue) ViewBag.SwedishRegionName = db.SwedishRegions.Where(sr => sr.RegionID == startupProject.SwedishRegionID).FirstOrDefault().RegionName;
+            if (startupProject.SwedishRegionID.HasValue)
+                ViewBag.SwedishRegionName = db.SwedishRegions.Where(sr => sr.RegionID == startupProject.SwedishRegionID).FirstOrDefault().RegionName;
 
             ViewBag.UserRole = Role.IdeaCarrier.ToString();
             ViewBag.ApprovedBy = "";
+            ViewBag.FormIsFinished = FormIsFinished(startupProject);
+
+            ViewBag.TheOnlyProject = false;
+            if (startupProject.User.Startups.Count() == 1) ViewBag.TheOnlyProject = true;
 
             if (User.IsInRole(Role.Admin.ToString()))
             {
                 ViewBag.UserRole = Role.Admin.ToString();
                 ViewBag.IdeaCarrierUserName = startupProject.User.UserName;
                 if (!string.IsNullOrEmpty(startupProject.ApprovedByID))
-                //{
-                    ViewBag.ApprovedBy = db.Users.Where(u => u.Id == startupProject.ApprovedByID).FirstOrDefault().UserName;
-                    //if (string.IsNullOrEmpty(approvedBy))
-                    //{
-                    //    ViewBag.ApprovedBy = "a formal user";
-                    //}
-                    //else ViewBag.ApprovedBy = approvedBy;Descending
-                //}
+                {
+                    if (User.Identity.GetUserId() == startupProject.ApprovedByID) ViewBag.ApprovedBy = "You self";
+                    else ViewBag.ApprovedBy = db.Users.Where(u => u.Id == startupProject.ApprovedByID).FirstOrDefault().UserName;
+                }
+
                 return View(startupProject);
             }
 
             return View(startupProject);
+        }
+
+        private bool FormIsFinished(Models.IdeaCarrier.Startup startupProject)
+        {
+            return !string.IsNullOrEmpty(startupProject.StartupName) &&
+                startupProject.ProjectDomainID.HasValue &&
+                startupProject.DeadlineDate.HasValue &&
+                !string.IsNullOrEmpty(startupProject.ProjectSummary) &&
+                (startupProject.AllowedInvestors != null && startupProject.AllowedInvestors.Any()) &&
+                startupProject.FundingPhaseID.HasValue &&
+                startupProject.FundingAmountID.HasValue &&
+                startupProject.AlreadySpentTime.HasValue &&
+                startupProject.AlreadySpentMoney.HasValue &&
+                (startupProject.ProjectFundingDivisions != null && startupProject.ProjectFundingDivisions.Sum(pfd => pfd.Percentage) == 100) &&
+                startupProject.EstimatedExitPlanID.HasValue &&
+                startupProject.EstimatedBreakEven.HasValue &&
+                startupProject.PossibleIncomeStreams.HasValue &&
+                startupProject.TeamMemberSize.HasValue &&
+                startupProject.TeamExperience.HasValue &&
+                (startupProject.TeamWeaknesses != null && startupProject.TeamWeaknesses.Any()) &&
+                (startupProject.Outcomes != null && startupProject.Outcomes.Any()) &&
+                startupProject.InnovationLevelID.HasValue &&
+                startupProject.ScalabilityID.HasValue;
         }
 
         // GET: Startups/Create
@@ -159,17 +185,13 @@ namespace EoS.Controllers
         {
             AddNewProjectViewModel newProjectmodel = new AddNewProjectViewModel()
             {
+                StartupName = "",
                 IdeaCarrierMessage = db.IdeaCarrierMessages.FirstOrDefault().Text,
                 CountryList = new SelectList(db.Countries, "CountryID", "CountryName"),
                 SwedishCountryID = db.Countries.Where(c => c.CountryName == "Sweden").Select(u => u.CountryID).Single(),
                 SwedishRegionList = new SelectList(db.SwedishRegions, "RegionID", "RegionName")
             };
-
-            //ViewBag.CountryID = new SelectList(db.Countries, "CountryID", "CountryName");
-            //ViewBag.SwedishRegionsID = new SelectList(db.SwedishRegions, "RegionID", "RegionName"); //<----------
-            //ViewBag.SwedishCountryId = db.Countries.Where(c => c.CountryName == "Sweden").Select(u => u.CountryID).Single();
-            //ViewBag.IdeaCarrierMessage = db.IdeaCarrierMessages.Where(m => m.Id == 1).Select(m => m.Text).Single().ToString();
-
+            
             return  View(newProjectmodel);
         }
 
@@ -178,18 +200,9 @@ namespace EoS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "IdeaCarrier")] //StartupID,UserId,,ProjectDomainID,ProjectSummary,FundingPhaseID,FundingAmountID,FutureFundingNeeded,EstimatedExitPlanID,EstimatedBreakEven,TeamMemberSize,GoalTeamSize,TeamExperience,TeamVisionShared,HaveFixedRoles,PossibleIncomeStreams,InnovationLevelID,ScalabilityID,DeadlineDate,LastSavedDate,CreatedDate,Locked,WillSpendOwnMoney,AlreadySpentMoney,AlreadySpentTime
-        //public ActionResult AddNewProject([Bind(Include = "StartupName,CountryID,SwedishRegionID")] Models.IdeaCarrier.Startup model, string submitCommand)
+        [Authorize(Roles = "IdeaCarrier")]
         public ActionResult AddNewProject(AddNewProjectViewModel newProjectModel, string submit_command)
         {
-            //if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit"))
-            //{   //if user submit the form, lock it for editable
-            //this must be before ModelState.IsValid
-            //    model.Locked = true;
-            //    TryValidateModel(model);
-            //return Content(startup.Lock.ToString());
-            //}
-
             if (ModelState.IsValid)
             {
                 string countryAbbreviation = db.Countries.Find(newProjectModel.CountryID).CountryAbbreviation;
@@ -230,23 +243,17 @@ namespace EoS.Controllers
                 db.Startups.Add(newStartupProject);
                 db.SaveChanges();
 
-                if (!string.IsNullOrEmpty(submit_command) && submit_command.StartsWith("Proceed")) //<------"Proceed to the Project form"
+                if (!string.IsNullOrEmpty(submit_command) && submit_command.StartsWith("Proceed")) //"Proceed to the Project form"
                 {
-                    //return Content(startup.StartupID.ToString());
+                    //return Content(newStartupProject.StartupID.ToString());
+                    //TempData["is_new_project"] = true;
                     return RedirectToAction("ProjectForm", new { id = newStartupProjectID });
                 }
-                else {
-                  return RedirectToAction("Index");
-                }
+                else return RedirectToAction("Index");
             }
 
-            //In case of validation error, rerwite the ViewBags for dropdownlist for create view that handle the selection options
-            //ViewBag.CountryId = new SelectList(db.Countries, "CountryID", "CountryName");
-            //ViewBag.RegionsId = new SelectList(db.SwedishRegions, "RegionID", "RegionName");
-            //ViewBag.SwedishCountryId = db.Countries.Where(c => c.CountryName == "Sweden").Select(u => u.CountryID).Single();
-            //ViewBag.IdeaCarrierMessage = db.IdeaCarrierMessages.Where(m => m.Id == 1).Select(m => m.Text).Single().ToString();
-
-            newProjectModel.IdeaCarrierMessage = db.IdeaCarrierMessages.Where(m => m.Id == 1).Select(m => m.Text).Single().ToString();
+            newProjectModel.StartupName = "";
+            newProjectModel.IdeaCarrierMessage = db.IdeaCarrierMessages.FirstOrDefault().Text;
             newProjectModel.CountryList = new SelectList(db.Countries, "CountryID", "CountryName");
             newProjectModel.SwedishCountryID = db.Countries.Where(c => c.CountryName == "Sweden").Select(u => u.CountryID).Single();
             newProjectModel.SwedishRegionList = new SelectList(db.SwedishRegions, "RegionID", "RegionName");
@@ -256,7 +263,7 @@ namespace EoS.Controllers
 
         // GET: Startups/Edit/5
         //[HttpGet]
-        [Authorize(Roles = "IdeaCarrier")]
+        [Authorize(Roles = "Admin, IdeaCarrier")]
         public ActionResult ProjectForm(string id)
         {
             if (User.IsInRole(Role.Admin.ToString())) return RedirectToAction("EditAdmin", new { id });
@@ -266,18 +273,6 @@ namespace EoS.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            //These viewBags to handel the current values of the startup properies if exist and provide by other selections
-            //Models.IdeaCarrier.Startup currentStartup = db.Startups.Find(id);
-            //ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", currentStartup.ProjectDomainID != null ? currentStartup.ProjectDomainID : null);
-            //ViewBag.FundingPhaseIdEdit = new SelectList(db.FundingPhases, "FundingPhaseID", "FundingPhaseName", currentStartup.FundingPhaseID != null ? currentStartup.FundingPhaseID : null);
-            //ViewBag.FundingNeedIdEdit = new SelectList(db.FundingAmounts, "FundingAmountID", "FundingAmountValue", currentStartup.FundingAmountID != null ? currentStartup.FundingAmountID : null);
-            //ViewBag.EstimatedExitPlanIdEdit = new SelectList(db.EstimatedExitPlans, "EstimatedExitPlanID", "EstimatedExitPlanName", currentStartup.EstimatedExitPlanID != null ? currentStartup.EstimatedExitPlanID : null);
-            //ViewBag.InnovationLevelIdEdit = new SelectList(db.InnovationLevels, "InnovationLevelID", "InnovationLevelName", currentStartup.InnovationLevelID != null ? currentStartup.InnovationLevelID : null);
-            //ViewBag.ScalabilityIdEdit = new SelectList(db.Scalabilities, "ScalabilityID", "ScalabilityName", currentStartup.ScalabilityID != null ? currentStartup.ScalabilityID : null);
-
-            //Get the uploaded files size
-            //ViewBag.AllowedToUploadMore = AllowedToUploadMore(id); <--- move to Index
-
             Models.IdeaCarrier.Startup startupProject = db.Startups.Find(id); //startupProject
             if (startupProject == null)
             {
@@ -286,32 +281,20 @@ namespace EoS.Controllers
 
             if (startupProject.Locked) return RedirectToAction("ProjectDetails", new { id });
 
-            ViewBag.Message = "";
-            //ViewBag.Tab = "tab_Project";
-            ViewBag.Unanswered = "";
+            string message = "";
+            string unansweredQuestion = "";
+            //bool isNewProject = false; //<--------------??
 
             if (TempData.Any())
             {
-                if (TempData.ContainsKey("message")) ViewBag.Message = TempData["message"] as string;
+                if (TempData.ContainsKey("message")) message = TempData["message"] as string;
                 //if (TempData.ContainsKey("tab")) ViewBag.Tab = TempData["tab"] as string;
-                if (TempData.ContainsKey("unanswered")) ViewBag.Unanswered = TempData["unanswered"] as string;
+                if (TempData.ContainsKey("unanswered")) unansweredQuestion = TempData["unanswered"] as string;
+                //if (TempData.ContainsKey("is_new_project")) isNewProject = TempData["is_new_project"] as bool? ?? false;
                 TempData.Clear();
             }
 
-            //to be deleted----------------------------
-            //ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", startup.ProjectDomainID != null ? startup.ProjectDomainID : null);
-            //ViewBag.FundingPhaseIdEdit = new SelectList(db.FundingPhases, "FundingPhaseID", "FundingPhaseName", startup.FundingPhaseID != null ? startup.FundingPhaseID : null);
-            //ViewBag.FundingNeedIdEdit = new SelectList(db.FundingAmounts, "FundingAmountID", "FundingAmountValue", startup.FundingAmountID != null ? startup.FundingAmountID : null);
-            //ViewBag.EstimatedExitPlanIdEdit = new SelectList(db.EstimatedExitPlans, "EstimatedExitPlanID", "EstimatedExitPlanName", startup.EstimatedExitPlanID != null ? startup.EstimatedExitPlanID : null);
-            //ViewBag.InnovationLevelIdEdit = new SelectList(db.InnovationLevels, "InnovationLevelID", "InnovationLevelName", startup.InnovationLevelID != null ? startup.InnovationLevelID : null);
-            //ViewBag.ScalabilityIdEdit = new SelectList(db.Scalabilities, "ScalabilityID", "ScalabilityName", startup.ScalabilityID != null ? startup.ScalabilityID : null);
-
-            //PopulateAssignedWeaknessesData(startup);
-            //this query has been modified to handle weaknesses checked boxes
-            //PopulateAssignedCheckBoxsData(startup); //to be replaced
-
-            //return View(startup);
-            return View(GetStartupProjectViewModel(startupProject));
+            return View(GetStartupProjectViewModel(startupProject, false, message, unansweredQuestion/*, isNewProject*/));
         }
 
         // POST: Startups/ProjectForm/5
@@ -321,89 +304,40 @@ namespace EoS.Controllers
         [ValidateAntiForgeryToken]
         //[ValidateInput(false)]
         [Authorize(Roles = "IdeaCarrier")]
-        //CreatedDate, AllowSharingDisplayName?
-        //public ActionResult ProjectForm([Bind(Include = "StartupID,UserId,CountryID,SwedishRegionID,StartupName,ProjectDomainID,DeadlineDate,ProjectSummary,AllowSharing,FundingPhaseID,FundingAmountID,EstimatedExitPlanID,FutureFundingNeeded,AlreadySpentTime,AlreadySpentMoney,WillSpendOwnMoney,EstimatedBreakEven,PossibleIncomeStreams,HavePayingCustomers,TeamMemberSize,TeamExperience,TeamVisionShared,HaveFixedRoles,LookingForActiveInvestors,InnovationLevelID,ScalabilityID,LastSavedDate,Locked,LastLockedDate")] Models.IdeaCarrier.Startup model,
-        //    string[] SelectedSharedToInvestors, string[] SelectedTeamWeaknesses, string[] SelectedOutcomes, string ActiveTab, string submitCommand)
         public ActionResult ProjectForm(StartupProjectPostViewModel projectPostModel)
         {
-            //if (model.Locked) return RedirectToAction("ProjectDetails", new { id = model.StartupID }); //<----------
-
-            //if (!string.IsNullOrEmpty(submitCommand) && submitCommand.ToUpper().StartsWith("SUBMIT"))
-            //{   //if user submits the form, lock it in order to be editable
-            //this must be before ModelState.IsValid
-            //    model.Locked = true; //<----------------------IsBeingSubmitted
-            //    if (selectedOutcomes == null)
-            //    {
-            //        ModelState.AddModelError("Outcomes", "Select at least one Outcome");
-            //    }
-            //    if (selectedSharedToInvestors == null)
-            //    {
-            //        ModelState.AddModelError("AllowedInvestors", "Select at least one Investor");
-            //    }
-            //    TryValidateModel(model);
-            //}
-
-            bool updated = false;
+            bool updated = true;
 
             Models.IdeaCarrier.Startup startupProject = db.Startups.Find(projectPostModel.StartupID);
 
             if (ModelState.IsValid)
             {
-                //UpdateStartupWeaknesses(selectedWeaknesses, startup);
-                //UpdateStartupCheckBoxsData(SelectedSharedToInvestors, SelectedTeamWeaknesses, SelectedOutcomes, model);
-
-                //if &&!model.Locked {               
-
-                //bool wrongAnswerInFundingDivisionPercentages = false;
-
-                if (UpdateActiveTab(startupProject, projectPostModel)) //, ref wrongAnswerInFundingDivisionPercentages)
+                if (UpdateActiveTab(startupProject, projectPostModel))
                 {
-                    //if (wrongAnswerInFundingDivisionPercentages)
-                    //TempData["message"] = "In tab BudgetI \"How will the funding be spent?\" the sum of the percentages can't be over 100!";
-                    //TempData["wrong_answer"] = "FundingDivisionPercentages";
-                    //
                     startupProject.LastSavedDate = DateTime.Now.Date;
                     db.Entry(startupProject).State = EntityState.Modified;
-                    db.SaveChanges();
 
-                    updated = true;
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Message = ex.Message;
+                        updated = false;
+                    }
                 }
-
-                //if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Upload"))
-                //{   //save the data of the form before upload the file to prevent loss of data
-                //    return RedirectToAction("UploadFile", "Startups", new { StartupID = model.StartupID });  
-                //}
-
-                //if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit")) return RedirectToAction("ProjectDetails", new { id = model.StartupID });
-                                                                                                //return RedirectToAction("Index");
-                //}
-                //else ModelState.AddModelError("Locked", "Form locked, not possible to change anything in it, please contact Admin by the contact form.");
             }
-            else ModelState.AddModelError("", "Validation Error !!");
+            else
+            {
+                ModelState.AddModelError("", "Validation Error !!");
+                updated = false;
+            }
 
-            //ViewBag.Message = "";
-            ViewBag.Tab = projectPostModel.ActiveTab; //<---------------
-            //ViewBag.Unanswered = "";
-
-            //In Case of validation error, reload the existing selected options if any, and provide by new selection options
-            //Models.IdeaCarrier.Startup currentStartup = db.Startups.Find(model.StartupID);
-          
-            //ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", currentStartup.ProjectDomainID != null ? currentStartup.ProjectDomainID : null); //<-------------simplify!!
-            //ViewBag.FundingPhaseIdEdit = new SelectList(db.FundingPhases, "FundingPhaseID", "FundingPhaseName", currentStartup.FundingPhaseID != null ? currentStartup.FundingPhaseID : null);
-            //ViewBag.FundingNeedIdEdit = new SelectList(db.FundingAmounts, "FundingAmountID", "FundingAmountValue", currentStartup.FundingAmountID != null ? currentStartup.FundingAmountID : null);
-            //ViewBag.EstimatedExitPlanIdEdit = new SelectList(db.EstimatedExitPlans, "EstimatedExitPlanID", "EstimatedExitPlanName", currentStartup.EstimatedExitPlanID != null ? currentStartup.EstimatedExitPlanID : null);
-            //ViewBag.InnovationLevelIdEdit = new SelectList(db.InnovationLevels, "InnovationLevelID", "InnovationLevelName", currentStartup.InnovationLevelID != null ? currentStartup.InnovationLevelID : null); //<--------------------!!
-            //ViewBag.ScalabilityIdEdit = new SelectList(db.Scalabilities, "ScalabilityID", "ScalabilityName", currentStartup.ScalabilityID != null ? currentStartup.ScalabilityID : null);
-            //Get the uploaded files size
-            //ViewBag.AllowedToUploadMore = AllowedToUploadMore(model.StartupID); //<--------------flytta!!!
-
-            //PopulateAssignedCheckBoxsData(model/*, selectedWeaknesses, selectedOutcomes, selectedSharedToInvestors*/); //<-----------------!!!
-
-            //return View(model);
             return View(GetStartupProjectViewModel(startupProject, updated));
         }
 
-        private StartupProjectViewModel GetStartupProjectViewModel(Models.IdeaCarrier.Startup startupProject, bool updated = false)
+        private StartupProjectViewModel GetStartupProjectViewModel(Models.IdeaCarrier.Startup startupProject, bool updated = false, string message = "", string unansweredQuestion = ""/*, bool isNewProject = false*/)
         {
             return new StartupProjectViewModel()
             {
@@ -412,102 +346,58 @@ namespace EoS.Controllers
                 //Project
                 ProjectName = startupProject.StartupName,
                 ProjectDomainID = startupProject.ProjectDomainID,
-                ProjectDomainList = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName"), //, startup.ProjectDomainID)
+                ProjectDomainList = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName"),
                 DeadlineDate = startupProject.DeadlineDate,
                 ProjectSummary = startupProject.ProjectSummary,
-                AllowSharing_DisplayName = db.IdeaCarrierMessages.FirstOrDefault().AllowSharing_DisplayName, //<-----
-                AllowSharing = startupProject.AllowSharing,
-                AllowedInvestors = GetAllowedInvestors(startupProject), //<--------------!!!
-                //AllowedInvestorsUnanswered = !startupProject.AllowedInvestors.Any(),
+                AllowSharing_DisplayName = db.IdeaCarrierMessages.FirstOrDefault().AllowSharing_DisplayName,
+                AllowSharing = startupProject.AllowSharing, //!isNewProject ? startupProject.AllowSharing : null,
+                AllowedInvestors = GetAllowedInvestors(startupProject),
 
                 //Funding
                 FundingPhaseID = startupProject.FundingPhaseID,
-                FundingPhaseList = new SelectList(db.FundingPhases, "FundingPhaseID", "FundingPhaseName"/*, startup.FundingPhaseID != null ? startup.FundingPhaseID : null*/),
+                FundingPhaseList = new SelectList(db.FundingPhases, "FundingPhaseID", "FundingPhaseName"),
                 FundingAmountID = startupProject.FundingAmountID,
-                FundingAmountList = new SelectList(db.FundingAmounts, "FundingAmountID", "FundingAmountValue"/*, startup.FundingAmountID != null ? startup.FundingAmountID : null*/),
-                FutureFundingNeeded = startupProject.FutureFundingNeeded,
+                FundingAmountList = new SelectList(db.FundingAmounts, "FundingAmountID", "FundingAmountValue"),
+                FutureFundingNeeded = startupProject.FutureFundingNeeded, //!isNewProject ? startupProject.FutureFundingNeeded : null,
                 AlreadySpentTime = startupProject.AlreadySpentTime,
                 AlreadySpentMoney = startupProject.AlreadySpentMoney,
-                WillSpendOwnMoney = startupProject.WillSpendOwnMoney,
+                WillSpendOwnMoney = startupProject.WillSpendOwnMoney, //!isNewProject ? startupProject.WillSpendOwnMoney : null,
 
                 //Budget
-                FundingDivisions = startupProject.ProjectFundingDivisions.Distinct().ToList(), //GetFundingDivisions(startupProject), //<-------------!!!
-                //ProjectFundingDivisionsUnanswered = startupProject.ProjectFundingDivisions.Count(pfd => pfd.Percentage == 0) == startupProject.ProjectFundingDivisions.Count(),
+                FundingDivisions = startupProject.ProjectFundingDivisions.Distinct().ToList(),
                 EstimatedExitPlanID = startupProject.EstimatedExitPlanID,
-                EstimatedExitPlanList = new SelectList(db.EstimatedExitPlans, "EstimatedExitPlanID", "EstimatedExitPlanName"/*, startup.EstimatedExitPlanID != null ? startup.EstimatedExitPlanID : null*/),
+                EstimatedExitPlanList = new SelectList(db.EstimatedExitPlans, "EstimatedExitPlanID", "EstimatedExitPlanName"),
                 EstimatedBreakEven = startupProject.EstimatedBreakEven,
                 PossibleIncomeStreams = startupProject.PossibleIncomeStreams,
-                HavePayingCustomers = startupProject.HavePayingCustomers,
+                HavePayingCustomers = startupProject.HavePayingCustomers, //!isNewProject ? startupProject.HavePayingCustomers : null,
 
                 //Team
                 TeamMemberSize = startupProject.TeamMemberSize,
                 TeamExperience = startupProject.TeamExperience,
-                TeamVisionShared = startupProject.TeamVisionShared,
-                HaveFixedRoles = startupProject.HaveFixedRoles,
-                TeamWeaknesses = GetTeamWeaknesses(startupProject), //<-------------------------!!!
-                //TeamWeaknessesUnanswered = !startupProject.TeamWesaknesses.Any(),
-                LookingForActiveInvestors = startupProject.LookingForActiveInvestors,
+                TeamVisionShared = startupProject.TeamVisionShared, //!isNewProject ? startupProject.TeamVisionShared : null,
+                HaveFixedRoles = startupProject.HaveFixedRoles, //!isNewProject ? startupProject.HaveFixedRoles : null,
+                TeamWeaknesses = GetTeamWeaknesses(startupProject),
+                LookingForActiveInvestors = startupProject.LookingForActiveInvestors, //!isNewProject ? startupProject.LookingForActiveInvestors : null,
 
                 //Outcome
-                Outcomes = GetOutcomes(startupProject), //<------------------------------!!!
-                //OutcomesUnanswered = !startupProject.Outcomes.Any(),
+                Outcomes = GetOutcomes(startupProject),
                 InnovationLevelID = startupProject.InnovationLevelID,
-                InnovationLevelList = new SelectList(db.InnovationLevels, "InnovationLevelID", "InnovationLevelName"/*, startup.InnovationLevelID != null ? startup.InnovationLevelID : null*/),
+                InnovationLevelList = new SelectList(db.InnovationLevels, "InnovationLevelID", "InnovationLevelName"),
                 ScalabilityID = startupProject.ScalabilityID,
-                ScalabilityList = new SelectList(db.Scalabilities, "ScalabilityID", "ScalabilityName"/*, startup.ScalabilityID != null ? startup.ScalabilityID : null*/),
+                ScalabilityList = new SelectList(db.Scalabilities, "ScalabilityID", "ScalabilityName"),
 
                 Updated = updated,
 
-                //AllQuestionsAnswered = GetAllQuestionsAnswered(startupProject)
+                Message = message,
+                UnansweredQuestion = unansweredQuestion
             };
         }
 
-        //private bool GetAllQuestionsAnswered(Models.IdeaCarrier.Startup startupProject)
-        //{
-        //    return
-        //         startupProject.ProjectDomainID.HasValue &&
-        //        !string.IsNullOrEmpty(startupProject.ProjectSummary) &&
-        //        //startupProject.AllowSharing.HassValue &&
-        //        startupProject.AllowedInvestors.Any() &&
-             
-        //        startupProject.FundingPhaseID.HasValue &&
-        //        startupProject.FundingAmountID.HasValue &&
-        //        //startupProject.FutureFundingNeeded.HasValue &&
-        //        startupProject.AlreadySpentTime.HasValue &&
-        //        startupProject.AlreadySpentMoney.HasValue &&
-        //        //startupProject.WillSpendOwnMoney.HasValue &&
-
-        //        startupProject.ProjectFundingDivisions.Count(pfd => pfd.Percentage > 0) <= startupProject.ProjectFundingDivisions.Count() &&
-        //        startupProject.EstimatedExitPlanID.HasValue &&
-        //        startupProject.EstimatedBreakEven.HasValue &&
-        //        startupProject.PossibleIncomeStreams.HasValue &&
-        //        //startupProject.HavePayingCustomers.HasValue &&
-
-        //        startupProject.TeamMemberSize.HasValue &&
-        //        startupProject.TeamExperience.HasValue &&
-        //        //startupProject.TeamVisionShared.HasValue &&
-        //        //startupProject.HaveFixedRoles.HasValue &&
-        //        startupProject.TeamWeaknesses.Any() &&
-        //        //startupProject.LookingForActiveInvestors.HasValue &&
-
-        //        startupProject.Outcomes.Any() &&
-        //        startupProject.InnovationLevelID.HasValue &&
-        //        startupProject.ScalabilityID.HasValue;
-        //}
-
         private List<AllowedInvestorViewModel> GetAllowedInvestors(Models.IdeaCarrier.Startup startupProject)
         {
-            //Models.IdeaCarrier.Startup currentAllowedInvestorsStartup = db.Startups.Include(a => a.AllowedInvestors).Where(s => s.StartupID == startupID).Single();
-            //var startupAllowedInvestors = new HashSet<int>(currentAllowedInvestorsStartup.AllowedInvestors.Select(a => a.AllowedInvestorID));
-
             List<AllowedInvestorViewModel> allowedInvestorViewModels = new List<AllowedInvestorViewModel>();
 
             List<int> projectAllowedInvestorIDList = startupProject.AllowedInvestors.Select(ai => ai.AllowedInvestorID).ToList();
-
-            //if (/*startupProject.AllowedInvestors != null && */startupProject.AllowedInvestors.Any())
-            //{
-            //currentAllowedInvestorIDList = startupProject.AllowedInvestors.Select(ai => ai.AllowedInvestorID).ToList();
-            //}
 
             List<AllowedInvestor> allowedInvestors = db.AllowedInvestors.ToList();
             foreach (var allowedInvestor in allowedInvestors)
@@ -516,64 +406,18 @@ namespace EoS.Controllers
                 {
                     AllowedInvestorID = allowedInvestor.AllowedInvestorID,
                     AllowedInvestorName = allowedInvestor.AllowedInvestorName,
-                    //Assigned = currentAllowedInvestorIDList.Contains(allowedInvestor.AllowedInvestorID)
                     Assigned = projectAllowedInvestorIDList.Any() ? projectAllowedInvestorIDList.Contains(allowedInvestor.AllowedInvestorID) : false
                 });
             }
-            //}
 
             return allowedInvestorViewModels;
         }
-
-        //private List<FundingDivisionStartup> GetFundingDivisions(Models.IdeaCarrier.Startup startupProject)
-        //{
-            //if (startupProject.ProjectFundingDivisions == null || !startupProject.ProjectFundingDivisions.Any()) //Initiation
-            //{
-                //var currentStartupFundingDivisionsStartup = db.Startups.Include(f => f.ProjectFundingDivisions).Where(s => s.StartupID == startupProject.StartupID).Single();
-                //var startupFundingDivisions = new HashSet<int>(currentStartupFundingDivisionsStartup.ProjectFundingDivisions.Select(f => f.FundingDivisionID));
-
-                //var FundingDivisionList = new List<FundingDivisionStartup>();
-
-                //List<int> currentFundingDivisionIDList = null;
-                //if (startupProject.ProjectFundingDivisions != null && !startupProject.ProjectFundingDivisions.Any())
-                //{
-                //    currentFundingDivisionIDList = startupProject.ProjectFundingDivisions.Select(fd => fd.FundingDivisionID).ToList();
-                //}
-
-                //bool updated = false;
-
-                //List<FundingDivision> fundingDivisions = db.FundingDivisions.ToList(); //==>AddNewProject
-                //foreach (var fundingDivision in fundingDivisions)
-                //{
-                //    if (currentFundingDivisionIDList == null || !currentFundingDivisionIDList.Contains(fundingDivision.FundingDivisionID))
-                //    {
-                //        db.FundingDivisionStartups.Add(new FundingDivisionStartup
-                //        {
-                //            FundingDivisionID = fundingDivision.FundingDivisionID,
-                //            Percentage = 0,
-                //            StartupID = startupProject.StartupID
-                //        });
-                //        updated = true;
-                //    }
-                //}
-                //if (updated) db.SaveChanges();
-            //}
-            //return db.FundingDivisionStartups.Where(fs => fs.StartupID == startupProject.StartupID).ToList();
-            //return startupProject.ProjectFundingDivisions.ToList();
-        //}
 
         private List<TeamWeaknessViewModel> GetTeamWeaknesses(Models.IdeaCarrier.Startup startupProject)
         {
             List<TeamWeaknessViewModel> teamWeaknessViewModels = new List<TeamWeaknessViewModel>();
 
             List<int> projectTeamWeaknessIDList = startupProject.TeamWeaknesses.Select(tw => tw.TeamWeaknessID).ToList();
-
-            //if (startupProject.TeamWeaknesses != null && startupProject.TeamWeaknesses.Any())
-            //{
-            //    currentTeamWeaknessIDList = startupProject.TeamWeaknesses.Select(tw => tw.TeamWeaknessID).ToList();
-            //}
-            //var currentWeaknessesStartup = db.Startups.Include(w => w.TeamWeaknesses).Where(s => s.StartupID == startupID).Single();
-            //var startupWeaknesses = new HashSet<int>(currentWeaknessesStartup.TeamWeaknesses.Select(w => w.TeamWeaknessID));
 
             List<TeamWeakness> teamWeaknesses = db.TeamWeaknesses.ToList();
             foreach (var teamWeakness in teamWeaknesses)
@@ -582,11 +426,9 @@ namespace EoS.Controllers
                 {
                     WeaknessID = teamWeakness.TeamWeaknessID,
                     WeaknessName = teamWeakness.TeamWeaknessName,
-                    //Assigned = currentTeamWeaknessIDList.Contains(teamWeakness.TeamWeaknessID)
                     Assigned = projectTeamWeaknessIDList.Any() ? projectTeamWeaknessIDList.Contains(teamWeakness.TeamWeaknessID) : false
                 });
             }
-            //}
 
             return teamWeaknessViewModels;
         }
@@ -597,13 +439,6 @@ namespace EoS.Controllers
 
             List<int> projectOutcomeIDList = startupProject.Outcomes.Select(o => o.OutcomeID).ToList();
 
-            //if (startupProject.Outcomes != null && startupProject.Outcomes.Any())
-            //{
-            //    currentOutcomeIDList = startupProject.Outcomes.Select(o => o.OutcomeID).ToList();
-            //}
-                //var currentOutcomesStartup = db.Startups.Include(o => o.Outcomes).Where(s => s.StartupID == startupID).Single();
-                //var startupOutcomes = new HashSet<int>(currentOutcomesStartup.Outcomes.Select(o => o.OutcomeID));
-                
                 List<Outcome> outcomes = db.Outcomes.ToList();
                 foreach (var outcome in outcomes)
                 {
@@ -611,7 +446,6 @@ namespace EoS.Controllers
                     {
                         OutcomeID = outcome.OutcomeID,
                         OutcomeName = outcome.OutcomeName,
-                        //Assigned = currentOutcomeIDList.Contains(outcome.OutcomeID)
                         Assigned = projectOutcomeIDList.Any() ? projectOutcomeIDList.Contains(outcome.OutcomeID) : false
                     });
                 }
@@ -628,7 +462,7 @@ namespace EoS.Controllers
             {
                 case "tab_Project": updated = UpdateTabProject(startupProject, projectPostModel); break;
                 case "tab_Funding": updated = UpdateTabFunding(startupProject, projectPostModel); break;
-                case "tab_Budget": updated = UpdateTabBudget(startupProject, projectPostModel); break; //, wrongAnswerInFundingDivisionPercentages)
+                case "tab_Budget": updated = UpdateTabBudget(startupProject, projectPostModel); break;
                 case "tab_Team": updated = UpdateTabTeam(startupProject, projectPostModel); break;
                 case "tab_Outcome": updated = UpdateTabOutcome(startupProject, projectPostModel); break;
                 default: break;
@@ -664,30 +498,49 @@ namespace EoS.Controllers
                 startupProject.ProjectSummary = projectPostModel.ProjectSummary;
                 updated = true;
             }
-            
-            if (startupProject.AllowSharing != projectPostModel.AllowSharing)
+
+            if (!string.IsNullOrEmpty(projectPostModel.AllowSharing))
             {
-                startupProject.AllowSharing = projectPostModel.AllowSharing;
+                bool postedAllowSharing = projectPostModel.AllowSharing.ToUpper() == "YES";
+                if (postedAllowSharing && !startupProject.AllowSharing) // && profilePostModel.AllowSharing.HasValue && !profilePostModel.AllowSharing.Value
+                {
+                    startupProject.AllowSharing = true;
+                    updated = true;
+                }
+                else if (!postedAllowSharing && startupProject.AllowSharing) // && profilePostModel.AllowSharing.HasValue && !profilePostModel.AllowSharing.Value
+                {
+                    startupProject.AllowSharing = false;
+                    updated = true;
+                }
+            }
+            else if (startupProject.AllowSharing) //!profilePostModel.AllowSharing.HasValue (bool?)
+            {
+                startupProject.AllowSharing = false; //profilePostModel.AllowSharing = null;
                 updated = true;
             }
+            //if (startupProject.AllowSharing != projectPostModel.AllowSharing)
+            //{
+            //    startupProject.AllowSharing = projectPostModel.AllowSharing;
+            //    updated = true;
+            //}
 
-            if (UpdateAllowedToInvestors(projectPostModel.SelectedAllowedInvestorIDs, startupProject) && !updated) updated = true;
+            if (UpdateAllowedToInvestors(projectPostModel.AllowedInvestorIDs, startupProject) && !updated) updated = true;
 
             return updated;
         }
 
-        private bool UpdateAllowedToInvestors(string[] selectedAllowedInvestorIDs, Models.IdeaCarrier.Startup startupProject)
+        private bool UpdateAllowedToInvestors(string[] postedAllowedInvestorIDs, Models.IdeaCarrier.Startup startupProject)
         {
             bool updated = false;
 
-            if (selectedAllowedInvestorIDs != null)
+            if (postedAllowedInvestorIDs != null)
             {
-                List<int> selectedAllowedInvestorIDList = Array.ConvertAll(selectedAllowedInvestorIDs, s => int.Parse(s)).ToList();
+                List<int> postedAllowedInvestorIDList = Array.ConvertAll(postedAllowedInvestorIDs, s => int.Parse(s)).ToList();
 
                 List<AllowedInvestor> projectAllowedInvestors = startupProject.AllowedInvestors.ToList();
                 foreach (AllowedInvestor projectAllowedInvestor in projectAllowedInvestors)
                 {
-                    if (!selectedAllowedInvestorIDList.Contains(projectAllowedInvestor.AllowedInvestorID))
+                    if (!postedAllowedInvestorIDList.Contains(projectAllowedInvestor.AllowedInvestorID))
                     {
                         startupProject.AllowedInvestors.Remove(projectAllowedInvestor);
                         updated = true;
@@ -696,9 +549,9 @@ namespace EoS.Controllers
 
                 List<AllowedInvestor> allowedInvestors = db.AllowedInvestors.ToList();
                 AllowedInvestor allowedInvestor = null;
-                foreach (int selectedAllowedInvestorID in selectedAllowedInvestorIDList)
+                foreach (int postedAllowedInvestorID in postedAllowedInvestorIDList)
                 {
-                    allowedInvestor = allowedInvestors.Where(ai => ai.AllowedInvestorID == selectedAllowedInvestorID).FirstOrDefault();
+                    allowedInvestor = allowedInvestors.Where(ai => ai.AllowedInvestorID == postedAllowedInvestorID).FirstOrDefault();
 
                     if (!startupProject.AllowedInvestors.Contains(allowedInvestor))
                     {
@@ -707,43 +560,11 @@ namespace EoS.Controllers
                     }
                 }
             }
-            else //if (selectedAllowedInvestorIDs == null)
+            else //if (postedAllowedInvestorIDs == null)
             {
                 startupProject.AllowedInvestors.Clear();
                 updated = true;
             }
-
-            //if (selectedAllowedInvestorIDs != null)
-            //{
-            //    List<int> selectedAllowedInvestorIDList = Array.ConvertAll(selectedAllowedInvestorIDs, s => int.Parse(s)).ToList();
-
-            //    List<int> currentAllowedInvestorIDList = startupProject.AllowedInvestors.Select(ai => ai.AllowedInvestorID).ToList();
-
-            //    List<AllowedInvestor> allowedInvestors = db.AllowedInvestors.ToList();
-
-            //    if (currentAllowedInvestorIDList.Any())
-            //    {
-            //        foreach (var allowedInvestor in allowedInvestors)
-            //        {
-            //            if (selectedAllowedInvestorIDList.Contains(allowedInvestor.AllowedInvestorID) && !currentAllowedInvestorIDList.Contains(allowedInvestor.AllowedInvestorID)) //selectedSharedToInvestorsHS
-            //            {
-            //                startupProject.AllowedInvestors.Add(allowedInvestor);
-            //                updated = true;
-            //            }
-            //            else if (currentAllowedInvestorIDList.Contains(allowedInvestor.AllowedInvestorID) && startupProject.AllowedInvestors.Remove(allowedInvestor))
-            //                updated = true;
-            //        }
-            //    }
-            //}
-            //else if (startupProject.AllowedInvestors.Any())
-            //{
-            //    List<AllowedInvestor> allowedInvestors = db.AllowedInvestors.ToList();
-
-            //    foreach (var allowedInvestor in allowedInvestors)
-            //    {
-            //        if (startupProject.AllowedInvestors.Remove(allowedInvestor)) updated = true;
-            //    }
-            //}
 
             return updated;
         }
@@ -764,11 +585,30 @@ namespace EoS.Controllers
                 updated = true;
             }
 
-            if (startupProject.FutureFundingNeeded != projectPostModel.FutureFundingNeeded)
+            if (!string.IsNullOrEmpty(projectPostModel.FutureFundingNeeded))
             {
-                startupProject.FutureFundingNeeded = projectPostModel.FutureFundingNeeded;
+                bool postedFutureFundingNeeded = projectPostModel.FutureFundingNeeded.ToUpper() == "YES";
+                if (postedFutureFundingNeeded && !startupProject.FutureFundingNeeded) // && profilePostModel.FutureFundingNeeded.HasValue && !profilePostModel.FutureFundingNeeded.Value
+                {
+                    startupProject.FutureFundingNeeded = true;
+                    updated = true;
+                }
+                else if (!postedFutureFundingNeeded && startupProject.FutureFundingNeeded) // && profilePostModel.FutureFundingNeeded.HasValue && !profilePostModel.FutureFundingNeeded.Value
+                {
+                    startupProject.FutureFundingNeeded = false;
+                    updated = true;
+                }
+            }
+            else if (startupProject.FutureFundingNeeded) //!profilePostModel.FutureFundingNeeded.HasValue (bool?)
+            {
+                startupProject.FutureFundingNeeded = false; //profilePostModel.FutureFundingNeeded = null;
                 updated = true;
             }
+            //if (startupProject.FutureFundingNeeded != projectPostModel.FutureFundingNeeded)
+            //{
+            //    startupProject.FutureFundingNeeded = projectPostModel.FutureFundingNeeded;
+            //    updated = true;
+            //}
 
             if (startupProject.AlreadySpentTime != projectPostModel.AlreadySpentTime)
             {
@@ -782,11 +622,30 @@ namespace EoS.Controllers
                 updated = true;
             }
 
-            if (startupProject.WillSpendOwnMoney != projectPostModel.WillSpendOwnMoney)
+            if (!string.IsNullOrEmpty(projectPostModel.WillSpendOwnMoney))
             {
-                startupProject.WillSpendOwnMoney = projectPostModel.WillSpendOwnMoney;
+                bool postedWillSpendOwnMoney = projectPostModel.WillSpendOwnMoney.ToUpper() == "YES";
+                if (postedWillSpendOwnMoney && !startupProject.WillSpendOwnMoney) // && profilePostModel.WillSpendOwnMoney.HasValue && !profilePostModel.WillSpendOwnMoney.Value
+                {
+                    startupProject.WillSpendOwnMoney = true;
+                    updated = true;
+                }
+                else if (!postedWillSpendOwnMoney && startupProject.WillSpendOwnMoney) // && profilePostModel.WillSpendOwnMoney.HasValue && !profilePostModel.WillSpendOwnMoney.Value
+                {
+                    startupProject.WillSpendOwnMoney = false;
+                    updated = true;
+                }
+            }
+            else if (startupProject.WillSpendOwnMoney) //!profilePostModel.WillSpendOwnMoney.HasValue (bool?)
+            {
+                startupProject.WillSpendOwnMoney = false; //profilePostModel.WillSpendOwnMoney = null;
                 updated = true;
             }
+            //if (startupProject.WillSpendOwnMoney != projectPostModel.WillSpendOwnMoney)
+            //{
+            //    startupProject.WillSpendOwnMoney = projectPostModel.WillSpendOwnMoney;
+            //    updated = true;
+            //}
 
             return updated;
         }
@@ -814,12 +673,31 @@ namespace EoS.Controllers
                 startupProject.PossibleIncomeStreams = projectPostModel.PossibleIncomeStreams;
                 updated = true;
             }
-            
-            if (startupProject.HavePayingCustomers != projectPostModel.HavePayingCustomers)
+
+            if (!string.IsNullOrEmpty(projectPostModel.HavePayingCustomers))
             {
-                startupProject.HavePayingCustomers = projectPostModel.HavePayingCustomers;
+                bool postedHavePayingCustomers = projectPostModel.HavePayingCustomers.ToUpper() == "YES";
+                if (postedHavePayingCustomers && !startupProject.HavePayingCustomers) // && profilePostModel.HavePayingCustomers.HasValue && !profilePostModel.HavePayingCustomers.Value
+                {
+                    startupProject.HavePayingCustomers = true;
+                    updated = true;
+                }
+                else if (!postedHavePayingCustomers && startupProject.HavePayingCustomers) // && profilePostModel.HavePayingCustomers.HasValue && !profilePostModel.HavePayingCustomers.Value
+                {
+                    startupProject.HavePayingCustomers = false;
+                    updated = true;
+                }
+            }
+            else if (startupProject.HavePayingCustomers) //!profilePostModel.HavePayingCustomers.HasValue (bool?)
+            {
+                startupProject.HavePayingCustomers = false; //profilePostModel.HavePayingCustomers = null;
                 updated = true;
             }
+            //if (startupProject.HavePayingCustomers != projectPostModel.HavePayingCustomers)
+            //{
+            //    startupProject.HavePayingCustomers = projectPostModel.HavePayingCustomers;
+            //    updated = true;
+            //}
 
             return updated;
         }
@@ -827,24 +705,23 @@ namespace EoS.Controllers
         private bool UpdateFundingDivisionPercentages(string[] fundingDivisionPercentages, Models.IdeaCarrier.Startup startupProject) //, ref bool wrongAnswer)
         {
             bool updated = false;
-
+            
             if (fundingDivisionPercentages != null)
             {
-                List<int> fundingDivisionPercentageList = Array.ConvertAll(fundingDivisionPercentages, s => int.Parse(s)).ToList();
+                List<int> fundingDivisionPercentageList = new List<int>(); //= Array.ConvertAll(fundingDivisionPercentages, s => Int32.Parse(Regex.Replace(s, "^0-9", "0"))).ToList();
 
-                //List<FundingDivisionStartup> startupFundingDivisionList = db.FundingDivisionStartups.Where(fds => fds.StartupID == startupProject).Distinct().ToList();
-                //List<FundingDivisionStartup> startupFundingDivisionList = startupProject.ProjectFundingDivisions.Distinct().ToList();
+                int fundingDivisionPercentage = 0;
+                foreach (string fundingDivisionPercentageString in fundingDivisionPercentages)
+                {
+                    if (Int32.TryParse(fundingDivisionPercentageString, out fundingDivisionPercentage))
+                    {
+                        if (fundingDivisionPercentage < 0) fundingDivisionPercentageList.Add(0);
+                        else fundingDivisionPercentageList.Add(fundingDivisionPercentage);
+                    }
+                    else fundingDivisionPercentageList.Add(0);
+                }
 
-                //int fundingDivisionPercentage = 0;
-
-                //if (startupProject.ProjectFundingDivisions != null && startupProject.ProjectFundingDivisions.Sum(pfd => pfd.Percentage) > 100)
-                //{
-                //    TempData["message"] = "In the question \"How will the funding be spent?\" the sum of the percentages can't be over 100!"; //Max 100%
-                //    TempData["unanswered"] = "ProjectFundingDivisions";
-                //return Redirect(Url.Action("ProjectForm", new { startupProject.StartupID }) + "#Budget");
-                //}
-
-                if (fundingDivisionPercentageList.Sum() <= 100) //<--------------!!!
+                if (fundingDivisionPercentageList.Sum() <= 100)
                 {
                     for (int i = 0; i < fundingDivisionPercentageList.Count(); i++)
                     {
@@ -852,12 +729,12 @@ namespace EoS.Controllers
                         if (startupProject.ProjectFundingDivisions.ElementAt(i).Percentage != fundingDivisionPercentageList.ElementAt(i))
                         {
                             startupProject.ProjectFundingDivisions.ElementAt(i).Percentage = fundingDivisionPercentageList.ElementAt(i);
-                            //db.Entry(startupFundingDivisionList.ElementAt(i)).State = EntityState.Modified; //<------!!!
+                            //db.Entry(startupFundingDivisionList.ElementAt(i)).State = EntityState.Modified;
                             updated = true;
                         }
                     }
                 } 
-                else TempData["message"] = "In tab BudgetI \"How will the funding be spent?\" the sum of the percentages can't be over 100!";
+                //else TempData["message"] = "In tab BudgetI \"How will the funding be spent?\" the sum of the percentages can't be over 100!";
                 //wrongAnswer = true; return false;
             }
             else //if (fundingDivisionPercentages == null)
@@ -885,42 +762,98 @@ namespace EoS.Controllers
                 updated = true;
             }
 
-            if (startupProject.TeamVisionShared != projectPostModel.TeamVisionShared)
+            if (!string.IsNullOrEmpty(projectPostModel.TeamVisionShared))
             {
-                startupProject.TeamVisionShared = projectPostModel.TeamVisionShared;
+                bool postedTeamVisionShared = projectPostModel.TeamVisionShared.ToUpper() == "YES";
+                if (postedTeamVisionShared && !startupProject.TeamVisionShared) // && profilePostModel.TeamVisionShared.HasValue && !profilePostModel.TeamVisionShared.Value
+                {
+                    startupProject.TeamVisionShared = true;
+                    updated = true;
+                }
+                else if (!postedTeamVisionShared && startupProject.TeamVisionShared) // && profilePostModel.TeamVisionShared.HasValue && !profilePostModel.TeamVisionShared.Value
+                {
+                    startupProject.TeamVisionShared = false;
+                    updated = true;
+                }
+            }
+            else if (startupProject.TeamVisionShared) //!profilePostModel.TeamVisionShared.HasValue (bool?)
+            {
+                startupProject.TeamVisionShared = false; //profilePostModel.TeamVisionShared = null;
                 updated = true;
             }
+            //if (startupProject.TeamVisionShared != projectPostModel.TeamVisionShared)
+            //{
+            //    startupProject.TeamVisionShared = projectPostModel.TeamVisionShared;
+            //    updated = true;
+            //}
 
-            if (startupProject.HaveFixedRoles != projectPostModel.HaveFixedRoles)
+            if (!string.IsNullOrEmpty(projectPostModel.HaveFixedRoles))
             {
-                startupProject.HaveFixedRoles = projectPostModel.HaveFixedRoles;
+                bool postedTeamVisionShared = projectPostModel.HaveFixedRoles.ToUpper() == "YES";
+                if (postedTeamVisionShared && !startupProject.HaveFixedRoles) // && profilePostModel.HaveFixedRoles.HasValue && !profilePostModel.HaveFixedRoles.Value
+                {
+                    startupProject.HaveFixedRoles= true;
+                    updated = true;
+                }
+                else if (!postedTeamVisionShared && startupProject.HaveFixedRoles) // && profilePostModel.HaveFixedRoles.HasValue && !profilePostModel.HaveFixedRoles.Value
+                {
+                    startupProject.HaveFixedRoles = false;
+                    updated = true;
+                }
+            }
+            else if (startupProject.HaveFixedRoles) //!profilePostModel.HaveFixedRoles (bool?)
+            {
+                startupProject.HaveFixedRoles = false; //profilePostModel.HaveFixedRoles = null;
                 updated = true;
             }
+            //if (startupProject.HaveFixedRoles != projectPostModel.HaveFixedRoles)
+            //{
+            //    startupProject.HaveFixedRoles = projectPostModel.HaveFixedRoles;
+            //    updated = true;
+            //}
 
-            ////if (UpdateStartupCheckBoxsData(null, projectPostModel.SelectedTeamWeaknessIDs, null, startupProject) && !updated) updated = true;
-            if (UpdateTeamWeaknesses(projectPostModel.SelectedTeamWeaknessIDs, startupProject) && !updated) updated = true;
+            if (UpdateTeamWeaknesses(projectPostModel.TeamWeaknessIDs, startupProject) && !updated) updated = true;
 
-            if (startupProject.LookingForActiveInvestors != projectPostModel.LookingForActiveInvestors)
+            if (!string.IsNullOrEmpty(projectPostModel.LookingForActiveInvestors))
             {
-                startupProject.LookingForActiveInvestors = projectPostModel.LookingForActiveInvestors;
+                bool postedLookingForActiveInvestors = projectPostModel.LookingForActiveInvestors.ToUpper() == "YES";
+                if (postedLookingForActiveInvestors && !startupProject.LookingForActiveInvestors) // && profilePostModel.LookingForActiveInvestors.HasValue && !profilePostModel.LookingForActiveInvestors.Value
+                {
+                    startupProject.LookingForActiveInvestors = true;
+                    updated = true;
+                }
+                else if (!postedLookingForActiveInvestors && startupProject.LookingForActiveInvestors) // && profilePostModel.LookingForActiveInvestors.HasValue && !profilePostModel.LookingForActiveInvestors.Value
+                {
+                    startupProject.LookingForActiveInvestors = false;
+                    updated = true;
+                }
+            }
+            else if (startupProject.LookingForActiveInvestors) //!profilePostModel.LookingForActiveInvestors.HasValue (bool?)
+            {
+                startupProject.LookingForActiveInvestors = false; //profilePostModel.LookingForActiveInvestors = null;
                 updated = true;
             }
+            //if (startupProject.LookingForActiveInvestors != projectPostModel.LookingForActiveInvestors)
+            //{
+            //    startupProject.LookingForActiveInvestors = projectPostModel.LookingForActiveInvestors;
+            //    updated = true;
+            //}
 
             return updated;
         }
 
-        private bool UpdateTeamWeaknesses(string[] selectedTeamWeaknessIDs, Models.IdeaCarrier.Startup startupProject)
+        private bool UpdateTeamWeaknesses(string[] postedTeamWeaknessIDs, Models.IdeaCarrier.Startup startupProject)
         {
             bool updated = false;
 
-            if (selectedTeamWeaknessIDs != null)
+            if (postedTeamWeaknessIDs != null)
             {
-                List<int> selectedTeamWeaknessIDList = Array.ConvertAll(selectedTeamWeaknessIDs, s => int.Parse(s)).ToList();
+                List<int> postedTeamWeaknessIDList = Array.ConvertAll(postedTeamWeaknessIDs, s => int.Parse(s)).ToList();
 
                 List<TeamWeakness> projectTeamWeaknesses = startupProject.TeamWeaknesses.ToList();
                 foreach (TeamWeakness projectTeamWeakness in projectTeamWeaknesses)
                 {
-                    if (!selectedTeamWeaknessIDList.Contains(projectTeamWeakness.TeamWeaknessID))
+                    if (!postedTeamWeaknessIDList.Contains(projectTeamWeakness.TeamWeaknessID))
                     {
                         startupProject.TeamWeaknesses.Remove(projectTeamWeakness);
                         updated = true;
@@ -929,9 +862,9 @@ namespace EoS.Controllers
 
                 List<TeamWeakness> teamSkills = db.TeamWeaknesses.ToList();
                 TeamWeakness teamWeakness = null;
-                foreach (int selectedTeamWeaknessID in selectedTeamWeaknessIDList)
+                foreach (int postedTeamWeaknessID in postedTeamWeaknessIDList)
                 {
-                    teamWeakness = teamSkills.Where(tw => tw.TeamWeaknessID == selectedTeamWeaknessID).FirstOrDefault();
+                    teamWeakness = teamSkills.Where(tw => tw.TeamWeaknessID == postedTeamWeaknessID).FirstOrDefault();
 
                     if (!startupProject.TeamWeaknesses.Contains(teamWeakness))
                     {
@@ -940,7 +873,7 @@ namespace EoS.Controllers
                     }
                 }
             }
-            else //if (selectedTeamWeaknessIDs == null)
+            else //if (postedTeamWeaknessIDs == null)
             {
                 startupProject.TeamWeaknesses.Clear();
                 updated = true;
@@ -953,7 +886,7 @@ namespace EoS.Controllers
         {
             bool updated = false;
 
-            updated = UpdateOutcomes(projectPostModel.SelectedOutcomeIDs, startupProject);
+            updated = UpdateOutcomes(projectPostModel.OutcomeIDs, startupProject);
 
             if (startupProject.InnovationLevelID != projectPostModel.InnovationLevelID)
             {
@@ -971,18 +904,18 @@ namespace EoS.Controllers
         }
 
         //Outcomes
-        private bool UpdateOutcomes(string[] SelectedOutcomeIDs, Models.IdeaCarrier.Startup startupProject)
+        private bool UpdateOutcomes(string[] postedOutcomeIDs, Models.IdeaCarrier.Startup startupProject)
         {
             bool updated = false;
 
-            if (SelectedOutcomeIDs != null)
+            if (postedOutcomeIDs != null)
             {
-                List<int> selectedOutcomeIDList = Array.ConvertAll(SelectedOutcomeIDs, s => int.Parse(s)).ToList();
+                List<int> postedOutcomeIDList = Array.ConvertAll(postedOutcomeIDs, s => int.Parse(s)).ToList();
 
                 List<Outcome> projectOutcomes = startupProject.Outcomes.ToList();
                 foreach (Outcome projectOutcome in projectOutcomes)
                 {
-                    if (!selectedOutcomeIDList.Contains(projectOutcome.OutcomeID))
+                    if (!postedOutcomeIDList.Contains(projectOutcome.OutcomeID))
                     {
                         startupProject.Outcomes.Remove(projectOutcome);
                         updated = true;
@@ -991,9 +924,9 @@ namespace EoS.Controllers
 
                 List<Outcome> outcomes = db.Outcomes.ToList();
                 Outcome outcome = null;
-                foreach (int selectedOutcomeID in selectedOutcomeIDList)
+                foreach (int postedOutcomeID in postedOutcomeIDList)
                 {
-                    outcome = outcomes.Where(o => o.OutcomeID == selectedOutcomeID).FirstOrDefault();
+                    outcome = outcomes.Where(o => o.OutcomeID == postedOutcomeID).FirstOrDefault();
 
                     if (!startupProject.Outcomes.Contains(outcome))
                     {
@@ -1002,40 +935,11 @@ namespace EoS.Controllers
                     }
                 }
             }
-            else //if (selectedOutcomeIDs == null)
+            else //if (postedOutcomeIDs == null)
             {
                 startupProject.Outcomes.Clear();
                 updated = true;
             }
-
-            //if (SelectedOutcomeIDs != null)
-            //{
-            //    List<int> selectedOutcomeIDList = Array.ConvertAll(SelectedOutcomeIDs, s => int.Parse(s)).ToList();
-
-            //    var currentOutcomeIDList = startupProject.Outcomes.Select(o => o.OutcomeID).ToList();
-
-            //    var outcomes = db.Outcomes.ToList();
-
-            //    foreach (var outcome in outcomes)
-            //    {
-            //        if (selectedOutcomeIDList.Contains(outcome.OutcomeID) && !currentOutcomeIDList.Contains(outcome.OutcomeID))
-            //        {
-            //            startupProject.Outcomes.Add(outcome);
-            //            updated = true;
-            //        }
-            //        else if (currentOutcomeIDList.Contains(outcome.OutcomeID) && startupProject.Outcomes.Remove(outcome))
-            //            updated = true;
-            //    }
-            //}
-            //else if (startupProject.Outcomes.Any())
-            //{
-            //    var outcomes = db.Outcomes.ToList();
-
-            //    foreach (var outcome in outcomes)
-            //    {
-            //        if (startupProject.Outcomes.Remove(outcome)) updated = true;
-            //    }
-            //}
 
             return updated;
         }
@@ -1046,7 +950,7 @@ namespace EoS.Controllers
         {
             if (cancel)
             {
-                TempData["message"] = "Submission of form cancelled!";
+                //TempData["message"] = "Submission of form cancelled!";
                 //TempData["tab"] = redirectTab;
                 if (string.IsNullOrEmpty(redirectTab)) return RedirectToAction("ProjectForm", new { id });
                 else return Redirect(Url.Action("ProjectForm", new { id }) + "#" + redirectTab);
@@ -1121,10 +1025,10 @@ namespace EoS.Controllers
                 return Redirect(Url.Action("ProjectForm", new { id }) + "#Funding");
             }
             //Budget
-            if (startupProject.ProjectFundingDivisions != null && startupProject.ProjectFundingDivisions.Sum(pfd => pfd.Percentage) > 100)
+            if (startupProject.ProjectFundingDivisions != null && startupProject.ProjectFundingDivisions.Sum(pfd => pfd.Percentage) != 100)
             {
-                TempData["message"] = "In the question \"How will the funding be spent?\" the sum of the percentages can't be over 100!"; //Max 100%
-                TempData["unanswered"] = "ProjectFundingDivisions";
+                TempData["message"] = "In the question \"How will the funding be spent?\" the sum of the percentages must 100!"; //Max 100%
+                TempData["unanswered"] = "FundingDivisions";
                 return Redirect(Url.Action("ProjectForm", new { id }) + "#Budget");
             }
             if (!startupProject.EstimatedExitPlanID.HasValue)
@@ -1213,13 +1117,15 @@ namespace EoS.Controllers
 
             bool? approved = startupProject.Approved;
             if (startupProject.Approved && startupProject.ApprovedByID != User.Identity.GetUserId()) approved = null;
-
+            User.Identity.GetUserId();
             StartupEditAdminViewModel model = new StartupEditAdminViewModel
             {
                 StartupID = startupProject.StartupID,
-                IdeaCarrierName = startupProject.User.UserName,
+                IdeaCarrierUserID = startupProject.UserID,
+                IdeaCarrierUserName = startupProject.User.UserName,
                 ProjectSummary = startupProject.ProjectSummary,
                 Approved =  approved,
+                ApprovedBy = User.Identity.GetUserId() == startupProject.ApprovedByID ? "You self" : db.Users.Where(u => u.Id == startupProject.ApprovedByID).FirstOrDefault().UserName,
                 Locked = startupProject.Locked
             };
 
@@ -1306,14 +1212,10 @@ namespace EoS.Controllers
             //    DeleteDocument(document.DocId, document.DocURL, null);
             //}
 
-            //startup.Documents.Clear();
-
-            List<FundingDivisionStartup> fundingDivisions = startupProject.ProjectFundingDivisions.ToList();
-
-            foreach (var fundingDivision in fundingDivisions)
+            List<FundingDivisionStartup> projectFundingDivisions = startupProject.ProjectFundingDivisions.ToList();
+            foreach (FundingDivisionStartup projectFundingDivision in projectFundingDivisions)
             {
-                //if (db.FundingDivisionStartups.Contains(fundingDivision))
-                db.FundingDivisionStartups.Remove(fundingDivision);
+                db.FundingDivisionStartups.Remove(projectFundingDivision);
             }
 
             //db.AllowedInvestors (virtual) X
@@ -1480,294 +1382,6 @@ namespace EoS.Controllers
             return permission;
         }
 
-
-        //-----------------------------------------------------------------
-        //private void UpdateStartupCheckBoxsData(string[] SelectedSharedToInvestors, string[] SelectedTeamWeaknesses, string[] SelectedOutcomes, Models.IdeaCarrier.Startup startup)
-        //{
-        //    //Profile
-        //    if (SelectedSharedToInvestors != null) //==> UpdateSelectedSharedToInvestors(Models.IdeaCarrier.Startup startupProject)
-        //    {
-        //        //this is the new selection list
-        //        var selectedSharedToInvestorsHS = new HashSet<string>(SelectedSharedToInvestors);
-        //        //List<int> selectedSharedToInvestorsIDs = Array.ConvertAll(SelectedSharedToInvestors, s => int.Parse(s)).ToList();
-        //        //this is the current or previous saved selections
-        //        Models.IdeaCarrier.Startup currentStartupSharedToInvestorsStartup = db.Startups.Include(a => a.AllowedInvestors).Where(s => s.StartupID == startup.StartupID).Single();
-        //        var startupCurrentSharedToInvestorIDs = new HashSet<int>(currentStartupSharedToInvestorsStartup.AllowedInvestors.Select(a => a.AllowedInvestorID));
-
-        //        foreach (var allowedInvestor in db.AllowedInvestors)
-        //        {
-        //            if (selectedSharedToInvestorsHS.Contains(allowedInvestor.AllowedInvestorID.ToString()))
-        //            {
-        //                //if the selection not in previous selections, add it
-        //                if (!startupCurrentSharedToInvestorIDs.Contains(allowedInvestor.AllowedInvestorID))
-        //                {
-        //                    startup.AllowedInvestors.Add(allowedInvestor);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                //if the selection in previous selections but not in the new selected list, remove it
-        //                if (startupCurrentSharedToInvestorIDs.Contains(allowedInvestor.AllowedInvestorID))
-        //                {
-        //                    startup.AllowedInvestors.Remove(allowedInvestor);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else if (startup.AllowedInvestors != null)
-        //    {
-        //        //Delete Any previous selection if any
-        //        //this is the current or previous saved selections
-        //        //var currentStartupShareToInvestors = db.Startups.Include(a => a.AllowedInvestors).Where(s => s.StartupID == startup.StartupID).Single();
-        //        //var startupCurrentShareToInvestors = new HashSet<int>(currentStartupShareToInvestors.AllowedInvestors.Select(a => a.AllowedInvestorID));
-
-        //        foreach (var allowedInvestor in db.AllowedInvestors)
-        //        {
-        //            startup.AllowedInvestors.Remove(allowedInvestor);
-        //        }
-        //    }
-
-        //    //********************************************************************************//
-        //    //Team
-        //    if (SelectedTeamWeaknesses != null) //==> UpdateSelectedTeamWeaknesses(Models.IdeaCarrier.Startup startup)
-        //    {
-        //        //this is the new selection list
-        //        var selectedWeaknessesHS = new HashSet<string>(SelectedTeamWeaknesses);
-        //        //List<int> selectedTeamWeaknessIDs = Array.ConvertAll(SelectedTeamWeaknesses, s => int.Parse(s)).ToList();
-        //        Models.IdeaCarrier.Startup currentStartupWeaknessesStartup = db.Startups.Include(w => w.TeamWeaknesses).Where(s => s.StartupID == startup.StartupID).Single();
-        //        var startupCurrentWeaknessIDs = new HashSet<int>(currentStartupWeaknessesStartup.TeamWeaknesses.Select(w => w.TeamWeaknessID));
-
-        //        foreach (var teamWeakness in db.TeamWeaknesses)
-        //        {
-        //            if (selectedWeaknessesHS.Contains(teamWeakness.TeamWeaknessID.ToString()))
-        //            {
-        //                //if the selection not in previous selections, add it
-        //                if (!startupCurrentWeaknessIDs.Contains(teamWeakness.TeamWeaknessID))
-        //                {
-        //                    startup.TeamWeaknesses.Add(teamWeakness);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                //if the selection in previous selections but not in the new selected list, remove it 
-        //                if (startupCurrentWeaknessIDs.Contains(teamWeakness.TeamWeaknessID))
-        //                {
-        //                    startup.TeamWeaknesses.Remove(teamWeakness);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else if (startup.TeamWeaknesses != null)
-        //    {
-        //        //Delete Any previous selection if any
-        //        //this is the current or previous saved selections
-        //        //var currentStartupWeaknesses = db.Startups.Include(w => w.TeamWeaknesses).Where(s => s.StartupID == startup.StartupID).Single();
-        //        //var startupCurrentWeaknesses = new HashSet<int>(currentStartupWeaknesses.TeamWeaknesses.Select(w => w.TeamWeaknessID));
-
-        //        foreach (var teamWeakness in db.TeamWeaknesses)
-        //        {
-        //            startup.TeamWeaknesses.Remove(teamWeakness);
-        //        }
-        //    }
-
-        //    //********************************************************************************//
-        //    //Outcome
-
-        //    if (SelectedOutcomes != null) //==> UpdateSelectedOutcomes(Models.IdeaCarrier.Startup startupProject)
-        //    {
-        //        //this is the new selection list
-        //        var selectedOutcomesHS = new HashSet<String>(SelectedOutcomes);
-        //        //List<int> selectedOutcomes = Array.ConvertAll(SelectedOutcomes, s => int.Parse(s)).ToList();
-        //        Models.IdeaCarrier.Startup currentStartupOutcomesStartup = db.Startups.Include(o => o.Outcomes).Where(s => s.StartupID == startup.StartupID).Single();
-        //        var startupCurrentOutcomeIDs = new HashSet<int>(currentStartupOutcomesStartup.Outcomes.Select(o => o.OutcomeID));
-                
-        //        foreach (var outcome in db.Outcomes)
-        //        {
-        //            if (selectedOutcomesHS.Contains(outcome.OutcomeID.ToString()))
-        //            {
-        //                //if the selection not in previous selections, add it
-        //                if (!startupCurrentOutcomeIDs.Contains(outcome.OutcomeID))
-        //                {
-        //                    startup.Outcomes.Add(outcome);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                //if the selection in previous selections but not in the new selected list, remove it 
-        //                if (startupCurrentOutcomeIDs.Contains(outcome.OutcomeID))
-        //                {
-        //                    startup.Outcomes.Remove(outcome);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else if (startup.Outcomes != null)
-        //    {
-        //        //Delete Any previous selection if any
-        //        //this is the current or previous saved selections
-        //        //var currentStartupOutcomes = db.Startups.Include(o => o.Outcomes).Where(s => s.StartupID == startup.StartupID).Single();
-        //        //var startupCurrentOutcomes = new HashSet<int>(currentStartupOutcomes.Outcomes.Select(o => o.OutcomeID));
-
-        //        foreach (var outcome in db.Outcomes)
-        //        {
-        //            startup.Outcomes.Remove(outcome);
-        //        }
-        //    }
-
-        //    //********************************************************************************//
-        //}
-
-        //to be deleted
-        private void PopulateAssignedCheckBoxsData(Models.IdeaCarrier.Startup startup)
-        {
-            var allWeaknesses = db.TeamWeaknesses;
-            var currentWeaknessesStartup = db.Startups.Include(w => w.TeamWeaknesses).Where(s => s.StartupID == startup.StartupID).Single();
-            var startupWeaknesses = new HashSet<int>(currentWeaknessesStartup.TeamWeaknesses.Select(w => w.TeamWeaknessID));
-            var weaknessesViewModel = new List<TeamWeaknessViewModel>();
-
-            foreach (var weakness in allWeaknesses)
-            {
-                weaknessesViewModel.Add(new TeamWeaknessViewModel
-                {
-                    WeaknessID = weakness.TeamWeaknessID,
-                    WeaknessName = weakness.TeamWeaknessName,
-                    Assigned = startupWeaknesses.Contains(weakness.TeamWeaknessID)
-                });
-            }
-
-            ViewBag.weaknessesViewModel = weaknessesViewModel;
-            //----------------------------
-            var allOutcomes = db.Outcomes; 
-            var currentStartupOutcomes = db.Startups.Include(o => o.Outcomes).Where(s => s.StartupID == startup.StartupID).Single();
-            var startupOutcomes = new HashSet<int>(currentStartupOutcomes.Outcomes.Select(o => o.OutcomeID));
-            var OutcomesViewModel = new List<StartupOutcomeViewModel>();
-
-            foreach (var outcome in allOutcomes)
-            {
-                OutcomesViewModel.Add(new StartupOutcomeViewModel
-                {
-                    OutcomeID = outcome.OutcomeID,
-                    OutcomeName = outcome.OutcomeName,
-                    Assigned = startupOutcomes.Contains(outcome.OutcomeID)
-                });
-            }
-
-            ViewBag.outcomesViewModel = OutcomesViewModel;
-            //--------------------------------------------
-            var allAllowedInvestors = db.AllowedInvestors;
-            var currentStartupAllowedInvestors = db.Startups.Include(a => a.AllowedInvestors).Where(s => s.StartupID == startup.StartupID).Single();
-            var startupAllowedInvestors = new HashSet<int>(currentStartupAllowedInvestors.AllowedInvestors.Select(a => a.AllowedInvestorID));
-            var AllowedInvestorsViewModel = new List<AllowedInvestorViewModel>();
-
-            foreach (var investors in allAllowedInvestors)
-            {
-                AllowedInvestorsViewModel.Add(new AllowedInvestorViewModel
-                {
-                    AllowedInvestorID = investors.AllowedInvestorID,
-                    AllowedInvestorName = investors.AllowedInvestorName,
-                    Assigned = startupAllowedInvestors.Contains(investors.AllowedInvestorID)
-                });
-            }
-
-            ViewBag.AllowedInvestorsViewModel = AllowedInvestorsViewModel;
-            //--------------------------------------------
-            //if (startup.ProjectFundingDivisions == null) { //getFundingDivisionList(startupProject)
-            var allFundingDivisions = db.FundingDivisions; 
-            var currentStartupFundingDivisions = db.Startups.Include(f => f.ProjectFundingDivisions).Where(s => s.StartupID == startup.StartupID).Single();
-            var startupFundingDivisions = new HashSet<int>(currentStartupFundingDivisions.ProjectFundingDivisions.Select(f => f.FundingDivisionID));
-            var FundingDivisionsList = new List<FundingDivisionStartup>();
-
-            foreach (var fundingDivision in allFundingDivisions)
-            {
-                if (!startupFundingDivisions.Contains(fundingDivision.FundingDivisionID))
-                {
-                    db.FundingDivisionStartups.Add(new FundingDivisionStartup
-                    {
-                        FundingDivisionID = fundingDivision.FundingDivisionID,
-                        Percentage = 0,
-                        StartupID = startup.StartupID
-                    });
-                }
-            }
-            db.SaveChanges(); //<-----------------------------------------------------------------------????
-                                      //model.FundingDivisionStartups.Where(fds => fds.StartupID.Equals(Model.StartupID)
-            ViewBag.FundingDivisionsList = db.FundingDivisionStartups.Where(fs => fs.StartupID == startup.StartupID).ToList();          
-        }
-
-
-
-        /******************************************************************************/
-        //to be deleted
-        //this function will be called if there is validation error, so can we add the latest selection of checkboxes
-        //private void PopulateAssignedCheckBoxsData(Models.IdeaCarrier.Startup startup, string[]  selectedWeaknesses, string[] selectedOutcomes, string[] selectedSharedToInvestors)
-        //{
-        //    var allWeaknesses = db.TeamWeaknesses;
-        //    var selectedWeaknessesHS = new HashSet<String>();
-        //    var weaknessesViewModel = new List<TeamWeaknessViewModel>();
-
-        //    if (selectedWeaknesses != null)
-        //    {
-        //        selectedWeaknessesHS = new HashSet<String>(selectedWeaknesses);
-        //    }
-
-        //    foreach (var weakness in allWeaknesses)
-        //    {
-        //        weaknessesViewModel.Add(new TeamWeaknessViewModel
-        //        {
-        //            WeaknessID = weakness.TeamWeaknessID,
-        //            WeaknessName = weakness.TeamWeaknessName,
-        //            Assigned = selectedWeaknessesHS.Contains(weakness.TeamWeaknessID.ToString())
-        //        });
-        //    }
-        //    ViewBag.weaknessesViewModel = weaknessesViewModel;
-        //    //----------------------------
-        //    var allOutcomes = db.Outcomes;
-        //    var selectedOutcomesHS = new HashSet<String>();
-        //    var OutcomesViewModel = new List<StartupOutcomeViewModel>();
-
-        //    if (selectedOutcomes != null)
-        //    {
-        //        selectedOutcomesHS = new HashSet<String>(selectedOutcomes);
-        //    }
-
-        //    foreach (var outcome in allOutcomes)
-        //    {
-        //        OutcomesViewModel.Add(new StartupOutcomeViewModel
-        //        {
-        //            OutcomeID = outcome.OutcomeID,
-        //            OutcomeName = outcome.OutcomeName,
-        //            Assigned = selectedOutcomesHS.Contains(outcome.OutcomeID.ToString())
-        //        });
-        //    }
-
-        //    ViewBag.outcomesViewModel = OutcomesViewModel;
-        //    //--------------------------------------------
-        //    var allAllowedInvestors = db.AllowedInvestors;
-        //    var selectedSharedToInvestorsHS = new HashSet<String>();
-        //    var AllowedInvestorsViewModel = new List<AllowedInvestorViewModel>();
-
-        //    if (selectedSharedToInvestors != null)
-        //    {
-        //        selectedSharedToInvestorsHS = new HashSet<String>(selectedSharedToInvestors);
-        //    }
-            
-        //    foreach (var investors in allAllowedInvestors)
-        //    {
-        //        AllowedInvestorsViewModel.Add(new AllowedInvestorViewModel
-        //        {
-        //            AllowedInvestorID = investors.AllowedInvestorID,
-        //            AllowedInvestorName = investors.AllowedInvestorName,
-        //            Assigned = selectedSharedToInvestorsHS.Contains(investors.AllowedInvestorID.ToString())
-        //        });
-        //    }
-
-        //    ViewBag.AllowedInvestorsViewModel = AllowedInvestorsViewModel;
-        //    //------------------------------------------------------------
-        //    ViewBag.FundingDivisionsList = db.FundingDivisionStartups.Where(fs => fs.StartupID == startup.StartupID).ToList();
-        //}
-
-
-
         /************************************************************************/
         // GET:
         [HttpGet]  
@@ -1790,7 +1404,7 @@ namespace EoS.Controllers
         public ActionResult GeneratePDF(string id)
         {
             //return new Rotativa.ActionAsPdf("CasePreview/"+id); ViewAsPdf
-            try //<-----------------------------------------------------------------------
+            try //<--------------------------------------------------------
             {
                 return new Rotativa.ActionAsPdf("CasePreview", new { id });
             }
@@ -1816,52 +1430,55 @@ namespace EoS.Controllers
             }
 
             startup.Approved = !(startup.Approved);
-            if (startup.Approved) startup.ApprovedByID = User.Identity.GetUserId(); //<-------------------------
+            if (startup.Approved) startup.ApprovedByID = User.Identity.GetUserId();
             else startup.ApprovedByID = "";
 
             db.Entry(startup).State = EntityState.Modified;
             db.SaveChanges();
 
-            if (!string.IsNullOrWhiteSpace(redirect))
+            if (!string.IsNullOrWhiteSpace(redirect) && redirect.ToUpper() != "INDEX")
             {
                 if (redirect.ToUpper().Contains("DETAILS")) return RedirectToAction("ProjectDetails", new { id });
                 else return RedirectToAction(redirect, new { id });
             }
 
-            return RedirectToAction("Index");
+            if (string.IsNullOrWhiteSpace(redirect) || redirect.ToUpper() == "INDEX") return RedirectToAction("Index", new { id });
+
+            return RedirectToAction("ProjectDetails", new { id });
         }
 
         [Authorize(Roles = "Admin")]
-        public ActionResult Unlock(string id, string redirect = "") //string userName?
+        public ActionResult Unlock(string id, string redirect = "")
         {
             if (string.IsNullOrEmpty(id))
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Models.IdeaCarrier.Startup startup = db.Startups.Find(id);
+            Models.IdeaCarrier.Startup startupProject = db.Startups.Find(id);
 
-            if (startup == null)
+            if (startupProject == null)
             {
                 return HttpNotFound();
             }
             //try
-            startup.Locked = false;
-            startup.Approved = false;
-            startup.ApprovedByID = "";
+            startupProject.Locked = false;
+            startupProject.Approved = false;
+            startupProject.ApprovedByID = "";
+            startupProject.MatchMakings.Clear(); //<----!!!
 
-            db.Entry(startup).State = EntityState.Modified;
+            db.Entry(startupProject).State = EntityState.Modified;
             db.SaveChanges();
 
-            if (!string.IsNullOrWhiteSpace(redirect))
+            if (!string.IsNullOrWhiteSpace(redirect) && redirect.ToUpper() != "INDEX")
             {
                 if (redirect.ToUpper().Contains("DETAILS")) return RedirectToAction("ProjectDetails", new { id });
                 else return RedirectToAction(redirect, new { id });
             }
 
-            //ViewBag.UserName = userName; ?
+            if (string.IsNullOrWhiteSpace(redirect) || redirect.ToUpper() == "INDEX") return RedirectToAction("Index", new { id });
 
-            return RedirectToAction("Index");
+            return RedirectToAction("ProjectDetails", new { id });
         }
 
         // GET: Startups/Reminder
@@ -1873,9 +1490,9 @@ namespace EoS.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Models.IdeaCarrier.Startup Startup = db.Startups.Find(id);
+            Models.IdeaCarrier.Startup StartupProject = db.Startups.Find(id);
 
-            if (Startup == null)
+            if (StartupProject == null)
             {
                 return HttpNotFound();
             }
@@ -1884,9 +1501,9 @@ namespace EoS.Controllers
                 ReminderStartupViewModel model = new ReminderStartupViewModel
                 {
                     StartupId = id, //==Startup.StartupID,
-                    StartupName = Startup.StartupName,
-                    IdeaCarrierEmail = Startup.User.Email,
-                    IdeaCarrierId = Startup.UserID,
+                    StartupName = StartupProject.StartupName,
+                    IdeaCarrierEmail = StartupProject.User.Email,
+                    IdeaCarrierId = StartupProject.UserID,
                     Subject = subject,
                     Message = message,
                     Redirect = redirect
@@ -1958,7 +1575,6 @@ namespace EoS.Controllers
             return View(model);
         }
 
-        //ProlongDeadlineDate", , new { id = Model.StartupID, period = 6 }
         [Authorize(Roles = "IdeaCarrier")]
         public ActionResult ProlongDeadlineDate(string id, int months = 6, string redirect = "")
         {
@@ -1979,13 +1595,20 @@ namespace EoS.Controllers
             db.Entry(startupProject).State = EntityState.Modified;
             db.SaveChanges();
 
-            if (!string.IsNullOrWhiteSpace(redirect))
+            if (!string.IsNullOrWhiteSpace(redirect) && redirect.ToUpper() != "INDEX")
             {
                 if (redirect.ToUpper().Contains("DETAILS")) return RedirectToAction("ProjectDetails", new { id });
                 else return RedirectToAction(redirect, new { id });
             }
 
-            return RedirectToAction("Index");
+            if (string.IsNullOrWhiteSpace(redirect) || redirect.ToUpper() == "INDEX")
+            {
+                ViewBag.IdeaCarrierUserName = startupProject.User.Email;
+                ViewBag.IdeaCarrierId = startupProject.UserID;
+                return RedirectToAction("Index");
+            }
+
+            return RedirectToAction("ProjectDetails", new { id });
         }
 
         protected override void Dispose(bool disposing)

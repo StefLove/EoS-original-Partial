@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿//using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace EoS.Models.Shared
@@ -15,5 +15,7 @@ namespace EoS.Models.Shared
         [Required]
         [Display(Name = "Country abbreviation")]
         public string CountryAbbreviation { get; set; }
+
+        //public virtual ICollection<Investor.Investment> Investments { get; set; }
     }
 }

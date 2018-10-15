@@ -29,7 +29,7 @@ namespace EoS.Models.Investor
 
         [Display(Name = "Swedish region (Län)")]
         public int? SwedishRegionID { get; set; }
-        public virtual SwedishRegion SwedishRegion { get; set; } //<-------Remove
+        //public virtual SwedishRegion SwedishRegion { get; set; }
 
         //Profile----------------------------------------------
 
@@ -48,18 +48,11 @@ namespace EoS.Models.Investor
         public virtual ICollection<FundingPhase> FundingPhases { get; set; }
 
         //[Display(Name = "Funding Support")]
-        //public int? FundingAmountID { get; set; }
         [Display(Name = "Funding amounts")]
         public virtual ICollection<FundingAmount> FundingAmounts { get; set; }
 
         [Display(Name = "Needs future funding?")]
-        public bool FutureFundingNeeded { get; set; }
-
-        //[Display(Name = "Are you interested in projects that you already spent time working with?")]
-        //public bool AlreadySpentTime { get; set; }
-
-        //[Display(Name = "Are you interested in projects that you have already spent money in?")]
-        //public bool AlreadySpentMoney { get; set; }
+        public bool FutureFundingNeeded { get; set; } //<--------bool?
 
         //Budget-----------------------------------------------
 
@@ -77,13 +70,13 @@ namespace EoS.Models.Investor
         //Team-------------------------------------------------
 
         [Display(Name = "Team size > 1 person?")]
-        public bool TeamMemberSizeMoreThanOne { get; set; } //<-----bool? TeamSizeMoreThanOnePerson
+        public bool TeamMemberSizeMoreThanOne { get; set; } //<-----bool?
 
         [Display(Name = "Team has experience?")]
-        public bool TeamHasExperience { get; set; } //<-----bool?
+        public bool TeamHasExperience { get; set; } //<--------bool?
 
         [Display(Name = "Active investor?")]
-        public bool ActiveInvestor { get; set; } //<-----remove
+        public bool ActiveInvestor { get; set; } //<--------bool?
 
         [Display(Name = "Team skills")]
         public virtual ICollection<TeamSkill> TeamSkills { get; set; }
@@ -98,9 +91,6 @@ namespace EoS.Models.Investor
 
         [Display(Name = "Required scalabilities")]
         public virtual ICollection<Scalability> Scalabilities { get; set; }
-
-        //[Display(Name = "Is it important to have paying customers?")]
-        //public bool HavePayingCustomers { get; set; }
 
         //-----------------------------------------------------
 
@@ -122,43 +112,20 @@ namespace EoS.Models.Investor
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? DueDate { get; set; }
 
-        [Display(Name = "Locked")]
+        [Display(Name = "Locked?")]
         public bool Locked { get; set; }
 
         [Editable(true)]
         [DataType(DataType.DateTime)]
-        [Display(Name = "Last locked date")]
+        [Display(Name = "Last locked")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? LastLockedDate { get; internal set; }
 
-        [Display(Name = "Is this profile active?")]
+        [Display(Name = "Active?")] //<-----------
         public bool Active { get; set; } //bool?
 
         [Display(Name = "Matched Startup projects")]
-        public virtual ICollection<MMM.MatchMaking> MatchMakings { get; set; } //<-------------------------
-
-        //public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        //{
-        //if (Locked && !ProjectDomainID.HasValue)
-        //{
-        //     yield return new ValidationResult("Project Domain is required.", new List<string> { "ProjectDomainID" });
-        //}
-
-        //if (Locked && FundingAmounts == null)
-        //{
-        //    yield return new ValidationResult("Select at least one Funding Support.", new List<string> { "FundingAmounts" });
-        //}
-
-        //if (Locked && !TeamMemberSize.HasValue)
-        //{
-        //    yield return new ValidationResult("Team Member Size is required.", new List<string> { "TeamMemberSize" });
-        //}
-
-        //if (Locked && !TeamHasExperience.HasValue)
-        //{
-        //    yield return new ValidationResult("Team Experience is required.", new List<string> { "TeamHasExperience" });
-        //}
-        //}
+        public virtual ICollection<MMM.MatchMaking> MatchMakings { get; set; }
     }
 
     public class InvestmentProfileViewModel
@@ -166,21 +133,6 @@ namespace EoS.Models.Investor
         //[Key]
         [Display(Name = "Profile ID")]
         public string InvestmentID { get; set; }
-
-        //[ForeignKey("User")]
-        //[Display(Name = "Investor")]
-        //public string UserId { get; set; }
-        //public virtual ApplicationUser User { get; set; }
-
-        //[Required]
-        //[Display(Name = "Country")]
-        //public int CountryID { get; set; }
-        //public virtual Shared.Country Country { get; set; }
-
-        ////[ForeignKey("SwedishRegion")]
-        //[Display(Name = "Swedish region (Län)")]
-        //public int? SwedishRegionID { get; set; }
-        //public virtual Shared.SwedishRegion SwedishRegion { get; set; }
 
         //Profile----------------------------------------------
 
@@ -200,7 +152,6 @@ namespace EoS.Models.Investor
         //[Display(Name = "Funding phases")]
         //public virtual ICollection<Models.Shared.FundingPhase> FundingPhases { get; set; }
         public List<InvestorFundingPhaseViewModel> FundingPhases { get; set; }
-        //public bool FundingPhasesUnanswered { get; set; }
 
         //[Display(Name = "Funding Support")]
         //public int? FundingAmountID { get; set; }
@@ -211,13 +162,7 @@ namespace EoS.Models.Investor
 
         //[Required]
         [Display(Name = "Are you interested in projects that might have a need for future funding?")]  //<------------------!!!
-        public bool FutureFundingNeeded { get; set; }
-
-        //[Display(Name = "Are you interested in projects that you already spent time working with?")]
-        //public bool AlreadySpentTime { get; set; }
-
-        //[Display(Name = "Are you interested in projects that you have already spent money in?")]
-        //public bool AlreadySpentMoney { get; set; }
+        public bool FutureFundingNeeded { get; set; } //<--------bool?
 
         //Budget-----------------------------------------------
 
@@ -240,94 +185,65 @@ namespace EoS.Models.Investor
 
         //[Required]
         [Display(Name = "Is it important that the team consists of more than 1 person?")]
-        public bool TeamMemberSizeMoreThanOne { get; set; }
+        public bool TeamMemberSizeMoreThanOne { get; set; } //<--------bool?
 
         //[Required]
         [Display(Name = "Is it important that the team has experience in the field?")]
-        public bool TeamHasExperience { get; set; }
+        public bool TeamHasExperience { get; set; } //<--------bool?
 
         //[Required]
         [Display(Name = "Are you an active investor?")]
-        public bool ActiveInvestor { get; set; }
+        public bool ActiveInvestor { get; set; } //<--------bool?
 
         //[Display(Name = "Skills you might bring to the team")]
         //public virtual ICollection<TeamSkill> TeamSkills { get; set; }
         public List<TeamSkillViewModel> TeamSkills { get; set; }
-        //public bool TeamSkillsUnanswered { get; set; }
 
         //Outcome----------------------------------------------
 
         //[Display(Name = "Outcomes")]
         //public virtual ICollection<Models.Shared.Outcome> Outcomes { get; set; }
         public List<InvestorOutcomeViewModel> Outcomes { get; set; }
-        //public bool OutcomesUnanswered { get; set; }
 
         //[Display(Name = "Levels of innovation")]
         //public virtual ICollection<Models.Shared.InnovationLevel> InnovationLevels { get; set; }
         public List<InvestorInnovationLevelViewModel> InnovationLevels { get; set; }
-        //public bool InnovationLevelsUnanswered { get; set; }
 
         //[Display(Name = "Required scalabilities")]
         //public virtual ICollection<Models.Shared.Scalability> Scalabilities { get; set; }
         public List<InvestorScalabilityViewModel> Scalabilities { get; set; }
-        //public bool ScalabilitiesUnanswered { get; set; }
-
-        //[Display(Name = "Is it important to have paying customers?")]
-        //public bool HavePayingCustomers { get; set; }
 
         //-----------------------------------------------------
 
-        //[Display(Name = "Locked")]
-        //public bool Locked { get; set; }
+        public bool Updated { get; set; }
 
-        //[Display(Name = "Profile activity")]
-        //public bool Active { get; set; }
-
-        public bool Updated { get; set; } //<-----Remove?
-
-        //public bool AllQuestionsAnswered { get; set; }
+        public string Message { get; set; }
+        public string UnansweredQuestion { get; set; }
     }
-
-    //public class InvestmentProfileGetViewModel : InvestmentProfileViewModel
-    //{
-        //Project
-        //public SelectList ProfileDomainList { get; set; }
-        //Funding
-        //public List<InvestorFundingPhaseViewModel> FundingPhases { get; set; }
-        //public List<InvestorFundingAmountViewModel> FundingAmounts { get; set; }
-        //Budget
-        //public List<InvestorEstimatedExitPlanViewModel> EstimatedExitPlans { get; set; }
-        //Team
-        //public List<TeamSkillViewModel> TeamSkills { get; set; }
-        //Outcome
-        //public List<InvestorOutcomeViewModel> Outcomes { get; set; }
-        //public List<InvestorInnovationLevelViewModel> InnovationLevels { get; set; }
-        //public List<InvestorScalabilityViewModel> Scalabilities { get; set; }
-    //}
 
     public class InvestmentProfilePostViewModel : InvestmentProfileViewModel
     {
         //Funding
-        public string[] SelectedFundingPhaseIDs { get; set; }
-        public string[] SelectedFundingAmountIDs { get; set; }
+        public string[] FundingPhaseIDs { get; set; }
+        public string[] FundingAmountIDs { get; set; }
+        public new string FutureFundingNeeded { get; set; } //<---!!
         //Budget
-        public string[] SelectedEstimatedExitPlanIDs { get; set; }
+        public string[] EstimatedExitPlanIDs { get; set; }
         //Team
-        public string[] SelectedTeamSkillIDs { get; set; }
+        public string[] TeamSkillIDs { get; set; }
+        public new string TeamMemberSizeMoreThanOne { get; set; }
+        public new string TeamHasExperience { get; set; }
+        public new string ActiveInvestor { get; set; }
         //Outcomes
-        public string[] SelectedOutcomeIDs { get; set; }
-        public string[] SelectedInnovationLevelIDs { get; set; }
-        public string[] SelectedScalabilityIDs { get; set; }
-
+        public string[] OutcomeIDs { get; set; }
+        public string[] InnovationLevelIDs { get; set; }
+        public string[] ScalabilityIDs { get; set; }
+        //-----------------------------------
         public string ActiveTab { get; set; }
     }
 
     public class AddNewProfileViewModel
     {
-        //[Key]
-        //[Display(Name = "Profile ID")]
-        //public string InvestmentID { get; set; }
-
         [AllowHtml]
         [Display(Name = "Message for Investor")]
         public string InvestorMessage { get; set; }
@@ -339,14 +255,12 @@ namespace EoS.Models.Investor
         [Required]
         [Display(Name = "Country")]
         public int CountryID { get; set; }
-        //public virtual Country Country { get; set; }
         public SelectList CountryList { get; set; }
 
         public int SwedishCountryID { get; set; }
 
         [Display(Name = "Swedish region (Län)")]
         public int? SwedishRegionID { get; set; }
-        //public virtual SwedishRegion SwedishRegion { get; set; }
         public SelectList SwedishRegionList { get; set; }
     }
 }

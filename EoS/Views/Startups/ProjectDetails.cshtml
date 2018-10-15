@@ -102,6 +102,9 @@
             }
         </dd>
 
+        <dt>
+            @Html.DisplayNameFor(model => model.ProjectSummary)
+        </dt>
         <dd class="hidden-print">
             @Html.TextAreaFor(model => model.ProjectSummary, new { @readonly = "readonly", @rows = "10", @cols = "150" })
         </dd>
@@ -115,7 +118,8 @@
             @Html.DisplayNameFor(model => model.AllowSharing)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.AllowSharing)
+            @(Model.AllowSharing ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.AllowSharing)*@
         </dd>
 
         @*Funding*@
@@ -124,42 +128,72 @@
             @Html.DisplayNameFor(model => model.FundingPhase.FundingPhaseName)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.FundingPhase.FundingPhaseName)
+            @if (Model.FundingPhase != null)
+            {
+                @Html.DisplayFor(model => model.FundingPhase.FundingPhaseName)
+            }
+            else
+            {
+                @Html.Raw("None")
+            }
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.FundingAmount.FundingAmountValue)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.FundingAmount.FundingAmountValue)
+            @if (Model.FundingAmount != null)
+            {
+                @Html.DisplayFor(model => model.FundingAmount.FundingAmountValue)
+            }
+            else
+            {
+                @Html.Raw("None")
+            }
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.FutureFundingNeeded)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.FutureFundingNeeded)
+            @(Model.FutureFundingNeeded ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.FutureFundingNeeded)*@
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.AlreadySpentTime)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.AlreadySpentTime)
+            @if (Model.AlreadySpentTime.HasValue)
+            {
+                @Html.DisplayFor(model => model.AlreadySpentTime.Value)
+            }
+            else
+            {
+                @Html.Raw("Not answered")
+            }
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.AlreadySpentMoney)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.AlreadySpentMoney)
+            @if (Model.AlreadySpentMoney.HasValue)
+            {
+                @Html.DisplayFor(model => model.AlreadySpentMoney.Value)
+            }
+            else
+            {
+                @Html.Raw("Not answered")
+            }
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.WillSpendOwnMoney)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.WillSpendOwnMoney)
+            @(Model.WillSpendOwnMoney ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.WillSpendOwnMoney)*@
         </dd>
 
         @*Budget*@
@@ -178,7 +212,7 @@
             }
             else
             {
-                @Html.Raw("None");
+                @Html.Raw("None")
             }
         </dd>
 
@@ -186,28 +220,51 @@
             @Html.DisplayNameFor(model => model.EstimatedExitPlan.EstimatedExitPlanName) @*planID?*@
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.EstimatedExitPlan.EstimatedExitPlanName)
+            @if (Model.EstimatedExitPlan != null)
+            {
+                @Html.DisplayFor(model => model.EstimatedExitPlan.EstimatedExitPlanName)
+            }
+            else
+            {
+                @Html.Raw("Not answered")
+            }
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.EstimatedBreakEven)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.EstimatedBreakEven)
+            @if (Model.EstimatedBreakEven.HasValue)
+            {
+                @Html.DisplayFor(model => model.EstimatedBreakEven.Value)
+            }
+            else
+            {
+                @Html.Raw("Not answered")
+            }
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.PossibleIncomeStreams)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.PossibleIncomeStreams)
+            @if (Model.PossibleIncomeStreams.HasValue)
+            {
+                @Html.DisplayFor(model => model.PossibleIncomeStreams.Value)
+            }
+            else
+            {
+                @Html.Raw("Not answered")
+            }
+
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.HavePayingCustomers)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.HavePayingCustomers)
+            @(Model.HavePayingCustomers ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.HavePayingCustomers)*@
         </dd>
 
         @*Team*@
@@ -216,28 +273,44 @@
             @Html.DisplayNameFor(model => model.TeamMemberSize)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.TeamMemberSize)
+            @if (Model.TeamMemberSize.HasValue)
+            {
+                @Html.DisplayFor(model => model.TeamMemberSize.Value)
+            }
+            else
+            {
+                @Html.Raw("Not answered")
+            }
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.TeamExperience)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.TeamExperience)
+            @if (Model.TeamExperience.HasValue)
+            {
+                @Html.DisplayFor(model => model.TeamExperience.Value)
+            }
+            else
+            {
+                @Html.Raw("Not answered")
+            }
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.TeamVisionShared)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.TeamVisionShared)
+            @(Model.TeamVisionShared ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.TeamVisionShared)*@
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.HaveFixedRoles)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.HaveFixedRoles)
+            @(Model.HaveFixedRoles ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.HaveFixedRoles)*@
         </dd>
 
         <dt>
@@ -262,7 +335,8 @@
             @Html.DisplayNameFor(model => model.LookingForActiveInvestors)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.LookingForActiveInvestors)
+            @(Model.LookingForActiveInvestors ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.LookingForActiveInvestors)*@
         </dd>
 
         @*Outcome*@
@@ -288,18 +362,26 @@
         <dt>
             @Html.DisplayNameFor(model => model.InnovationLevelID)
         </dt>
-        <dd>
-            @Html.DisplayFor(model => model.InnovationLevel.InnovationLevelName)
-        </dd>
+        @if (Model.InnovationLevelID.HasValue)
+        {
+            <dd>
+                @Model.InnovationLevel.InnovationLevelName
+            </dd>
+        }
+        else
+        {
+            <dd>
+                @Html.Raw("None")
+            </dd>
+        }
 
         <dt>
             @Html.DisplayNameFor(model => model.Scalability)
         </dt>
-
         @if (Model.ScalabilityID.HasValue)
         {
             <dd>
-                @Html.DisplayFor(model => model.Scalability)
+                @Model.Scalability.ScalabilityName
             </dd>
         }
         else
@@ -330,74 +412,21 @@
 
             if (Model.Locked)
             {
-                if (Model.MatchMakings.Any())
-                {
-                    <dt>
-                        @Html.DisplayNameFor(model => model.MatchMakings)
-                    </dt>
-                    <dd>
-                        @Model.MatchMakings.Count()
-                        @Html.Raw(" matching Investment profiles found:<br />")
-
-                        @foreach (var matchMaking in Model.MatchMakings)
-                        {
-                            @Html.ActionLink(linkText: matchMaking.InvestmentId, actionName: "ProfileDetails", controllerName: "Investments", routeValues: new { id = matchMaking.InvestmentId }, htmlAttributes: new { title = "Investment profile details" }) <br />
-                        }
-                    </dd>
-                }
-
-                <dt class="hidden-print">
-                    @Html.Raw("This Profile form")
-                </dt>
-                if (Model.Locked)
-                {
-                    @Html.Raw("is locked&nbsp;")
-                    <dd class="hidden-print">
-                        @Html.ActionLink("Unlock it", "Unlock", new { id = Model.StartupID, redirect = "ProjectDetails" }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
-                    </dd>
-                }
-
                 <dt>
-                    @Html.DisplayNameFor(model => model.ApprovedByID)
+                    @Html.DisplayNameFor(model => model.MatchMakings)
                 </dt>
                 <dd>
-                    @ViewBag.ApprovedBy) @*@Html.DisplayFor(model => model.ApprovedByID*@
-                </dd>
-            }
-            else
-            {
-                <dt>
-                    @Html.Raw("This Project form")
-                </dt>
-                <dd>
-                    @*@Html.Raw(DateTime.Now.Date.Subtract(Model.LastSavedDate.Date).Days);
-                    @Html.Raw(" days since last saved");*@
-
-                    @{int daysSincelastSaved = DateTime.Now.Date.Subtract(Model.LastSavedDate.Date).Days;
-                        string message = daysSincelastSaved + (daysSincelastSaved == 1 ? " day" : " days") + " since last saved";}
-                    @Html.Raw(message)
-
-                    <span class="hidden-print">
-                        @if (daysSincelastSaved >= 1)
-                        {
-                            <text>&nbsp;&nbsp;</text>
-                            @Html.ActionLink("Remind", "Reminder", new { id = Model.StartupID, subject = "Finish Startup form" + Model.StartupID, message = message, redirect = "Details" }, new { @class = "btn btn-danger" })
-                        }
-                    </span>
-                </dd>
-            }
-        }
-        else if (ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString())
-        {
-            if (Model.Locked)
-            {
-                <dt>
-                    @Html.Raw("No of Matched Profiles")
-                </dt>
-                <dd>
-                    @if (Model.MatchMakings.Any())
+                    if (Model.MatchMakings.Any())
                     {
-                        @Html.DisplayFor(model => model.MatchMakings.Count())
+
+                    @Model.MatchMakings.Count()
+                    @Html.Raw(" matching Investment profiles found:<br />")
+
+                    @foreach (var matchMaking in Model.MatchMakings)
+                    {
+                        @Html.ActionLink(linkText: matchMaking.InvestmentId, actionName: "ProfileDetails", controllerName: "Investments", routeValues: new { id = matchMaking.InvestmentId }, htmlAttributes: new { title = "Investment profile details" }) <br />
+                    }
+
                     }
                     else
                     {
@@ -405,28 +434,127 @@
                     }
                 </dd>
 
-                <dt>
-                    @Html.Raw("This Project form")
+            if (Model.Locked)
+            {
+                <dt class="hidden-print">
+                    @Html.Raw("This project form")
                 </dt>
                 <dd>
-                    @Html.Raw("is locked&nbsp;") @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + Model.StartupID }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
+                    @Html.Raw("is locked&nbsp;")
+                    @Html.ActionLink("Unlock it", "Unlock", new { id = Model.StartupID, redirect = "ProjectDetails" }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
                 </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.LastLockedDate)
+                </dt>
+                <dd>
+                    @if (Model.LastLockedDate.HasValue)
+                    {
+                        @Html.DisplayFor(model => model.LastLockedDate)
+                    }
+                    else
+                    {
+                        @Html.Raw("None")
+                    }
+                </dd>
+            }
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Approved)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Approved)
+                <span class="hidden-print">
+                    @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && Model.Locked)
+                    {
+                        if (Model.Approved)
+                        {
+                            @Html.ActionLink("Disapprove", "ChangeApproval", new { id = Model.StartupID, redirect = "Details" }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Approve", "ChangeApproval", new { id = Model.StartupID, redirect = "Details" }, new { @class = "btn btn-success", @style = "height:25px;padding:1px" })
+                        }
+                    }
+                </span>
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ApprovedByID)
+            </dt>
+            <dd>
+                @ViewBag.ApprovedBy @*@Html.DisplayFor(model => model.ApprovedByID*@
+            </dd>
+        }
+        else
+        {
+            <dt>
+                @Html.Raw("This project form")
+            </dt>
+            <dd>
+                @*@Html.Raw(DateTime.Now.Date.Subtract(Model.LastSavedDate.Date).Days);
+                @Html.Raw(" days since last saved");*@
+
+                @{int daysSincelastSaved = DateTime.Now.Date.Subtract(Model.LastSavedDate.Date).Days;
+                    string message = daysSincelastSaved + (daysSincelastSaved == 1 ? " day" : " days") + " since last saved";}
+                @Html.Raw(message)
+
+                <span class="hidden-print">
+                    @if (daysSincelastSaved >= 1)
+                    {
+                        <text>&nbsp;&nbsp;</text>
+                        @Html.ActionLink("Remind", "Reminder", new { id = Model.StartupID, subject = "Finish Startup form" + Model.StartupID, message = message, redirect = "Details" }, new { @class = "btn btn-danger" })
+                    }
+                </span>
+            </dd>
+        }
+        }
+        else if (ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString())
+        {
+        if (Model.Locked)
+        {
+        <dt>
+            @Html.Raw("#Matches")
+        </dt>
+        <dd>
+            @if (Model.MatchMakings.Any())
+            {
+                @Model.MatchMakings.Count()
             }
             else
             {
-                <dt>
-                    @Html.Raw("This Project form")
-                </dt>
-                <dd>
-                    @Html.Raw("is not finished.&nbsp;") @Html.ActionLink("Finish it", "ProjectForm", new { id = Model.StartupID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
-                </dd>
+                @Html.Raw("0")
             }
+        </dd>
+
+        <dt>
+            @Html.Raw("This project form")
+        </dt>
+        <dd>
+            @Html.Raw("is locked.&nbsp;") @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + Model.StartupID }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
+        </dd>
+        }
+        else
+        {
+        <dt>
+            @Html.Raw("This project form")
+        </dt>
+        <dd>
+            @if (ViewBag.FormIsFinished)
+            {
+                @Html.Raw("is not submitted and locked.&nbsp;") @Html.ActionLink("Submit & lock it", "SubmitProjectForm", new { id = Model.StartupID, redirect = "ProjectDetails" }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
+            }
+            else
+            {
+                @Html.Raw("is not finished.&nbsp;") @Html.ActionLink("Finish it", "ProjectForm", new { id = Model.StartupID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
+            }
+        </dd>
         }
 
         <dt>
             @Html.DisplayNameFor(model => model.LastLockedDate)
         </dt>
-        @if (Model.LastLockedDate.HasValue)
+        if (Model.LastLockedDate.HasValue)
         {
         <dd>
             @Html.DisplayFor(model => model.LastLockedDate)
@@ -443,21 +571,10 @@
             @Html.DisplayNameFor(model => model.Approved)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Approved)
-            <span class="hidden-print">
-                @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && Model.Locked)
-                {
-                    if (Model.Approved)
-                    {
-                        @Html.ActionLink("Disapprove", "ChangeApproval", new { id = Model.StartupID, redirect = "Details" }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
-                    }
-                    else
-                    {
-                        @Html.ActionLink("Approve", "ChangeApproval", new { id = Model.StartupID, redirect = "Details" }, new { @class = "btn btn-success", @style = "height:25px;padding:1px" })
-                    }
-                }
-            </span>
+            @(Model.Approved ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.Approved)*@
         </dd>
+        }
 
         <dt>@Html.Raw("Documents")</dt>
         <dd>@Html.Raw("None") @*@Html.Action("List", "DocumentList", new { startupID = Model.StartupID, @class = "hidden-print" })*@</dd>
@@ -467,14 +584,16 @@
 <p class="hidden-print">
     @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
     {
-        @Html.ActionLink("Back to Startup projects", "Index", new { id = Model.UserID })
+        @Html.ActionLink("Back to Startup projects by this Idea carrier", "Index", new { id = Model.UserID })
+        <text>|</text>
+        @Html.ActionLink("Go to all Startup projects", "Index")
     }
     else
     {
-        @Html.ActionLink("Back to your Startup projects", "Index", new { id = Model.UserID})
+        @Html.ActionLink("Back to your Startup projects", "Index")
     }
-    @* &&!ViewBag.TheOnlyProject*@
-    @if (!Model.Locked && ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString())
+    
+    @if (ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString() && !ViewBag.TheOnlyProject)
     {
         <text>|</text>
         @Html.ActionLink("Remove project", "RemoveProject", new { id = Model.StartupID }, new { @style = "color:red" })
@@ -487,3 +606,11 @@
         @Html.ActionLink("Edit", "EditAdmin", new { id = Model.StartupID })
     }
 </p>
+
+@*<script type="text/javascript">
+
+    function submitProjectForm() {
+        return confirm('Do you really wish to submit this form? (It will be locked for editing');
+    }
+
+</script>*@

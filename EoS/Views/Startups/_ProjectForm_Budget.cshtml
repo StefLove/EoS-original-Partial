@@ -1,6 +1,6 @@
 ﻿@model EoS.Models.IdeaCarrier.StartupProjectViewModel
 
-<div class="@(ViewBag.Unanswered == "FundingDivisions" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "FundingDivisions" ? "form-group warning" : "form-group")">
     <label class="control-label col-md-2" style="text-align:left">How will the funding be spent?<br />(100% max for all 6 fields)</label>
     <div class=" col-md-offset-0 col-md-9" style="margin-left:inherit">
         <table class="borderless">
@@ -10,14 +10,14 @@
                     {
                         foreach (var fundingDivision in Model.FundingDivisions)
                         {
-                            string fundingDivisionID = "fundingDivisionPercentage" + fundingDivision.FundingDivisionID.ToString();
-                            string fundingDivisionPercentageMessageID = "fundingDivisionPercentageMessage" + fundingDivision.FundingDivisionID.ToString();
+                            string fundingDivisionPercentageID = "fundingDivisionPercentage" + fundingDivision.FundingDivisionID.ToString();
+                            //string fundingDivisionPercentageMessageID = "fundingDivisionPercentageMessage" + fundingDivision.FundingDivisionID.ToString();
 
                             <td>@fundingDivision.FundingDivision.FundingDivisionName</td>
-                            <td><input type="number" id="@fundingDivisionID" name="FundingDivisionPercentages" value="@fundingDivision.Percentage" class="form-control" style="width:70px" /></td>
-                            <td> %</td>
-                            <td><div id="@fundingDivisionPercentageMessageID" name="fundingDivisionPercentageMessages" class="text-danger"></div></td>
-                            @:</tr><tr>
+                            <td><input type="number" id="@fundingDivisionPercentageID" name="FundingDivisionPercentages" value="@fundingDivision.Percentage" onchange="checkPercentage('@fundingDivisionPercentageID')" class="form-control" style="width:70px" /></td>
+                            <td>%</td>
+                            @*<td><div id="@fundingDivisionPercentageMessageID" name="fundingDivisionPercentageMessages" class="text-danger"></div></td>*@
+                        @:</tr><tr>
                         }
                     }
                     else
@@ -25,12 +25,18 @@
                         @:<td>Funding divisions percentages not set</td>
                     }
                 }
-            </tr>
-        </table>
+            @if (Model.FundingDivisions != null && Model.FundingDivisions.Any())
+            {
+                @:</tr><tr>
+                    @:<td><span style="font-size:x-large;font-weight:normal">&Sigma;</span></td>
+                    @:<td><div id="sumOfPercentages" class="col-md-10">@Model.FundingDivisions.Sum(fd => fd.Percentage)</div></td><td>%</td>
+                @:</tr>
+            }
+      </table>    
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "EstimatedExitPlan" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "EstimatedExitPlan" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.EstimatedExitPlanID, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.DropDownListFor(model => model.EstimatedExitPlanID, Model.EstimatedExitPlanList, "Please select an estimated exit plan", new { @class = "form-control" })
@@ -38,7 +44,7 @@
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "EstimatedBreakEven"  ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "EstimatedBreakEven"  ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.EstimatedBreakEven, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.EstimatedBreakEven, new { htmlAttributes = new { @class = "form-control", @placeholder = "In term of #years" } })
@@ -46,7 +52,7 @@
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "PossibleIncomeStreams" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "PossibleIncomeStreams" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.PossibleIncomeStreams, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.PossibleIncomeStreams, new { htmlAttributes = new { @class = "form-control", @placeholder = "10 equals to any number" } }) @*from 0 to 10*@
@@ -56,107 +62,67 @@
 
 <div class="form-group">
     @Html.LabelFor(model => model.HavePayingCustomers, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" }) @*width:220px"*@
-    <div class="col-md-10">
-        <div class="checkbox">
-            @Html.EditorFor(model => model.HavePayingCustomers)
-            @Html.ValidationMessageFor(model => model.HavePayingCustomers, "", new { @class = "text-danger" })
-        </div>
+    <div class="checkbox col-md-10">
+        @*<div class="radio">*@
+        @*@Html.EditorFor(model => model.HavePayingCustomers)*@
+        @Html.RadioButton("HavePayingCustomers", "Yes", Model.HavePayingCustomers) Yes&nbsp;&nbsp; @*Model.HavePayingCustomers.HasValue ? Model.HavePayingCustomers.Value : false*@
+        @Html.RadioButton("HavePayingCustomers", "No", !Model.HavePayingCustomers) No              @*Model.HavePayingCustomers.HasValue ? !Model.HavePayingCustomers.Value : false*@
+        @*@Html.ValidationMessageFor(model => model.HavePayingCustomers, "", new { @class = "text-danger" })*@
+        @*</div>*@
     </div>
 </div>
 
-<hr />
-@if (string.IsNullOrEmpty(ViewBag.Unanswered))
+<hr class="hidden-print"/>
+@if (string.IsNullOrEmpty(Model.UnansweredQuestion))
 {
-    <div class="col-md-offset-4">
+    <div class="col-md-offset-4 hidden-print">
         <input type="button" value="Save your answers for the questions in this tab Budget" class="btn btn-warning btn-sm" style="color:black;max-width:500px" onclick="SaveData()" />
     </div>
-    <div class="col-md-offset-2">
+    <div class="col-md-offset-2 hidden-print">
         <h5 class="text-danger">You have to answer all the necessary questions in all tabs before you may submit the form.</h5>
     </div>
 }
 else
 {
-    <div class="col-md-offset-4">
+    <div class="col-md-offset-4 hidden-print">
         @Html.ActionLink("Cancel submission of form", "SubmitProjectForm", new { id = Model.StartupID, cancel = true, redirect = "ProjectForm", redirectTab = "Budget" }, new { @id = "cancelProjectFormSubmission", @class = "btn btn-danger" })
     </div>
 }
 
-@*<script type="text/javascript">
+<script type="text/javascript">
 
-        @onchange = "CheckPercentages(@fundingDivision.FundingDivisionID)", @onfocus = "ShowMessage(@fundingDivision.FundingDivisionID)", @onblur = "RemoveMessage(@fundingDivision.FundingDivisionID)"
+    function checkPercentage(percentageId) {
+        var percentage = document.getElementById(percentageId);
+        var percentageValue = parseInt(percentage.value);
+        if (isNaN(percentageValue) || percentageValue < 0) percentageValue = 0;
+        var maxPercentageValue = getMaxPercentageValue(document.getElementsByName('FundingDivisionPercentages'), percentage);
 
-        //-------------------
+        if (percentageValue > maxPercentageValue)
+            percentage.value = maxPercentageValue;
+        else percentage.value = percentageValue;
+        setPercentageSum();
+    }
 
-        function checkPercentages(index) {
+    function getMaxPercentageValue(percentages, percentage) {
+        return 100 - sumUpPercentages(percentages) + parseInt(percentage.value);
+    }
 
-            var fundingDivisionPercentage = document.getElementById('fundingDivisionPercentage' + index);
-            var fundingDivisionPercentageMessage = document.getElementById('fundingDivisionPercentageMessage' + index);
-            var fundingDivisionPercentageValue = parseInt(fundingDivisionPercentage.value);
-            var maxValue = GetMaxValue(document.getElementsByName('fundingDivisionPercentages'), index);
+    function setPercentageSum() {
+        var percentageTag = document.getElementById('sumOfPercentages');
+        var percentages = document.getElementsByName('FundingDivisionPercentages');
 
-            if (fundingDivisionPercentageValue > maxValue) {
-                fundingDivisionPercentage.value = maxValue;
-                fundingDivisionPercentageMessage.innerHTML = '<h5>Max value = ' + maxValue + ' %</h5>';
-            }
+        percentageTag.innerHTML = sumUpPercentages(percentages); //totalPercentage;
+    }
+
+    function sumUpPercentages(percentages) {
+        var totalPercentage = 0;
+        var percentageValue = 0;
+
+        for (var i = 0; i < percentages.length; i++) {
+            percentageValue = parseInt(percentages.item(i).value);
+            if (!Number.isNaN(percentageValue)) totalPercentage += percentageValue;
         }
+        return totalPercentage;
+    }
 
-        //function checkPercentages(fundingDivisionPercentage) {
-
-        //    var index = GetIndex(fundingDivisionPercentage); //?
-
-        //    //var fundingDivisionPercentageID = fundingDivisionPercentage.id; //?'fundingDivisionID' + index;
-
-            ////document.getElementById('fundingDivisionPercentage_' + index).value = fundingDivisionPercentage.value;
-
-         //   var fundingDivisionPercentageValue = parseInt(fundingDivisionPercentage.value);
-         //   var maxValue = GetMaxValue(document.getElementsByName('fundingDivisionPercentages'), index);
-
-         //   if (fundingDivisionPercentageValue > maxValue) {
-         //       fundingDivisionPercentage.value = maxValue;
-
-                ////document.getElementById('fundingDivisionID_' + index).value = maxValue;
-         //       setMessage(index).innerHTML = '<h5>Max value = ' + maxValue + ' %</h5>';
-            //}
-        //}
-
-        //function showMessage(fundingDivisionPercentage) {
-        function showMessage(index) {
-
-            //var index = GetIndex(fundingDivisionPercentage);
-
-            GetMessages().item(index).innerHTML = '<h5>Max value = ' + GetMaxValue(document.getElementsByName('fundingDivisionPercentages'), index) + ' %</h5>';
-        }
-
-        function removeMessage(index) {
-
-            //var index = GetIndex(fundingDivisionStartupPercentage);
-
-            GetMessages().item(index).innerHTML = '';
-        }
-
-        function setMessage(index) {
-            return document.getElementById('fundingDivisionPercentageMessage' + index);
-        }
-
-        function GetMessages() {
-            return document.getElementsByName('fundingDivisionPercentageMessages');
-        }
-
-        //function getIndex(fundingDivisionPercentage) {
-        //    return parseInt(fundingDivisionPercentage.id.replace(/\D/g, ''));
-        //    //parseInt(fundingDivisionPercentage.id.replace('fundingDivisionPercentage'.''));
-        //}
-
-        function getMaxValue(fundingDivisionPercentages, index) {
-
-            var totalPercentage = 0;
-            var percentageValue = 0;
-
-            for (var i = 0; i < fundingDivisionPercentages.length; i++) {
-                percentageValue = parseInt(fundingDivisionPercentages.item(i).value);
-                if (!Number.isNaN(percentageValue)) totalPercentage += parseInt(fundingDivisionPercentages.item(i).value);
-            }
-            return 100 - totalPercentage + parseInt(fundingDivisionPercentages.item(index).value);
-        }
-
-    </script>*@
+    </script>

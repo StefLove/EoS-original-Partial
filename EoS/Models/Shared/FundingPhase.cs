@@ -12,6 +12,6 @@ namespace EoS.Models.Shared
         [Display(Name = "Funding phase name ")]
         public string FundingPhaseName { get; set; }
 
-        public virtual ICollection<Investor.Investment> Investments { get; set; } //<---necessary??
+        public virtual ICollection<Investor.Investment> Investments { get; set; }
     }
 }

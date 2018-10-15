@@ -1,6 +1,6 @@
 ﻿@model EoS.Models.IdeaCarrier.StartupProjectViewModel
 
-<div class="@(ViewBag.Unanswered == "FundingPhase" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "FundingPhase" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.FundingPhaseID, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.DropDownListFor(model => model.FundingPhaseID, Model.FundingPhaseList, "Please select a funding phase", new { @class = "form-control" })
@@ -8,7 +8,7 @@
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "Funding" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "Funding" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.FundingAmountID, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.DropDownListFor(model => model.FundingAmountID, Model.FundingAmountList, "Please select a funding need", new { @class = "form-control" })
@@ -20,13 +20,15 @@
     @Html.LabelFor(model => model.FutureFundingNeeded, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-9">
         <div class="checkbox col-md-10">
-            @Html.EditorFor(model => model.FutureFundingNeeded)
-            @Html.ValidationMessageFor(model => model.FutureFundingNeeded, "", new { @class = "text-danger" })
+            @*@Html.EditorFor(model => model.FutureFundingNeeded)*@
+            @Html.RadioButton("FutureFundingNeeded", "Yes", Model.FutureFundingNeeded) Yes&nbsp;&nbsp; @*Model.FutureFundingNeeded.HasValue ? Model.FutureFundingNeeded.Value : false*@
+            @Html.RadioButton("FutureFundingNeeded", "No", !Model.FutureFundingNeeded) No              @*Model.FutureFundingNeeded.HasValue ? !Model.FutureFundingNeeded.Value : false*@
+            @*@Html.ValidationMessageFor(model => model.FutureFundingNeeded, "", new { @class = "text-danger" })*@
         </div>
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "AlreadySpentTime" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "AlreadySpentTime" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.AlreadySpentTime, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.AlreadySpentTime, new { htmlAttributes = new { @class = "form-control", @placeholder = "In term of hours, 0 for none" } })
@@ -34,7 +36,7 @@
     </div>
 </div>
 
-<div class="@(ViewBag.Unanswered == "AlreadySpentMoney" ? "form-group warning" : "form-group")">
+<div class="@(Model.UnansweredQuestion == "AlreadySpentMoney" ? "form-group warning" : "form-group")">
     @Html.LabelFor(model => model.AlreadySpentMoney, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.AlreadySpentMoney, new { htmlAttributes = new { @class = "form-control", @placeholder = "In term of €1000 amount, 0 for none" } })
@@ -46,24 +48,26 @@
     @Html.LabelFor(model => model.WillSpendOwnMoney, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-9">
         <div class="checkbox col-md-10">
-            @Html.EditorFor(model => model.WillSpendOwnMoney)
-            @Html.ValidationMessageFor(model => model.WillSpendOwnMoney, "", new { @class = "text-danger" })
+            @*@Html.EditorFor(model => model.WillSpendOwnMoney)*@
+            @Html.RadioButton("WillSpendOwnMoney", "Yes", Model.WillSpendOwnMoney) Yes&nbsp;&nbsp; @*Model.WillSpendOwnMoney.HasValue ? Model.WillSpendOwnMoney.Value : false*@
+            @Html.RadioButton("WillSpendOwnMoney", "No", !Model.WillSpendOwnMoney) No              @*Model.WillSpendOwnMoney.HasValue ? !Model.WillSpendOwnMoney.Value : false*@
+            @*@Html.ValidationMessageFor(model => model.WillSpendOwnMoney, "", new { @class = "text-danger" })*@
         </div>
     </div>
 </div>
 
-<hr />
-@if (string.IsNullOrEmpty(ViewBag.Unanswered))
+<hr class="hidden-print"/>
+@if (string.IsNullOrEmpty(Model.UnansweredQuestion))
 {
-    <div class="col-md-offset-4">
+    <div class="col-md-offset-4 hidden-print">
         <input type="button" value="Save your answers for the questions in this tab Funding" class="btn btn-warning btn-sm" style="color:black;max-width:500px" onclick="SaveData()" />
     </div>
-    <div class="col-md-offset-2">
+    <div class="col-md-offset-2 hidden-print">
         <h5 class="text-danger">You have to answer all the necessary questions in all tabs before you may submit the form.</h5>
     </div>
 }
 else
-{
-    @Html.ActionLink("Cancel submission of form", "SubmitProjectForm", new { id = Model.StartupID, cancel = true, redirect = "ProjectForm", redirectTab = "Funding" }, new { @id = "cancelProjectFormSubmission", @class = "btn btn-danger" })
+{   <div class="col-md-offset-4 hidden-print">
+        @Html.ActionLink("Cancel submission of form", "SubmitProjectForm", new { id = Model.StartupID, cancel = true, redirect = "ProjectForm", redirectTab = "Funding" }, new { @id = "cancelProjectFormSubmission", @class = "btn btn-danger" })
+    </div>
 }
-

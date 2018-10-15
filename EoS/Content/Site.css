@@ -324,4 +324,23 @@ th, tr, td {
     }
 }
 
-/*For CasePrivew*/
+/*input[type=checkbox][disabled][checked]::after {
+    color: black
+}
+.check-box:disabled ~ dd {
+    color: black
+}
+checkbox-style:disabled {
+    color: black
+}
+.disabled {
+    color:black
+}
+input[type=checkbox][disabled] ~ dd + label {
+    color: black
+}*/
+/*.checkbox .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+    color: black;
+    border-color: black;
+}*/
+    /*For CasePrivew*/

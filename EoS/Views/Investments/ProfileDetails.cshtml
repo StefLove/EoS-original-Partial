@@ -127,7 +127,8 @@
             @Html.DisplayNameFor(model => model.FutureFundingNeeded)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.FutureFundingNeeded)
+            @(Model.FutureFundingNeeded ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.FutureFundingNeeded)*@
         </dd>
 
         @*Budget*@
@@ -170,21 +171,24 @@
             @Html.DisplayNameFor(model => model.TeamMemberSizeMoreThanOne)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.TeamMemberSizeMoreThanOne)
+            @(Model.TeamMemberSizeMoreThanOne ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.TeamMemberSizeMoreThanOne)*@
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.TeamHasExperience)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.TeamHasExperience)
+            @(Model.TeamHasExperience ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.TeamHasExperience)*@
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.ActiveInvestor)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.ActiveInvestor)
+            @(Model.ActiveInvestor ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.ActiveInvestor)*@
         </dd>
 
         <dt>
@@ -345,7 +349,7 @@
             <dd>
                 @if (Model.MatchMakings.Any())
                 {
-                    @Html.DisplayFor(model => model.MatchMakings.Count())
+                    @Model.MatchMakings.Count()
                 }
                 else
                 {
@@ -498,11 +502,13 @@
 <p class="hidden-print">
     @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
     {
-        @Html.ActionLink("Back to Investment profiles", "Index", new { id = Model.UserId })
+        @Html.ActionLink("Back to Investment profiles for this Investor", "Index", new { id = Model.UserId })
+        <text>|</text>
+        @Html.ActionLink("Go to all Investment profiles", "Index")
     }
     else
     {
-        @Html.ActionLink("Back to your Investment profiles", "Index", new { id = Model.UserId })
+        @Html.ActionLink("Back to your Investment profiles", "Index")
     }
 
     @if (Model.DueDate.HasValue && ViewBag.UserRole == EoS.Models.Role.Admin.ToString())

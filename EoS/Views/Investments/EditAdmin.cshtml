@@ -1,7 +1,7 @@
 ﻿@model EoS.Models.Investor.InvestmentEditAdminViewModel
 
 @{
-    ViewBag.Title = "Edit Investment profile "+ Model.InvestmentId + " belonging to " + Model.InvestorName + " (Admins only)";
+    ViewBag.Title = "Edit Investment profile "+ Model.InvestmentID + " belonging to " + Model.InvestorUserName + " (Admins only)";
 }
 
 @using (Html.BeginForm())
@@ -12,7 +12,7 @@
         <h3>@ViewBag.Title</h3>
         <hr />
 
-        @Html.HiddenFor(model => model.InvestmentId)
+        @Html.HiddenFor(model => model.InvestmentID)
 
         <div class="form-group">
             @Html.LabelFor(model => model.DueDate, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -46,8 +46,8 @@
 }
 
 <div class="hidden-print">
-    @Html.ActionLink("Back to Investment profiles", "Index") |
-    @Html.ActionLink("Details", "Details", new { id = Model.InvestmentId })
+    @Html.ActionLink("Back to Investment profiles by " + Model.InvestorUserName, "Index", new { id = Model.InvestorUserID }) |
+    @Html.ActionLink("Details", "Details", new { id = Model.InvestmentID })
 </div>
 
 <script>

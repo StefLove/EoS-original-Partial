@@ -10,10 +10,13 @@ namespace EoS.Models.Investor
     {
         //[Key]
         [Display(Name = "Investment ID")]
-        public string InvestmentId { get; set; }
+        public string InvestmentID { get; set; }
 
-        [Display(Name = "Investor name")]
-        public string InvestorName { get; set; }
+        [Display(Name = "Investor user name")]
+        public string InvestorUserName { get; set; }
+
+        [Display(Name = "Investor user ID")]
+        public string InvestorUserID { get; internal set; }
 
         [Editable(true)]
         [DataType(DataType.DateTime, ErrorMessage = "Use date format: yyyy-MM-dd")]

@@ -31,7 +31,7 @@ namespace EoS.Models.MMM
         public string StartupId { get; set; }
         public virtual IdeaCarrier.Startup Startup { get; set; }
 
-        [Display(Name = "Project domain")] //1
+        [Display(Name = "Domain")] //1
         public bool? ProjectDomainMatched { get; set; }
 
         [Display(Name = "Funding phase")] //2

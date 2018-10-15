@@ -12,6 +12,6 @@ namespace EoS.Models.Shared
         [Display(Name = "Name of Level of innovation")]
         public string InnovationLevelName { get; set; }
 
-        public virtual ICollection<Investor.Investment> Investments { get; set; } //<---necessary??
+        public virtual ICollection<Investor.Investment> Investments { get; set; }
     }
 }

@@ -46,7 +46,8 @@
                 @Html.DisplayNameFor(model => model.ProjectDomainMatched) @*1*@
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.ProjectDomainMatched.Value)
+                @(Model.ProjectDomainMatched.Value ? "Match" : "No match")
+                @*@Html.DisplayFor(model => model.ProjectDomainMatched.Value)*@
             </dd>
         }
 
@@ -56,7 +57,8 @@
                 @Html.DisplayNameFor(model => model.FundingPhaseMatched) @*2*@
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.FundingPhaseMatched.Value)
+                @(Model.FundingPhaseMatched.Value ? "Match" : "No match")
+                @*@Html.DisplayFor(model => model.FundingPhaseMatched.Value)*@
             </dd>
         }
 
@@ -66,7 +68,8 @@
                 @Html.DisplayNameFor(model => model.FundingAmountMatched) @*3*@
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.FundingAmountMatched.Value)
+                @(Model.FundingAmountMatched.Value ? "Match" : "No match")
+                @*@Html.DisplayFor(model => model.FundingAmountMatched.Value)*@
             </dd>
         }
 
@@ -76,7 +79,8 @@
                 @Html.DisplayNameFor(model => model.FundingAmountMatched) @*3*@
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.FundingAmountMatched.Value)
+                @(Model.FundingAmountMatched.Value ? "Match" : "No match")
+                @*@Html.DisplayFor(model => model.FundingAmountMatched.Value)*@
             </dd>
         }
 
@@ -86,37 +90,8 @@
                 @Html.DisplayNameFor(model => model.EstimatedExitPlanMatched) @*4*@
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.EstimatedExitPlanMatched.Value)
-            </dd>
-        }
-
-        @if (Model.OutcomesMatched.HasValue)
-        {
-            <dt>
-                @Html.DisplayNameFor(model => model.OutcomesMatched) @*5*@
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.OutcomesMatched.Value)
-            </dd>
-        }
-
-        @if (Model.InnovationLevelMatched.HasValue)
-        {
-            <dt>
-                @Html.DisplayNameFor(model => model.InnovationLevelMatched) @*6*@
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.InnovationLevelMatched.Value)
-            </dd>
-        }
-
-        @if (Model.ScalabilityMatched.HasValue)
-        {
-            <dt>
-                @Html.DisplayNameFor(model => model.ScalabilityMatched) @*7*@
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.ScalabilityMatched.Value)
+                @(Model.EstimatedExitPlanMatched.Value ? "Match" : "No match")
+                @*@Html.DisplayFor(model => model.EstimatedExitPlanMatched.Value)*@
             </dd>
         }
 
@@ -126,23 +101,57 @@
                 @Html.DisplayNameFor(model => model.TeamSkillsMatched) @*8*@
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.TeamSkillsMatched.Value)
+                @(Model.TeamSkillsMatched.Value ? "Match" : "No match")
+                @*@Html.DisplayFor(model => model.TeamSkillsMatched.Value)*@
             </dd>
         }
 
-    @*<dt>
-        @Html.DisplayNameFor(model => model.TeamMemberSizeMatched)
-    </dt>
-    <dd>
-        @Html.DisplayFor(model => model.TeamMemberSizeMatched)
-    </dd>
+        @if (Model.OutcomesMatched.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.OutcomesMatched) @*5*@
+            </dt>
+            <dd>
+                @(Model.OutcomesMatched.Value ? "Match" : "No match")
+                @*@Html.DisplayFor(model => model.OutcomesMatched.Value)*@
+            </dd>
+        }
 
-    <dt>
-        @Html.DisplayNameFor(model => model.TeamExperienceMatched)
-    </dt>
-    <dd>
-        @Html.DisplayFor(model => model.TeamExperienceMatched)
-    </dd>*@
+        @if (Model.InnovationLevelMatched.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.InnovationLevelMatched) @*6*@
+            </dt>
+            <dd>
+                @(Model.InnovationLevelMatched.Value ? "Match" : "No match")
+                @*@Html.DisplayFor(model => model.InnovationLevelMatched.Value)*@
+            </dd>
+        }
+
+        @if (Model.ScalabilityMatched.HasValue)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.ScalabilityMatched) @*7*@
+            </dt>
+            <dd>
+                @(Model.ScalabilityMatched.Value ? "Match" : "No match")
+                @*@Html.DisplayFor(model => model.ScalabilityMatched.Value)*@
+            </dd>
+        }
+
+        @*<dt>
+            @Html.DisplayNameFor(model => model.TeamMemberSizeMatched)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TeamMemberSizeMatched)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TeamExperienceMatched)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TeamExperienceMatched)
+        </dd>*@
 
         <dt>
             @Html.DisplayNameFor(model => model.NoOfMatches)
