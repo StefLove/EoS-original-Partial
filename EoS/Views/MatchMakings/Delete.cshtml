@@ -8,7 +8,7 @@
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>Match Making</h4>
+    <h4>Match Making @Model.MatchMakingId</h4>
     <hr />
     <dl class="dl-horizontal">
 
@@ -33,85 +33,87 @@
             @Html.DisplayFor(model => model.StartupId)
         </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ProjectDomainMatched) @*1*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.ProjectDomainMatched)
-        </dd>
+        @*<dt>
+                @Html.DisplayNameFor(model => model.ProjectDomainMatched)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ProjectDomainMatched.Value)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.FundingAmountMatched) @*3*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.FundingAmountMatched)
-        </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.FundingPhaseMatched)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FundingPhaseMatched.Value)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.FundingPhaseMatched) @*2*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.FundingPhaseMatched)
-        </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.FundingAmountMatched)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.FundingAmountMatched.Value)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.EstimatedExitPlanMatched) @*4*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.EstimatedExitPlanMatched)
-        </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.EstimatedExitPlanMatched)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.EstimatedExitPlanMatched.Value)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.OutcomesMatched) @*5*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.OutcomesMatched)
-        </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.OutcomesMatched)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.OutcomesMatched.Value)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.InnovationLevelMatched) @*6*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.InnovationLevelMatched)
-        </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.InnovationLevelMatched)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.InnovationLevelMatched.Value)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ScalabilityMatched) @*7*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.ScalabilityMatched)
-        </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ScalabilityMatched)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ScalabilityMatched.Value)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.TeamSkillsMatched) @*8*@
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.TeamSkillsMatched)
-        </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.TeamSkillsMatched.Value)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.TeamSkillsMatched)
+            </dd>*@
 
         <dt>
             @Html.DisplayNameFor(model => model.NoOfMatches)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.NoOfMatches) (of @Html.DisplayFor(model => model.MaxNoOfMatches))
+            @Html.DisplayFor(model => model.NoOfMatches) @*(of @Html.DisplayFor(model => model.MaxNoOfMatches))*@
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.Sent)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Sent)
+            @*@Html.DisplayFor(model => model.Sent)*@
+            @(Model.Sent ? "Yes" : "No")
         </dd>
-
     </dl>
 
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
+    <div class="form-actions no-color hidden-print">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
 
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-danger" /> |
-            @Html.ActionLink("Back to Result List", "Results")
-        </div>
-    }
+            <input type="submit" value="Delete" class="btn btn-danger hidden-print" /><text> |</text>
+            @Html.ActionLink("To Result List", "Results")<text> |</text>
+            @Html.ActionLink("To Details", "Details", new { id = Model.MatchMakingId })
+        }
+    </div>
+
 </div>

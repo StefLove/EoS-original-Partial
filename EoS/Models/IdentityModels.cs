@@ -118,5 +118,16 @@ namespace EoS.Models
         public DbSet<SMTP.SmtpClient> SmtpClients { get; set; }
 
         public DbSet<MMM.MatchMaking> MatchMakings { get; set; }
+
+        //protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        //{
+            // Configure Code First to ignore PluralizingTableName convention
+            // If you keep this convention then the generated tables will have pluralized names.
+            //modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+
+            //modelBuilder.Entity<IdeaCarrier.Startup>().HasRequired(mb => mb.User).WithMany(mb => mb.Startups).WillCascadeOnDelete(true);
+            //modelBuilder.Entity<IdeaCarrier.FundingDivisionStartup>().HasRequired(mb => mb.Startup).WithMany(mb => mb.ProjectFundingDivisions).WillCascadeOnDelete(true);
+            //modelBuilder.Entity<Investor.Investment>().HasRequired(mb => mb.User).WithMany(mb => mb.Investments).WillCascadeOnDelete(true);
+        //}
     }
 }

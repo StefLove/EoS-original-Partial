@@ -36,18 +36,18 @@
             </div>
         </div>
 
-        @if (Model.Approved.HasValue)
+        @*@if (Model.Approved.HasValue)
         {
             <div class="form-group">
                 @Html.LabelFor(model => model.Approved, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
                 <div class="col-md-9">
                     <div class="checkbox col-md-10">
-                        @Html.EditorFor(model => model.Approved.Value) &nbsp;(Approved by&nbsp;@Model.ApprovedBy)
+                        @Html.EditorFor(model => model.Approved.Value) &nbsp;(by&nbsp;@Model.ApprovedBy)
                         @Html.ValidationMessageFor(model => model.Approved, "", new { @class = "text-danger" })
                     </div>
                 </div>
             </div>
-        }
+        }*@
 
         <div class="form-group hidden-print">
             <div class="col-md-offset-2 col-md-10">
@@ -61,5 +61,5 @@
     <div class="hidden-print">
         @Html.ActionLink("Back to Investment profiles by this Idea carrier", "Index", new { id = Model.IdeaCarrierUserID }) |
         @Html.ActionLink("Go to all Investment profiles", "Index") |
-        @Html.ActionLink("Details", "Details", new { id = Model.StartupID })
+        @Html.ActionLink("Project details", "ProjectDetails", new { id = Model.StartupID })
     </div>

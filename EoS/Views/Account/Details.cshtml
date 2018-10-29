@@ -138,22 +138,34 @@
     </dl>
 </div>
 <p class="hidden-print">
-    @*@{ string aT = Model.Role == EoS.Models.Role.Admin.ToString() ? Model.Role : ""; }
-    @Html.ActionLink("Back to List", "Index", new { accountType =  aT } ) |
-
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id, accountType = aT }) |
-    @Html.ActionLink("Delete", "Delete", new { id = Model.Id, accountType = aT })*@
-
-    @Html.ActionLink("Back to Account List", "Index", new { accountType = Model.Role }) |
     @{
         if (!ViewBag.OwnAccount)
         {
             string aT = Model.Role == EoS.Models.Role.Admin.ToString() ? EoS.Models.Role.Admin.ToString() : "";
+            if (Model.Role == EoS.Models.Role.Investor.ToString())
+            {
+                @Html.ActionLink("To the investment profiles", "Index", "Investments", new { id = Model.Id }, null)
+            }
+            else if (Model.Role == EoS.Models.Role.IdeaCarrier.ToString())
+            {
+                @Html.ActionLink("To the startup projects", "Index", "Startups", new { id = Model.Id }, null)
+            }
+            <text>|</text>
+            @Html.ActionLink("To the Account list", "Index", new { accountType = Model.Role }) <text>|</text>
             @Html.ActionLink("Edit", "Edit", new { id = Model.Id, accountType = aT }); <text>|</text>
-            @Html.ActionLink("Delete", "Delete", new { id = Model.Id, accountType = aT }, new { @style = "color:red"});
+            @Html.ActionLink("Delete", "Delete", new { id = Model.Id, accountType = aT }, new { @style = "color:red" })
         }
         else
         {
+            if (Model.Role == EoS.Models.Role.Investor.ToString())
+            {
+                @Html.ActionLink("Back to your investment profiles", "Index", "Investments")
+            }
+            else if (Model.Role == EoS.Models.Role.IdeaCarrier.ToString())
+            {
+                @Html.ActionLink("Back to your startup projects", "Index", "Startups")
+            }
+            <text>|</text>
             @Html.ActionLink("Edit your own account", "Edit");
         }
 

@@ -11,13 +11,14 @@ using EoS.Models.IdeaCarrier;
 using Microsoft.AspNet.Identity;
 using System.IO;
 using EoS.Models.Shared;
+using EoS.Models.MMM;
 using System.Threading.Tasks;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 
 namespace EoS.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class StartupsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -104,7 +105,7 @@ namespace EoS.Controllers
                     case "COUNTRY": return View(startupProjects.OrderBy(su => su.Country.CountryName));
                     //case "SWEDISHREGION": return View(startupProjects.OrderBy(su => su.SwedishRegion.RegionName));
                     case "PROJECTDOMAINNAME": return View(startupProjects.OrderBy(su => su.ProjectDomain?.ProjectDomainName));
-                    case "FUNDINGAMOUNTVALUE": return View(startupProjects.OrderBy(su => su.FundingAmount?.FundingAmountValue));
+                    //case "FUNDINGAMOUNTVALUE": return View(startupProjects.OrderBy(su => su.FundingAmount?.FundingAmountValue));
                     case "MATCHMAKINGCOUNT": return View(startupProjects.OrderByDescending(su => su.MatchMakings?.Count()));
                     case "LASTSAVEDDATE": return View(startupProjects.OrderByDescending(su => su.LastSavedDate));
                     case "DEADLINEDDATE": return View(startupProjects.OrderByDescending(su => su.DeadlineDate));
@@ -135,7 +136,7 @@ namespace EoS.Controllers
 
             ViewBag.UserRole = Role.IdeaCarrier.ToString();
             ViewBag.ApprovedBy = "";
-            ViewBag.FormIsFinished = FormIsFinished(startupProject);
+            ViewBag.FormIsFinished = IsFormFinished(startupProject);
 
             ViewBag.TheOnlyProject = false;
             if (startupProject.User.Startups.Count() == 1) ViewBag.TheOnlyProject = true;
@@ -156,24 +157,37 @@ namespace EoS.Controllers
             return View(startupProject);
         }
 
-        private bool FormIsFinished(Models.IdeaCarrier.Startup startupProject)
+        private bool IsFormFinished(Models.IdeaCarrier.Startup startupProject)
         {
-            return !string.IsNullOrEmpty(startupProject.StartupName) &&
+            return
+                //Project
+                !string.IsNullOrEmpty(startupProject.StartupName) &&
                 startupProject.ProjectDomainID.HasValue &&
                 startupProject.DeadlineDate.HasValue &&
                 !string.IsNullOrEmpty(startupProject.ProjectSummary) &&
                 (startupProject.AllowedInvestors != null && startupProject.AllowedInvestors.Any()) &&
+                //startupProject.AllowSharing.HasValue && <-------
+                //Funding
                 startupProject.FundingPhaseID.HasValue &&
                 startupProject.FundingAmountID.HasValue &&
+                //startupProject.FutureFundingNeeded.HasValue && <-------
                 startupProject.AlreadySpentTime.HasValue &&
                 startupProject.AlreadySpentMoney.HasValue &&
+                //startupProject.WillSpendOwnMoney.HasValue && <--------
+                //Budget
                 (startupProject.ProjectFundingDivisions != null && startupProject.ProjectFundingDivisions.Sum(pfd => pfd.Percentage) == 100) &&
                 startupProject.EstimatedExitPlanID.HasValue &&
                 startupProject.EstimatedBreakEven.HasValue &&
                 startupProject.PossibleIncomeStreams.HasValue &&
+                //startupProject.HavePayingCustomers.HasValue && <--------
+                //Team
                 startupProject.TeamMemberSize.HasValue &&
                 startupProject.TeamExperience.HasValue &&
+                //startupProject.TeamVisionShared.HasValue && <---------
+                //startupProject.HaveFixedRoles.HasValue && <-------
                 (startupProject.TeamWeaknesses != null && startupProject.TeamWeaknesses.Any()) &&
+                //startupProject.LookingForActiveInvestors.HasValue && <------
+                //Outcome
                 (startupProject.Outcomes != null && startupProject.Outcomes.Any()) &&
                 startupProject.InnovationLevelID.HasValue &&
                 startupProject.ScalabilityID.HasValue;
@@ -321,7 +335,7 @@ namespace EoS.Controllers
                     {
                         db.SaveChanges();
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) //invalid data
                     {
                         ViewBag.Message = ex.Message;
                         updated = false;
@@ -1115,17 +1129,21 @@ namespace EoS.Controllers
                 return HttpNotFound();
             }
 
-            bool? approved = startupProject.Approved;
-            if (startupProject.Approved && startupProject.ApprovedByID != User.Identity.GetUserId()) approved = null;
-            User.Identity.GetUserId();
+            //string approvedBy = "";
+            //if (startupProject.Approved && !string.IsNullOrWhiteSpace(startupProject.ApprovedByID))
+            //{
+            //    if (startupProject.ApprovedByID == User.Identity.GetUserId()) approvedBy = "You self";
+            //    else approvedBy = startupProject.ApprovedByID;
+            //}
+            
             StartupEditAdminViewModel model = new StartupEditAdminViewModel
             {
                 StartupID = startupProject.StartupID,
                 IdeaCarrierUserID = startupProject.UserID,
                 IdeaCarrierUserName = startupProject.User.UserName,
                 ProjectSummary = startupProject.ProjectSummary,
-                Approved =  approved,
-                ApprovedBy = User.Identity.GetUserId() == startupProject.ApprovedByID ? "You self" : db.Users.Where(u => u.Id == startupProject.ApprovedByID).FirstOrDefault().UserName,
+                //Approved = startupProject.Approved,
+                //ApprovedBy = approvedBy,
                 Locked = startupProject.Locked
             };
 
@@ -1161,12 +1179,12 @@ namespace EoS.Controllers
                     updated = true;
                 }
 
-                if (model.Approved.HasValue && startupProject.Approved != model.Approved.Value)
-                {
-                    startupProject.Approved = model.Approved.Value;
-                    startupProject.ApprovedByID = User.Identity.GetUserId();
-                    updated = true;
-                }
+                //if (model.Approved.HasValue && startupProject.Approved != model.Approved.Value)
+                //{
+                //    startupProject.Approved = model.Approved.Value;
+                //    startupProject.ApprovedByID = User.Identity.GetUserId();
+                //    updated = true;
+                //}
 
                 if (updated)
                 {
@@ -1180,7 +1198,7 @@ namespace EoS.Controllers
         }
 
         // GET: Startups/RemoveProject/5
-        [Authorize(Roles = "Admin, IdeaCarrier")]
+        [Authorize(Roles = "IdeaCarrier")] //Admin, 
         //[HttpDelete]
         public ActionResult RemoveProject(string id)
         {
@@ -1198,7 +1216,7 @@ namespace EoS.Controllers
         }
 
         // POST: Startups/RemoveProject/5
-        [Authorize(Roles = "Admin, IdeaCarrier")]
+        [Authorize(Roles = "IdeaCarrier")] //Admin, 
         [HttpPost, ActionName("RemoveProject")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(string id)
@@ -1448,7 +1466,7 @@ namespace EoS.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public ActionResult Unlock(string id, string redirect = "")
+        public ActionResult Unlock(string id, string redirect = "", bool isSingleUser = false)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -1465,7 +1483,10 @@ namespace EoS.Controllers
             startupProject.Locked = false;
             startupProject.Approved = false;
             startupProject.ApprovedByID = "";
-            startupProject.MatchMakings.Clear(); //<----!!!
+
+            List<MatchMaking> startupProjectMatchMakings = startupProject.MatchMakings.ToList();
+            foreach (MatchMaking startupProjectMatchMaking in startupProjectMatchMakings)
+                db.MatchMakings.Remove(startupProjectMatchMaking);
 
             db.Entry(startupProject).State = EntityState.Modified;
             db.SaveChanges();
@@ -1476,7 +1497,8 @@ namespace EoS.Controllers
                 else return RedirectToAction(redirect, new { id });
             }
 
-            if (string.IsNullOrWhiteSpace(redirect) || redirect.ToUpper() == "INDEX") return RedirectToAction("Index", new { id });
+            if (string.IsNullOrWhiteSpace(redirect) || redirect.ToUpper() == "INDEX")
+                return RedirectToAction("Index", new { id = (isSingleUser ? startupProject.UserID : "") });
 
             return RedirectToAction("ProjectDetails", new { id });
         }
@@ -1602,11 +1624,7 @@ namespace EoS.Controllers
             }
 
             if (string.IsNullOrWhiteSpace(redirect) || redirect.ToUpper() == "INDEX")
-            {
-                ViewBag.IdeaCarrierUserName = startupProject.User.Email;
-                ViewBag.IdeaCarrierId = startupProject.UserID;
-                return RedirectToAction("Index");
-            }
+                return RedirectToAction("Index", new { id = startupProject.UserID });
 
             return RedirectToAction("ProjectDetails", new { id });
         }

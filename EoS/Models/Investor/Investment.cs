@@ -18,7 +18,7 @@ namespace EoS.Models.Investor
         public string InvestmentID { get; set; } //ProfileID
 
         //[ForeignKey("User")]
-        [Display(Name = "Investor ID")]
+        [Display(Name = "Investor internal ID")]
         public string UserId { get; set; }
         public virtual ApplicationUser User { get; set; }
 

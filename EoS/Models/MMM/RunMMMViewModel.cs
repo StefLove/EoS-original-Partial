@@ -9,14 +9,16 @@ namespace EoS.Models.MMM
 {
     public class RunMMMViewModel
     {
+        public string Id { get; set; }
+
         [Required(ErrorMessage = "*")]
         [Display(Name = "Investment profile")]
-        public string InvestmentProfileId { get; set; }
-        public SelectList InvestmentProfileList { get; set; }
+        public string MatchableInvestmentProfileId { get; set; }
+        public SelectList MatchableInvestmentProfileList { get; set; }
 
-        [Display(Name = "Startup project")] //When not selected all startups will be matched
-        public string StartupProjectId { get; set; }
-        public SelectList StartupProjectList { get; set; }
+        [Display(Name = "Startup project")]
+        public string MatchableStartupProjectId { get; set; }
+        public SelectList MatchableStartupProjectList { get; set; }
 
         [Display(Name = "Domain")]
         public bool ProjectDomainSelected { get; set; } //1
@@ -30,22 +32,22 @@ namespace EoS.Models.MMM
         [Display(Name = "Estimated exit plan")]
         public bool EstimatedExitPlanSelected { get; set; } //4
 
-        [Display(Name = "Outcomes")]
-        public bool OutcomesSelected { get; set; } //5
-
-        [Display(Name = "Level of innovation")]
-        public bool InnovationLevelSelected { get; set; } //6
-
-        [Display(Name = "Scalability")]
-        public bool ScalabilitySelected { get; set; } //7      
-
-        [Display(Name = "Team skills")]
-        public bool TeamSkillsSelected { get; set; } //8
-
         //[Display(Name = "Team Member Size")]
         //public bool TeamMemberSizeSelected { get; set; }
 
         //[Display(Name = "Team Experience")]
         //public bool TeamExperienceSelected { get; set; }
+
+        [Display(Name = "Team skills/weaknesses")]
+        public bool TeamSkillsSelected { get; set; } //5
+
+        [Display(Name = "Outcomes")]
+        public bool OutcomesSelected { get; set; } //6
+
+        [Display(Name = "Level of innovation")]
+        public bool InnovationLevelSelected { get; set; } //7
+
+        [Display(Name = "Scalability")]
+        public bool ScalabilitySelected { get; set; } //8  
     }
 }

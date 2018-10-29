@@ -5,18 +5,20 @@
 
     <h3>
         No report has been sent (or even exists).
-    </h3><br />
+    </h3>
 }
-else if (ViewBag.Sent&& ViewBag.InvestorUserNames!=null)
+else if (ViewBag.Sent&& ViewBag.InvestorUserNames != null)
 {
-    @ViewBag.Title = "Report sent";
+    ViewBag.Title = "Report sent";
 
-    <h3> @*The report @ViewBag.ReportName*@
-        A report has been sent each one of<br />&nbsp;<br />
-        @for (int i = 0; i< ViewBag.InvestorUserNames.Length; i++)
-        {
+    <h3>
+        @*The report @ViewBag.ReportName*@
+        @{ string investorUserName = ViewBag.InvestorUserName}
+        @Html.Raw("A report has been sent to ") @Html.ActionLink(investorUserName, "Index", new { id = ViewBag.InvestorId }, new { title = "The Investor's account details", target ="_blank"}) @Html.Raw(".")
+        @*@for (int i = 0; i < ViewBag.InvestorUserNames.Length; i++)
+        { each one of<br />&nbsp;
             Html.Raw(ViewBag.InvestorUserNames[i]);<br />
-        }
+        }*@
     </h3>
 }
 else //Message.Sent == false
@@ -25,6 +27,12 @@ else //Message.Sent == false
     ViewBag.Title = "Report not sent";
 
     <h2>Error !</h2> @*The report @ViewBag.ReportName*@
-    <h3>The report could not be sent.</h3>
+    <h3>The report could not be sent.</h3><br />
+    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+    {
+        <h4>
+            @Html.Raw(ViewBag.ErrorMessage)
+        </h4>
+    }
 }
 

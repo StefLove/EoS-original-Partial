@@ -1,4 +1,5 @@
 ﻿@model EoS.Models.Investor.Investment
+@*EoS.Models.Investor.InvestmentProfileDetailsViewModel*@
 
 @{
     ViewBag.Title = "Investment profile details";
@@ -29,15 +30,23 @@
 
         @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
         {
+            @*<dt>
+                @Html.DisplayNameFor(model => model.User.UserName)
+            </dt>
+            <dd>
+                @* @Html.DisplayFor(model => model.User.UserName)* @
+                @Html.ActionLink(Model.User.UserName, "Index", new { id = Model.UserId }, new { target = "_blank" })
+            </dd>*@
+
             <dt>
-                @Html.Raw("Investor internal id")
+                @Html.Raw("Investor internal ID")
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.UserId)
             </dd>
 
             <dt>
-                @Html.Raw("Investor external id")
+                @Html.Raw("Investor external ID")
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.User.ExternalId)
@@ -47,7 +56,8 @@
                 @Html.Raw("Investor user name")
             </dt>
             <dd>
-                @ViewBag.InvestorUserName
+                @{ string investorUserName = ViewBag.InvestorUserName; }
+                @Html.ActionLink(investorUserName, "Details", "Account", new { id = Model.UserId }, new { title = "This Investor's account details", target = "_blank" })
             </dd>
         }
 
@@ -155,14 +165,28 @@
             @Html.DisplayNameFor(model => model.EstimatedBreakEven)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.EstimatedBreakEven)
+            @if (Model.EstimatedBreakEven.HasValue)
+            {
+                @Html.DisplayFor(model => model.EstimatedBreakEven)
+            }
+            else
+            {
+                @Html.Raw("Not answered")
+            }
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.PossibleIncomeStreams)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.PossibleIncomeStreams)
+            @if (Model.PossibleIncomeStreams.HasValue)
+            {
+                @Html.DisplayFor(model => model.PossibleIncomeStreams)
+            }
+            else
+            {
+                @Html.Raw("Not answered")
+            }
         </dd>
 
         @*Team*@
@@ -319,18 +343,39 @@
         @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && Model.MatchMakings.Any())
         {
             <dt>
-                @Html.DisplayNameFor(model => model.MatchMakings)
+                @*@Html.DisplayNameFor(model => model.MatchMakings)*@
+                @Html.Raw("Matched with")
             </dt>
             <dd>
-                @Model.MatchMakings.Count()
-                @Html.Raw(" matching Startup projects found:<br />")
-
-                @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+                @if (Model.MatchMakings != null && Model.MatchMakings.Any())
                 {
-                    foreach (var matchMaking in Model.MatchMakings)
+                    var distinctMatchedProjects = Model.MatchMakings.Select(mm => mm.StartupId).Distinct().ToList();
+
+                    if (distinctMatchedProjects.Count() == 1)
                     {
-                        @Html.ActionLink(linkText: matchMaking.StartupId, actionName: "ProjectDetails", controllerName: "Startups", routeValues: new { id = matchMaking.StartupId }, htmlAttributes: new { title = "Startup project details", @style = "height:25px;padding:1px" }) <br />
+                        @Html.Raw("1 Startup project:<br />")
                     }
+                    else
+                    {
+                        @Html.Raw(distinctMatchedProjects.Count().ToString() + " Startup projects:<br />")
+                    }
+
+                    //if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
+                    //{
+                    foreach (var distinctMatchedProject in distinctMatchedProjects)
+                    {
+                        <span class="visible-print">@distinctMatchedProject</span>
+                        @Html.ActionLink(distinctMatchedProject, "ProjectDetails", "Startups", new { id = distinctMatchedProject }, new { @class="hidden-print", title = "Startup project details", target = "_blank" })
+                        if (distinctMatchedProject != distinctMatchedProjects.Last())
+                        {
+                            <br />
+                        }
+                    }
+                    //}
+                }
+                else if (Model.MatchMakings == null || !Model.MatchMakings.Any())
+                {
+                    @Html.Raw("0 Startup projects.")
                 }
                 @*else if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
                 {
@@ -358,15 +403,29 @@
             </dd>
         }
 
+        @if (Model.Locked && Model.Active && (!Model.DueDate.HasValue || Model.DueDate.HasValue && Model.DueDate.Value > DateTime.Now))
+        {
+            <dt class="hidden-print"></dt>
+            <dd class="hidden-print">
+                @{ string MatchText = "Match with projects"; }
+                @if (Model.MatchMakings.Any())
+                {
+                    MatchText = "Match again with projects";
+                }
+                @Html.ActionLink(MatchText, "Motor", "MatchMakings", new { id = Model.InvestmentID }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
+            </dd>
+        }
+
+        <dt>
+            @Html.Raw("Profile form")
+        </dt>
         @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
         {
-            <dt>
-                @Html.Raw("This Profile form")
-            </dt>
             if (Model.Locked)
             {
-                <dd class="hidden-print">
-                    @Html.ActionLink("Unlock it", "Unlock", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
+                <dd>
+                    @Html.Raw("is locked&nbsp;")
+                    @Html.ActionLink("Unlock it", "Unlock", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-success hidden-print", @style = "height:25px;padding:1px" })
                 </dd>
             }
             else if (!Model.Locked)
@@ -383,7 +442,7 @@
                         @if (daysSincelastSaved >= 1)
                         {
                             <text>&nbsp;&nbsp;</text>
-                            @Html.ActionLink("Remind about finishing", "Reminder", new { id = Model.InvestmentID, subject = "Finish profile " + Model.InvestmentID, message = message, redirect = "ProfileDetails" }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
+                            @Html.ActionLink("Remind about finishing", "Reminder", new { id = Model.InvestmentID, subject = "Finish profile form" + Model.InvestmentID, message = message, redirect = "ProfileDetails" }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
                         }
                     </span>
                 </dd>
@@ -426,32 +485,36 @@
                     @Html.Raw("Unlocked")
                 }
             </dd>*@
-
-            if (Model.Locked && Model.Active && (!Model.DueDate.HasValue || Model.DueDate.HasValue && Model.DueDate.Value > DateTime.Now))
-            {
-                <dt class="hidden-print"></dt>
-                <dd class="hidden-print">
-                    @Html.ActionLink("Match with projects", "Motor", "MatchMakings", new { id = Model.InvestmentID }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
-                </dd>
-            }
         }
-        else //if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
+        else if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
         {
-            <dt>
-                @Html.Raw("This Profile form")
-            </dt>
+            @*<dt>
+                @Html.Raw("Profile form")
+            </dt>*@
             <dd>
                 @if (Model.Locked)
                 {
                     @Html.Raw("is locked&nbsp;&nbsp;")
                     @Html.ActionLink("Unlock it", "Contact", "Home", new { subject = "Unlock " + Model.InvestmentID }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
                 }
-                else
+                else if (!Model.Locked)
+                {
+                    if (ViewBag.FormIsFinished)
+                    {
+                        @Html.Raw("is not submitted and locked.&nbsp;") @Html.ActionLink("Submit & lock it", "SubmitProfileForm", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-primary hidden-print", onclick = "onSubmitProfileForm()", @style = "height:25px;padding:1px" })
+                        @Html.Raw("&nbsp;or&nbsp;")
+                        @Html.ActionLink("Continue with it", "ProfileForm", new { id = Model.InvestmentID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
+                    }
+                    else
+                    {
+                        @Html.Raw("is not finished.&nbsp;") @Html.ActionLink("Finish it", "ProfileForm", new { id = Model.InvestmentID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
+                    }
+                }
+                @*else
                 {
                     @Html.Raw("is not locked&nbsp;&nbsp;")
                     @Html.ActionLink("Finish the form and lock it", "ProfileForm", new { id = Model.InvestmentID }, new { @class = "btn btn-danger hidden-print", @style = "height:25px;padding:1px" })
-                }
-                @*@Html.DisplayFor(model => model.Locked)*@
+                }*@
             </dd>
 
             <dt>
@@ -469,8 +532,6 @@
             </dd>
         }
 
-
-
         <dt>
             @Html.DisplayNameFor(model => model.Active)
         </dt>
@@ -481,7 +542,7 @@
                     if (Model.Active)
                     {
                         @Html.Raw("Yes&nbsp;&nbsp;")
-                        @Html.ActionLink("Unactivate", "Activate", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
+                        @Html.ActionLink("Unactivate", "Activate", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @class = "btn btn-primary hidden-print", onclick = "submitProfileForm()", @style = "height:25px;padding:1px" })
                     }
                     else
                     {
@@ -491,7 +552,8 @@
                 }
                 else
                 {
-                    @Html.DisplayFor(model => model.Active)
+                    @(Model.Active ? "Yes" : "No")
+                    @*@Html.DisplayFor(model => model.Active)*@
                 }
             </div>
         </dd>
@@ -522,3 +584,11 @@
         @Html.ActionLink("Remove", "RemoveProfile", new { id = Model.InvestmentID }, new { @style = "color:red" })
     }
 </p>
+
+<script type="text/javascript">
+
+    function onSubmitProfileForm() {
+        return confirm('Do you really wish to submit the profile form? (It will be locked for editing)');
+    }
+
+</script>

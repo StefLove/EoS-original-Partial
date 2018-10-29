@@ -5,148 +5,148 @@
 }
 
 <h3>@ViewBag.Title</h3>
-
-@*@if (!string.IsNullOrEmpty(ViewBag.Message))
-{
-    <br />
-    <span class="text-danger" style="font-size:larger">@Html.Raw(ViewBag.Message)</span>
-    <hr />
-}*@
+@*
+        @if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        <br />
+        <span class="text-danger" style="font-size:larger">@Html.Raw(ViewBag.Message)</span>
+        <hr />
+    }*@
 
 @using (Ajax.BeginForm("ProjectForm", "Startups",
     new AjaxOptions
     {
         HttpMethod = "POST",
-        @*//UpdateTargetId = "StartupProjectForm",
-        //OnBegin = "OnBegin",
-        //OnComplete = "OnComplete",*@
-        OnSuccess = "OnSuccess",
-        OnFailure = "OnFailure",
-        LoadingElementId = "Progress",
-        InsertionMode = InsertionMode.Replace, 
-        @*//Confirm = "...",
-        //AllowCache = false*@
-    }, new { @id = "StartupProjectForm" }))
-{
-    @Html.AntiForgeryToken()
+@*//UpdateTargetId = "StartupProjectForm",
+    //OnBegin = "OnBegin",
+    //OnComplete = "OnComplete",*@
+            OnSuccess = "OnSuccess",
+            OnFailure = "OnFailure",
+            LoadingElementId = "Progress",
+            InsertionMode = InsertionMode.Replace,
+@*//Confirm = "...",
+    //AllowCache = false*@
+        }, new { @id = "StartupProjectForm" }))
+    {
+        @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
+        <div class="form-horizontal">
 
-        <div id="wizard">
+            <div id="wizard">
 
-            <div id="Message" class="text-danger">
-                @if (string.IsNullOrEmpty(Model.Message))
-                {
-                    @Html.Raw("Your answers are automatically saved when you navigate between the tabs, but the form is not submitted")
-                }
-                else
-                {
-                    @Model.Message
-                }
-            </div>
-            <hr />
-
-            @Html.HiddenFor(model => model.StartupID)
-
-            <input type="hidden" name="ActiveTab" id="ActiveTab" value="" />
-
-            @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
-            {
-                <div class="alert alert-danger">
-                    <a href="#" class="close" data-dismiss="alert">×</a>
-                    <h4>Validation Errors</h4>
-                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                </div>
-            }
-
-            <!-- Tabstrip -->
-
-            <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" id="tab_Project" class="active">
-                    <a href="#Project" role="tab" data-toggle="tab" onclick="SaveData()">Project</a>
-                </li>
-                <li role="presentation" id="tab_Funding" class="">
-                    <a href="#Funding" role="tab" data-toggle="tab" onclick="SaveData()">Funding</a>
-                </li>
-                <li role="presentation" id="tab_Budget" class="">
-                    <a href="#Budget" role="tab" data-toggle="tab" onclick="SaveData()">Budget</a>
-                </li>
-                <li role="presentation" id="tab_Team" class="">
-                    <a href="#Team" role="tab" data-toggle="tab" onclick="SaveData()">Team</a>
-                </li>
-                <li role="presentation" id="tab_Outcome" class="">
-                    <a href="#Outcome" role="tab" data-toggle="tab" onclick="SaveData()">Outcome</a>
-                </li>
-
-
-                @*<li role="presentation" id="tab_RelatedFiles">
-                        <a href="#RelatedFiles" role="tab" data-toggle="tab" onclick="SaveData()">Related Files</a>
-                    </li>*@
-            </ul>
-
-            <br />&nbsp;<br />
-
-            <!-- Tab panes -->
-
-            <div class="tab-content">
-
-                <div role="tabpanel" class="tab-pane active" id="Project">
-                    @{
-                        Html.RenderPartial("_ProjectForm_Project");
+                <div id="Message" class="text-danger">
+                    @if (string.IsNullOrEmpty(Model.Message))
+                    {
+                        @Html.Raw("Your answers are automatically saved when you navigate between the tabs, but the form is not submitted.")
+                    }
+                    else
+                    {
+                        @Model.Message
                     }
                 </div>
-
-                <div role="tabpanel" class="tab-pane" id="Funding">
-                    @{
-                        Html.RenderPartial("_ProjectForm_Funding");
-                    }
-                </div>
-
-                <div role="tabpanel" class="tab-pane" id="Budget">
-                    @{
-                        Html.RenderPartial("_ProjectForm_Budget");
-                    }
-                </div>
-
-                <div role="tabpanel" class="tab-pane" id="Team">
-                    @{
-                        Html.RenderPartial("_ProjectForm_Team");
-                    }
-                </div>
-
-                <div role="tabpanel" class="tab-pane" id="Outcome">
-                    @{
-                        Html.RenderPartial("_ProjectForm_Outcome");
-                    }
-                </div>
-
-            </div> <!-- Tab panes end -->
-
-            <div class="form-group hidden-print">
                 <hr />
-                <div class="col-md-offset-0 col-md-10" onclick="">
-                    <div style="float:left">
-                        <input type="button" name="first" value="First" class="btn button-first btn-info" onclick="SaveData()" />
-                        <input type="button" name="previous" value="Previous" class="btn button-previous btn-info" onclick="SaveData()" />
+
+                @Html.HiddenFor(model => model.StartupID)
+
+                <input type="hidden" name="ActiveTab" id="ActiveTab" value="" />
+
+                @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+                {
+                    <div class="alert alert-danger">
+                        <a href="#" class="close" data-dismiss="alert">×</a>
+                        <h4>Validation Errors</h4>
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                     </div>
-                    <div style="float:unset" class="col-md-offset-5">                       
-                        @Html.ActionLink("Submit & lock the form", "SubmitProjectForm", new { id = Model.StartupID, redirect = "ProjectDetails" }, new { @id = "projectFormSubmission", @class = "btn btn-primary", @style = "width:180px", onclick = "submitProjectForm()" })
+                }
+
+                <!-- Tabstrip -->
+
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" id="tab_Project" class="active">
+                        <a href="#Project" role="tab" data-toggle="tab" onclick="SaveData()">Project</a>
+                    </li>
+                    <li role="presentation" id="tab_Funding" class="">
+                        <a href="#Funding" role="tab" data-toggle="tab" onclick="SaveData()">Funding</a>
+                    </li>
+                    <li role="presentation" id="tab_Budget" class="">
+                        <a href="#Budget" role="tab" data-toggle="tab" onclick="SaveData()">Budget</a>
+                    </li>
+                    <li role="presentation" id="tab_Team" class="">
+                        <a href="#Team" role="tab" data-toggle="tab" onclick="SaveData()">Team</a>
+                    </li>
+                    <li role="presentation" id="tab_Outcome" class="">
+                        <a href="#Outcome" role="tab" data-toggle="tab" onclick="SaveData()">Outcome</a>
+                    </li>
+
+
+                    @*<li role="presentation" id="tab_RelatedFiles">
+                            <a href="#RelatedFiles" role="tab" data-toggle="tab" onclick="SaveData()">Related Files</a>
+                        </li>*@
+                </ul>
+
+                <br />&nbsp;<br />
+
+                <!-- Tab panes -->
+
+                <div class="tab-content">
+
+                    <div role="tabpanel" class="tab-pane active" id="Project">
+                        @{
+                            Html.RenderPartial("_ProjectForm_Project");
+                        }
                     </div>
-                    <div style="float:right">
-                        <input type="button" name="next" value="Next" class="btn button-next btn-info" onclick="SaveData()" />
-                        <input type="button" name="last" value="Last" class="btn button-last btn-info" onclick="SaveData()" />
+
+                    <div role="tabpanel" class="tab-pane" id="Funding">
+                        @{
+                            Html.RenderPartial("_ProjectForm_Funding");
+                        }
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="Budget">
+                        @{
+                            Html.RenderPartial("_ProjectForm_Budget");
+                        }
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="Team">
+                        @{
+                            Html.RenderPartial("_ProjectForm_Team");
+                        }
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="Outcome">
+                        @{
+                            Html.RenderPartial("_ProjectForm_Outcome");
+                        }
+                    </div>
+
+                </div> <!-- Tab panes end -->
+
+                <div class="form-group hidden-print">
+                    <hr />
+                    <div class="col-md-offset-0 col-md-10" onclick="">
+                        <div style="float:left">
+                            <input type="button" name="first" value="First" class="btn button-first btn-info" onclick="SaveData()" />
+                            <input type="button" name="previous" value="Previous" class="btn button-previous btn-info" onclick="SaveData()" />
+                        </div>
+                        <div style="float:unset" class="col-md-offset-5">
+                            @Html.ActionLink("Submit & lock the form", "SubmitProjectForm", new { id = Model.StartupID, redirect = "ProjectDetails" }, new { @id = "projectFormSubmission", @class = "btn btn-primary", @style = "width:180px", onclick = "return onSubmitProjectForm()" })
+                        </div>
+                        <div style="float:right">
+                            <input type="button" name="next" value="Next" class="btn button-next btn-info" onclick="SaveData()" />
+                            <input type="button" name="last" value="Last" class="btn button-last btn-info" onclick="SaveData()" />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-}
+    }
 
-<div id="Progress" class="modal text-danger text-center center-block hidden-print" style="width:100%; height:100%; left:50%; top:40%;">
+<div id="Progress" class="modal text-danger text-center center-block hidden-print" style="width:100%; height:100%; left:30%; top:30%;">
     <div style="position:absolute;">
         @*style="background-color:black; width:300px; border-radius:25px; border: 10px solid red;*@
         @*<h1>SAVING <br />YOUR DATA<br />IN PROGRESS</h1>*@
-        <img src="~/img/ajax_loader.gif" />
+        <img id="ProgressImage" src="~/img/loading.gif" />
     </div>
 </div>
 
@@ -160,7 +160,11 @@
 
 <script type="text/javascript">
 
-    window.onload = function (evt) { $("#Progress").hide(); };
+    window.onload = function (evt) {
+        $("#Progress").hide();
+        //$("ProgessImage").src = '~/img/saving.gif';
+        document.getElementById('ProgressImage').src = '/../img/saving.gif';
+    };
     //window.onbeforeunload = function (evt) { SaveData(); };
 
     function setNewStartTab() {
@@ -172,9 +176,9 @@
         location.reload(true);
     }
 
-    function submitProjectForm() {
+    function onSubmitProjectForm() {
         SaveData();
-        return confirm('Do you really wish to submit this form? (It will be locked for editing');
+        return confirm('Do you really wish to submit this form? (It will be locked for editing)');
     }
 @*
     //function submitProjectForm() {
@@ -199,10 +203,8 @@
 
     function OnSuccess(response) {
          @*//$("#Progress").hide();
-
         if ('@Model.Updated' === 'True') $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.<br />');
         else $('#Message').html('There were nothing that needed to be updated in ') + $("input[name='activeTab']")[0].value.replace('_', ' ') + '.';*@
-
          @*if ('@Model.Updated' === 'True') {*@
 
             var successMessage = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.'; // $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.';

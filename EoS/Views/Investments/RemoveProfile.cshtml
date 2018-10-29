@@ -24,7 +24,7 @@
             @Html.DisplayFor(model => model.Country.CountryName)
         </dd>
 
-        @if (Model.SwedishRegionID.HasValue)
+        @*@if (Model.SwedishRegionID.HasValue)
         {
             <dt>
                 @Html.DisplayNameFor(model => model.SwedishRegionID)
@@ -32,9 +32,9 @@
             <dd>
                 @Html.DisplayFor(model => model.SwedishRegion.RegionName)
             </dd>
-        }
+        }*@
         
-        <dt>
+        @*<dt>
             @Html.DisplayNameFor(model => model.TeamMemberSizeMoreThanOne)
         </dt>
         <dd>
@@ -46,7 +46,7 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.TeamHasExperience)
-        </dd>
+        </dd>*@
 
         <dt>
             @Html.DisplayNameFor(model => model.CreatedDate)
@@ -69,14 +69,16 @@
             @Html.DisplayNameFor(model => model.Locked)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Locked)
+            @(Model.Locked ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.Locked)*@
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.Active)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Active)
+            @(Model.Active ? "Yes" : "No")
+            @*@Html.DisplayFor(model => model.Active)*@
         </dd>
 
     </dl>
@@ -84,9 +86,9 @@
     {
         @Html.AntiForgeryToken()
 
-    <div class="form-actions no-color">
+    <div class="form-actions no-color hidden-print">
         <input type="submit" value="Remove this profile" class="btn btn-danger" /> |
-        @Html.ActionLink("Details", "ProfileDetails", new { id = Model.InvestmentID }) |
+        @Html.ActionLink("Profile details", "ProfileDetails", new { id = Model.InvestmentID }) |
         @Html.ActionLink("Back to your Investment profiles", "Index")
     </div>
     }

@@ -17,7 +17,7 @@ namespace EoS.Models.IdeaCarrier
         [Display(Name = "Project ID")]
         public string StartupID { get; set; } //ProjectID
 
-        [ForeignKey("User")]
+        //[ForeignKey("User")]
         [Display(Name = "Idea carrier")]
         public string UserID { get; set; }
         public virtual ApplicationUser User { get; set; }

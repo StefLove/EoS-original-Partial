@@ -16,12 +16,13 @@ namespace EoS.Models.MMM
         }
 
         [Key]
+        [Display(Name = "ID")]
         public int MatchMakingId { get; set; }
 
         [Editable(false)]
-        [Display(Name = "Date of Match making")]
+        [Display(Name = "Date and time")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd HH:mm:ss}")]
-        public DateTime MatchMakingDate { get; internal set; }
+        public DateTime MatchMakingDate { get; internal set; } //MatchMakingDateTime
 
         [Display(Name = "Investment profile")]
         public string InvestmentId { get; set; }
@@ -37,13 +38,13 @@ namespace EoS.Models.MMM
         [Display(Name = "Funding phase")] //2
         public bool? FundingPhaseMatched { get; set; }
 
-        [Display(Name = "Funding amount")] //3
+        [Display(Name = "Funding amount/need")] //3
         public bool? FundingAmountMatched { get; set; }
 
         [Display(Name = "Estimated exit plan")] //4
         public bool? EstimatedExitPlanMatched { get; set; }
 
-        [Display(Name = "Team skills")] //5
+        [Display(Name = "Team skills/weaknesses")] //5
         public bool? TeamSkillsMatched { get; set; }
 
         [Display(Name = "Outcomes")] //6
@@ -55,10 +56,10 @@ namespace EoS.Models.MMM
         [Display(Name = "Required scalability")] //8
         public bool? ScalabilityMatched { get; set; }
 
-        [Display(Name = "Number of matches")]
+        [Display(Name = "#Matches")]
         public int NoOfMatches { get; internal set; }
 
-        [Display(Name = "Maximal number of matches")]
+        [Display(Name = "Max #matches")] //<-----
         public int MaxNoOfMatches { get; internal set; }
 
         [Display(Name = "Sent to investor")]

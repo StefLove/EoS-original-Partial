@@ -26,15 +26,28 @@ namespace EoS.Controllers
         }
 
         // GET: MatchMakings
-        public /*async Task<*/ActionResult/*>*/ Results(DateTime? matchedDate, bool? sent/*, bool? sendReports*/)
+        public /*async Task<*/ActionResult/*>*/ Results(string dateTime, bool? sent/*, bool? sendReports*/)
         {
-            List<MatchMaking> matchMakings = db.MatchMakings.ToList();
-            ViewBag.NoOfResults = matchMakings.Count;
+            List<MatchMaking> matchMakings = db.MatchMakings.OrderByDescending(mm => mm.MatchMakingDate).ToList();
+            ViewBag.NoOfResults = matchMakings.Count();
+            ViewBag.AllResults = true;
+            //ViewBag.DateTime = null;
+            //ViewBag.Sent = false;
 
-            if (matchedDate.HasValue)
+            if (!string.IsNullOrEmpty(dateTime))
             {
-                matchMakings = matchMakings.Where(mm => DateTime.Compare(mm.MatchMakingDate, matchedDate.Value) == 0).OrderBy(mm => mm.InvestmentId).ToList();
-                ViewBag.AllResults = false;
+                DateTime parsedDateTime = new DateTime();
+                if (DateTime.TryParse(dateTime, out parsedDateTime))
+                {
+                    //matchMakings = matchMakings.Where(mm => DateTime.Compare(mm.MatchMakingDate, parsedDateTime) == 0).OrderBy(mm => mm.InvestmentId).ToList();
+                    matchMakings = matchMakings.Where(mm => mm.MatchMakingDate.Date.Equals(parsedDateTime.Date) &&
+                                    mm.MatchMakingDate.Hour.Equals(parsedDateTime.Hour) &&
+                                    mm.MatchMakingDate.Minute.Equals(parsedDateTime.Minute) &&
+                                    mm.MatchMakingDate.Second.Equals(parsedDateTime.Second)).OrderBy(mm => mm.InvestmentId).ToList();
+
+                    ViewBag.AllResults = false;
+                    ViewBag.DateTime = parsedDateTime;
+                }
             }
 
             if (sent.HasValue)
@@ -58,9 +71,7 @@ namespace EoS.Controllers
             //            var startupList = investor.Startups.Where(s => s.StartupID == matchMaking.StartupId);
             //            if (startupList.Any())
             //            {
-            //                matchedStartups.Add(startupList.FirstOrDefault());
-            //
-            //                
+            //                matchedStartups.Add(startupList.FirstOrDefault());              
             //            }
             //        }
 
@@ -138,12 +149,15 @@ namespace EoS.Controllers
                                 smtp.EnableSsl = smtpClient.EnableSsl;
                                 await smtp.SendMailAsync(message);
 
-                                string[] InvestorUserNames = { investor.UserName };
-                                return RedirectToAction("ReportSent", new { sent = true, investorUserNames = InvestorUserNames, matchMakingDate = matchMaking.MatchMakingDate }); //InvestorUserNames used while testing. ,reportName = reportName
+                                //string[] InvestorUserNames = { investor.UserName };
+                                TempData["investor_id"] = investor.Id;
+                                TempData["investor_user_name"] = investor.UserName;
+                                return RedirectToAction("ReportSent", new { sent = true, /*investorUserNames = InvestorUserNames,*/ matchMakingDate = matchMaking.MatchMakingDate });
                             }
                         }
-                        catch
+                        catch (Exception ex)
                         {
+                            TempData["error_message"] = ex.Message;
                             //return RedirectToAction("ReportSent", new { sent = false });
                         }
                     }
@@ -154,12 +168,18 @@ namespace EoS.Controllers
             return View(matchMaking);
         }
 
-        [Authorize]
-        public ActionResult ReportSent(bool? sent, string[] investorUserNames, DateTime? matchMakingDate)
+        //Get
+        public ActionResult ReportSent(bool? sent, /*string[] investorUserNames,*/ DateTime? matchMakingDate)
         {
             ViewBag.Sent = sent;
-            ViewBag.InvestorUserNames = investorUserNames;
             if (matchMakingDate.HasValue) ViewBag.MatchMakingDate = matchMakingDate.Value;
+            if (TempData.Any())
+            {
+                if (TempData.ContainsKey("investor_id")) ViewBag.InvestorId = TempData["investor_id"] as string;
+                if (TempData.ContainsKey("investor_user_name")) ViewBag.InvestorUserName = TempData["investor_user_name"] as string;
+                if (TempData.ContainsKey("error_message")) ViewBag.ErrorMessage = TempData["error_message"] as string;
+                TempData.Clear();
+            }
 
             return View();
         }
@@ -167,32 +187,9 @@ namespace EoS.Controllers
         // GET: MatchMakings/Run (Create)
         public ActionResult Motor(string Id) // Id==investmentId or InvestorId
         {
-            SelectList investmentProfileList;
-
-            if (!string.IsNullOrEmpty(Id))
-            {
-                if (Id.ToUpper().StartsWith("IV")) //InvestmentId
-                {
-                    investmentProfileList = new SelectList(db.Investments.Where(i => i.InvestmentID == Id), "InvestmentID", "InvestmentID");
-                    //investmentProfileList = new SelectList(db.Investments.Where(i => i.InvestmentID == Id && i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID");
-                    //if (investments.Count() == 1) investments.FirstOrDefault().Selected = true;
-                }
-                else //InvestorId
-                {
-                    investmentProfileList = new SelectList(db.Investments.Where(i => i.UserId == Id), "InvestmentID", "InvestmentID");
-                    //investmentProfileList = new SelectList(db.Investments.Where(i => i.UserId == Id && i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID");
-                }
-            }
-            else //All
-            {
-                investmentProfileList = new SelectList(db.Investments.Where(i => i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID");
-            }
-
-            SelectList startupProjectList = new SelectList(db.Startups.Where(s => s.Locked && s.Approved && (DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID), "StartupID", "StartupID");
-            //if (startups.Count() == 1) startups.FirstOrDefault().Selected = true;
-
             RunMMMViewModel model = new RunMMMViewModel
             {
+                Id = Id,
                 //Project
                 ProjectDomainSelected = true,
                 //Funding
@@ -206,9 +203,9 @@ namespace EoS.Controllers
                 OutcomesSelected = false,
                 InnovationLevelSelected = false,
                 ScalabilitySelected = false,
-                       
-                InvestmentProfileList = investmentProfileList,
-                StartupProjectList = startupProjectList
+
+                MatchableInvestmentProfileList = new SelectList(GetMatchableInvestmentProfiles(Id), "InvestmentID", "InvestmentID"),
+                MatchableStartupProjectList = new SelectList(GetMatchableStartupProjects(), "StartupID", "StartupID")
             };
 
             return View(model);
@@ -219,281 +216,379 @@ namespace EoS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //public ActionResult Motor([Bind(Include = "MatchMakingIdInvestmentId,StartupId,ProjectDomainMatched,FundingAmountMatched")] MatchMaking matchMaking)
         public ActionResult Motor(RunMMMViewModel model)
         {
-            if (ModelState.IsValid) //(&& matched)
+            if (ModelState.IsValid)
             {
-                int NoOfFailures = 0; //<--------
+                int NoOfFailures = 0;
+                int noOfMatches = 0;
+                int MaxNoOfMatches = 0;
+                if (model.ProjectDomainSelected) MaxNoOfMatches++;
+                if (model.FundingPhaseSelected) MaxNoOfMatches++;
+                if (model.FundingAmountSelected) MaxNoOfMatches++;
+                if (model.EstimatedExitPlanSelected) MaxNoOfMatches++;
+                if (model.TeamSkillsSelected) MaxNoOfMatches++;
+                if (model.OutcomesSelected) MaxNoOfMatches++;
+                if (model.InnovationLevelSelected) MaxNoOfMatches++;
+                if (model.ScalabilitySelected) MaxNoOfMatches++;
 
-                MatchMaking matchMaking = new MatchMaking();
+                MatchMaking matchMaking = null;
+                DateTime matchedDateTime = DateTime.Now;
 
-                //List<Investment> investmentsProfiles;
-                //if (string.IsNullOrEmpty(model.InvestmentProfileId) //All
-                //{
-                //    investmentProfiles = db.Investments.Where(i => i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID).ToList(); //All investments selected
-                //}
-                 
-                //else
+                List<Investment> matchableInvestmentProfiles = GetMatchableInvestmentProfiles(model.MatchableInvestmentProfileId);
+                List<Models.IdeaCarrier.Startup> matchableStartupProjects = GetMatchableStartupProjects(model.MatchableStartupProjectId);
 
-                Investment investmentProfile = db.Investments.Where(i => i.InvestmentID == model.InvestmentProfileId).FirstOrDefault(); //investment
-
-                List<Models.IdeaCarrier.Startup> startupProjects;
-
-                if (string.IsNullOrEmpty(model.StartupProjectId))
+                foreach (Investment matchableProfile in matchableInvestmentProfiles)
                 {
-                    startupProjects = db.Startups.Where(s => s.Locked && s.Approved && (!s.DeadlineDate.HasValue || s.DeadlineDate.HasValue && DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID).ToList(); //All startups selected
-                }
-                else
-                {
-                    startupProjects = db.Startups.Where(s => s.StartupID == model.StartupProjectId).ToList();
-                }
-
-                DateTime matchedDateTime = DateTime.Now; 
-
-                //MMM
-
-                //foreach (Investment profile in investmentProfiles) 
-                //{ 
-                // //matchMaking.InvestmentId = investment.InvestmentID;
-
-                foreach (Models.IdeaCarrier.Startup project in startupProjects)
-                {
-                    //var existingMatchMaking s= investment.MatchMakings.Where(mm => mm.StartupId == startup.StartupID).ToList();
-
-                    //if (!investmentProfile.MatchMakings.Where(mm => mm.StartupId == project.StartupID).Any()) //already matched
-                    //{
-                        matchMaking.StartupId = project.StartupID;
-                        matchMaking.InvestmentId = investmentProfile.InvestmentID;
+                    foreach (Models.IdeaCarrier.Startup matchableProject in matchableStartupProjects)
+                    {
+                        matchMaking = new MatchMaking()
+                        {
+                            //MatchMakingId = matchableProfile.InvestmentID + "_" +matchableProject.StartupID,
+                            InvestmentId = matchableProfile.InvestmentID,
+                            StartupId = matchableProject.StartupID,
+                            ProjectDomainMatched = null,
+                            FundingPhaseMatched = null,
+                            FundingAmountMatched = null,
+                            EstimatedExitPlanMatched = null,
+                            TeamSkillsMatched = null,
+                            OutcomesMatched = null,
+                            InnovationLevelMatched = null,
+                            ScalabilityMatched = null,
+                            NoOfMatches = 0,
+                            MaxNoOfMatches = MaxNoOfMatches,
+                            MatchMakingDate = matchedDateTime, 
+                            Sent = false
+                        };
+                        matchMaking.NoOfMatches = 0;
 
                         if (model.ProjectDomainSelected)
                         {
-                            if (investmentProfile.ProjectDomain.ProjectDomainName == project.ProjectDomain.ProjectDomainName) //investment.ExtraProjectDomains (of type string)
+                            if (matchableProfile.ProjectDomain.ProjectDomainName == matchableProject.ProjectDomain.ProjectDomainName)
                             {
                                 matchMaking.ProjectDomainMatched = true;
                                 matchMaking.NoOfMatches++;
 
-                                if (model.FundingAmountSelected && investmentProfile.FundingAmounts.Contains(project.FundingAmount))
+                                if (model.FundingAmountSelected && matchableProfile.FundingAmounts.Contains(matchableProject.FundingAmount))
                                 {
                                     matchMaking.FundingAmountMatched = true;
                                     matchMaking.NoOfMatches++;
 
-                                    //if (!investment.DueDate.HasValue) investment.DueDate = DateTime.Now;
+                                    Match(matchableProfile, matchableProject, ref matchMaking, ref NoOfFailures, model); //Match the rest
 
-                                    Match(investmentProfile, project, ref matchMaking, ref NoOfFailures, model); //Match the rest
+                                    noOfMatches = matchMaking.NoOfMatches;
 
-                                    matchMaking.MatchMakingDate = matchedDateTime;
+                                    List<MatchMaking> earlierMatchMakings = db.MatchMakings.Where(mm => mm.InvestmentId == matchMaking.InvestmentId && mm.StartupId == matchMaking.StartupId).ToList();
+                                    
+                                    //string matchMakingId = matchableProfile.InvestmentID + "_" +matchableProject.StartupID;
+                                    //MatchMaking earlierMatchMaking = db.MatchMakings.Find(matchableProfile.InvestmentID + "_" + matchableProject.StartupID);
 
-                                    db.MatchMakings.Add(matchMaking);
+                                    if (earlierMatchMakings.Any()) //(earlierMatchMaking != null) 
+                                    {
+                                        MatchMaking earlierMatchMaking = earlierMatchMakings.FirstOrDefault();
+                                        UpdateEarlierMatchMaking(earlierMatchMaking, matchMaking);
+
+                                        db.Entry(earlierMatchMaking).State = EntityState.Modified;
+                                    }
+                                    else db.MatchMakings.Add(matchMaking);
+
                                     db.SaveChanges();
 
-                                    return RedirectToAction("Results", new { matchedDate = matchedDateTime });
+                                    //return RedirectToAction("Results", new { dateTime = matchedDateTime });
                                 }
                                 else
                                 {
                                     NoOfFailures++;
-                                    ViewBag.Message += "Project Domains match, but not Funding Amounts.<br />"; //<---remove
-                                    ModelState.AddModelError("", "Project Domains match, but not Funding Amounts.");
+                                    ModelState.AddModelError("", "Domain matches, but not Funding amount.");
                                 }
 
                             }
-                            else //ProjectDomain does not matched
+                            else //ProjectDomain does not match
                             {
-                                //model.ProjectDomainSelected = true;
-                                //model.FundingAmountSelected = true;
-                                //model.Investments = new SelectList(db.Investments.Where(i => i.Locked && i.Active), "InvestmentID", "InvestmentID");
-                                //model.Startups = new SelectList(db.Startups.Where(s => s.Locked && s.Active && s.Approved), "StartupID", "StartupID");
                                 NoOfFailures++;
-                                ViewBag.Message += "Project Domains do not match.<br />"; //<----where
-                                ModelState.AddModelError("", "Project Domains do not match.< br />");
+                                ModelState.AddModelError("", "Domain does not match.");
                                 //return View(model);
                             }
                         }
                         else if (model.FundingAmountSelected)
                         {
-                            if (investmentProfile.FundingAmounts.Contains(project.FundingAmount))
+                            if (matchableProfile.FundingAmounts.Contains(matchableProject.FundingAmount))
                             {
                                 matchMaking.FundingAmountMatched = true;
                                 matchMaking.NoOfMatches++;
 
                                 //if (!investment.DueDate.HasValue) investment.DueDate = DateTime.Now;
 
-                                Match(investmentProfile, project, ref matchMaking, ref NoOfFailures, model); //Match the rest
+                                Match(matchableProfile, matchableProject, ref matchMaking, ref NoOfFailures, model); //Match the rest
 
-                                matchMaking.MatchMakingDate = matchedDateTime;
+                                noOfMatches = matchMaking.NoOfMatches;
 
-                                db.MatchMakings.Add(matchMaking);
+                                List<MatchMaking> earlierMatchMakings = db.MatchMakings.Where(mm => mm.InvestmentId == matchMaking.InvestmentId && mm.StartupId == matchMaking.StartupId).ToList();
+
+                                //MatchMaking earlierMatchMaking = db.MatchMakings.Find(matchableProfile.InvestmentID + "_" +matchableProject.StartupID);
+
+                                if (earlierMatchMakings.Any())  //if (earlierMatchMaking != null)
+                                {
+                                    MatchMaking earlierMatchMaking = earlierMatchMakings.FirstOrDefault();
+                                    UpdateEarlierMatchMaking(earlierMatchMaking, matchMaking);
+
+                                    db.Entry(earlierMatchMaking).State = EntityState.Modified;
+                                }
+                                else db.MatchMakings.Add(matchMaking);
+
                                 db.SaveChanges();
 
-                                return RedirectToAction("Results", new { matchedDate = matchedDateTime });
+                                //return RedirectToAction("Results", new { dateTime = matchedDateTime });
                             }
                             else
                             {
-                                ViewBag.Message += "Funding amounts do not match.<br />"; //<---where += "<br />..."
-                                ModelState.AddModelError("", "Funding amounts do not match.");
+                                //ViewBag.Message += "Funding amounts do not match.<br />"; //<---where += "<br />..."
+                                ModelState.AddModelError("", "Funding amount does not match.");
                             }
                         }
                         else
                         {
-                            if (Match(investmentProfile, project, ref matchMaking, ref NoOfFailures, model)) //Match the rest <---------------model saknas
+                            if (Match(matchableProfile, matchableProject, ref matchMaking, ref NoOfFailures, model))
                             {
-                                matchMaking.MatchMakingDate = matchedDateTime;
+                                noOfMatches = matchMaking.NoOfMatches;
 
-                                db.MatchMakings.Add(matchMaking);
+                                List<MatchMaking> earlierMatchMakings = db.MatchMakings.Where(mm => mm.InvestmentId == matchMaking.InvestmentId && mm.StartupId == matchMaking.StartupId).ToList();
+
+                                //MatchMaking earlierMatchMaking = db.MatchMakings.Find(matchableProfile.InvestmentID + "_" + matchableProject.StartupID);
+
+                                if (earlierMatchMakings.Any()) //if (earlierMatchMaking != null)
+                                {
+                                    MatchMaking earlierMatchMaking = earlierMatchMakings.FirstOrDefault();
+                                    UpdateEarlierMatchMaking(earlierMatchMaking, matchMaking);
+
+                                    db.Entry(earlierMatchMaking).State = EntityState.Modified;
+                                }
+                                else db.MatchMakings.Add(matchMaking);
+
                                 db.SaveChanges();
 
-                                return RedirectToAction("Results", new { matchedDate = matchedDateTime });
+                                //return RedirectToAction("Results", new { dateTime = matchedDateTime });
                             }
                             else
                             {
-                                //ViewBag.Message += "No matches found.<br />"; //for which investment?
-                                ModelState.AddModelError("", "No matches found.");
+                                //ViewBag.Message += "No matches found."; //for which investment?
+                                //ModelState.AddModelError("", "No matches found.");
+                                ModelState.AddModelError("", "The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.");
                             }
                         }
-                    //}
-                    //else //already matched
-                    //{
-                        //model.ProjectDomainSelected = true;
-                        //model.FundingAmountSelected = true;
-                        //model.Investments = new SelectList(db.Investments.Where(i => i.Locked && i.Active), "InvestmentID", "InvestmentID");
-                        //model.Startups = new SelectList(db.Startups.Where(s => s.Locked && s.Active && s.Approved), "StartupID", "StartupID");
-                        //ViewBag.Message = "Investment " + investment.InvestmentID + " and Startup " + startup.StartupID + " has already been matched, delete the post from MatchMakings if you want to redo it !";
-
-                      //  int startupIndex = db.MatchMakings.ToList().FindIndex(mm => mm.StartupId == project.StartupID);
-                      //  ViewBag.Message += "<a href=\"~MatcMakings/Details\"" + startupIndex + "/>Investment " + investmentProfile.InvestmentID + " and Startup " + project.StartupID + "</a> is already matched, delete the record from the MatchMakings if you want to redo it !<br />";
-                      //  ModelState.AddModelError("", "No list of Startups exists. There is nothing to be matched.");
-                        //return View(model);
-                    //}
+                    }
                 }
 
-                if (matchMaking.NoOfMatches == 0) //startupProjects.Any()
+                if (!matchableStartupProjects.Any())
                 {
-                    ViewBag.Message += " The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.<br />";
-                    ModelState.AddModelError("", "The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.");
+                    //ViewBag.Message += "No list of Startups exists. There is nothing to be matched.<br />";
+                    ModelState.AddModelError("", "No list of projects exists. There is nothing to be matched.>");
+                }
+                //else if (startupProjects.Any() && NoOfFailures > 0)
+                //{
+                    //ViewBag.Message += " The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.<br />";
+                //    ModelState.AddModelError("", "The profiles and projects failed to be matched " + NoOfFailures.ToString() + " times.");
+
                     //return RedirectToAction("Results", new { matchedDate = matchedDateTime }); //Matches done
-                }
-                else
-                {
-                    ViewBag.Message += "No list of Startups exists. There is nothing to be matched.<br />";
-                    ModelState.AddModelError("", "No list of Startups exists. There is nothing to be matched.>");
-                }
+                //}
+                else return RedirectToAction("Results", new { dateTime = matchedDateTime });
             }
             else //Model state not valid
             {
-                ViewBag.Message += "No list of Startups exists. There is nothing to be matched.<br />";
+                //ViewBag.Message += "No list of Startups exists. There is nothing to be matched.<br />";
                 ModelState.AddModelError("", "Model state is not valid.");
             }
 
             model.ProjectDomainSelected = true;
             model.FundingAmountSelected = true;
-            model.InvestmentProfileList = new SelectList(db.Investments.Where(i => i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID"/*, model.InvestmentProfileId*/);
-            model.StartupProjectList = new SelectList(db.Startups.Where(s => s.Locked && s.Approved && (DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID), "StartupID", "StartupID");
+            model.MatchableInvestmentProfileList = new SelectList(GetMatchableInvestmentProfiles(model.Id), "InvestmentID", "InvestmentID", model.MatchableInvestmentProfileId);
+            //new SelectList(db.Investments.Where(i => i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID), "InvestmentID", "InvestmentID"/*, model.InvestmentProfileId*/);
+            model.MatchableStartupProjectList = new SelectList(GetMatchableStartupProjects(), "StartupID", "StartupID", model.MatchableStartupProjectId);
+            //new SelectList(db.Startups.Where(s => s.Locked && s.Approved && (DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID), "StartupID", "StartupID");
             //ViewBag.Message = "Model state is not valid.";
             return View(model);
         }
 
-        private bool Match(Investment investment, Models.IdeaCarrier.Startup startup, ref MatchMaking matchMaking, ref int NoOfFailures, RunMMMViewModel model)
+        private void UpdateEarlierMatchMaking(MatchMaking earlierMatchMaking, MatchMaking matchMaking)
+        {
+            if (earlierMatchMaking.ProjectDomainMatched != matchMaking.ProjectDomainMatched)
+                earlierMatchMaking.ProjectDomainMatched = matchMaking.ProjectDomainMatched;
+
+            if (earlierMatchMaking.FundingPhaseMatched != matchMaking.FundingPhaseMatched)
+                earlierMatchMaking.FundingPhaseMatched = matchMaking.FundingPhaseMatched;
+
+            if (earlierMatchMaking.FundingAmountMatched != matchMaking.FundingAmountMatched)
+                earlierMatchMaking.FundingAmountMatched = matchMaking.FundingAmountMatched;
+
+            if (earlierMatchMaking.EstimatedExitPlanMatched != matchMaking.EstimatedExitPlanMatched)
+                earlierMatchMaking.EstimatedExitPlanMatched = matchMaking.EstimatedExitPlanMatched;
+
+            if (earlierMatchMaking.TeamSkillsMatched != matchMaking.TeamSkillsMatched)
+                earlierMatchMaking.TeamSkillsMatched = matchMaking.TeamSkillsMatched;
+
+            if (earlierMatchMaking.OutcomesMatched != matchMaking.OutcomesMatched)
+                earlierMatchMaking.OutcomesMatched = matchMaking.OutcomesMatched;
+
+            if (earlierMatchMaking.InnovationLevelMatched != matchMaking.InnovationLevelMatched)
+                earlierMatchMaking.InnovationLevelMatched = matchMaking.InnovationLevelMatched;
+
+            if (earlierMatchMaking.ScalabilityMatched != matchMaking.ScalabilityMatched)
+                earlierMatchMaking.ScalabilityMatched = matchMaking.ScalabilityMatched;
+
+            earlierMatchMaking.NoOfMatches = matchMaking.NoOfMatches;
+            earlierMatchMaking.MaxNoOfMatches = matchMaking.MaxNoOfMatches;
+            earlierMatchMaking.MatchMakingDate = matchMaking.MatchMakingDate;
+            earlierMatchMaking.Sent = matchMaking.Sent;
+        }
+
+        private bool Match(Investment investmentProfiles, Models.IdeaCarrier.Startup startupProject, ref MatchMaking matchMaking, ref int NoOfFailures, RunMMMViewModel model)
         {
             bool matchFound = false;
 
-            if (model.FundingPhaseSelected && investment.FundingPhases.Contains(startup.FundingPhase))
+            if (model.FundingPhaseSelected)
             {
-                matchMaking.FundingPhaseMatched = true;
-                matchMaking.NoOfMatches++;
-                matchFound = true;
-            }
-            else NoOfFailures++;
-
-            if (model.EstimatedExitPlanSelected && investment.EstimatedExitPlans.Contains(startup.EstimatedExitPlan))
-            {
-                matchMaking.EstimatedExitPlanMatched = true;
-                matchMaking.NoOfMatches++;
-                matchFound = true;
-            }
-            else NoOfFailures++;
-
-            if (model.OutcomesSelected)
-            {
-                bool outcomesMatch = false;
-                if (investment.Outcomes.Count() > startup.Outcomes.Count())
+                if (investmentProfiles.FundingPhases.Contains(startupProject.FundingPhase))
                 {
-                    foreach (var startupOutcome in startup.Outcomes)
+                    matchMaking.FundingPhaseMatched = true;
+                    matchMaking.NoOfMatches++;
+                    matchFound = true;
+                }
+                else
+                {
+                    matchMaking.FundingPhaseMatched = false;
+                    NoOfFailures++;
+                }
+            }
+
+            if (model.EstimatedExitPlanSelected)
+            {
+                if (investmentProfiles.EstimatedExitPlans.Contains(startupProject.EstimatedExitPlan))
+                {
+                    matchMaking.EstimatedExitPlanMatched = true;
+                    matchMaking.NoOfMatches++;
+                    matchFound = true;
+                }
+                else
+                {
+                    matchMaking.EstimatedExitPlanMatched = false;
+                    NoOfFailures++;
+                }
+            }
+
+            if (model.TeamSkillsSelected)
+            {
+                bool teamSkillsMatch = false;
+                List<string> startupTeamWeaknesses = startupProject.TeamWeaknesses.Select(tw => tw.TeamWeaknessName).ToList();
+                List<string> investmentTeamSkills = investmentProfiles.TeamSkills.Select(tw => tw.SkillName).ToList();
+
+                if (investmentTeamSkills.Count() > startupTeamWeaknesses.Count())
+                {
+                    foreach (string startupTeamWeakness in startupTeamWeaknesses)
                     {
-                        if (investment.Outcomes.Contains(startupOutcome))
+                        if (investmentTeamSkills.Contains(startupTeamWeakness))
                         {
-                            outcomesMatch = true;
+                            teamSkillsMatch = true;
                             matchFound = true;
                         }
-                        //else outcomesMatch = false;
                     }
                 }
                 else
                 {
-                    foreach (var investmentOutcome in investment.Outcomes)
+                    foreach (string investmentTeamSkill in investmentTeamSkills)
                     {
-                        if (startup.Outcomes.Contains(investmentOutcome))
+                        if (startupTeamWeaknesses.Contains(investmentTeamSkill))
+                        {
+                            teamSkillsMatch = true;
+                            matchFound = true;
+                        }
+                    }
+                }
+                matchMaking.TeamSkillsMatched = teamSkillsMatch;
+                if (teamSkillsMatch) matchMaking.NoOfMatches++; else NoOfFailures++;
+            }
+
+            if (model.OutcomesSelected)
+            {
+                bool outcomesMatch = false;
+                List<string> startupOutcomes = startupProject.Outcomes.Select(o => o.OutcomeName).ToList();
+                List<string> investmentOutcomes = investmentProfiles.Outcomes.Select(o => o.OutcomeName).ToList();
+
+                if (investmentOutcomes.Count() > startupOutcomes.Count())
+                {
+                    foreach (var startupOutcome in startupOutcomes)
+                    {
+                        if (investmentOutcomes.Contains(startupOutcome))
                         {
                             outcomesMatch = true;
                             matchFound = true;
                         }
-                        //else outcomesMatch = false;
+                    }
+                }
+                else
+                {
+                    foreach (var investmentOutcome in investmentOutcomes)
+                    {
+                        if (startupOutcomes.Contains(investmentOutcome))
+                        {
+                            outcomesMatch = true;
+                            matchFound = true;
+                        }
                     }
                 }
                 matchMaking.OutcomesMatched = outcomesMatch;
+                if (outcomesMatch) matchMaking.NoOfMatches++; else NoOfFailures++;
             }
 
-            if (model.InnovationLevelSelected && investment.InnovationLevels.Contains(startup.InnovationLevel))
+            if (model.InnovationLevelSelected)
             {
-                matchMaking.InnovationLevelMatched = true;
-                matchMaking.NoOfMatches++;
-                matchFound = true;
+                if (investmentProfiles.InnovationLevels.Contains(startupProject.InnovationLevel))
+                {
+                    matchMaking.InnovationLevelMatched = true;
+                    matchMaking.NoOfMatches++;
+                    matchFound = true;
+                }
+                else
+                {
+                    matchMaking.InnovationLevelMatched = false;
+                    NoOfFailures++;
+                }
             }
-            else NoOfFailures++;
-
-            if (model.ScalabilitySelected && investment.Scalabilities.Contains(startup.Scalability))
+            if (model.ScalabilitySelected)
             {
-                matchMaking.ScalabilityMatched = true;
-                matchMaking.NoOfMatches++;
-                matchFound = true;
+                if (investmentProfiles.Scalabilities.Contains(startupProject.Scalability))
+                {
+                    matchMaking.ScalabilityMatched = true;
+                    matchMaking.NoOfMatches++;
+                    matchFound = true;
+                }
+                else
+                {
+                    matchMaking.ScalabilityMatched = false;
+                    NoOfFailures++;
+                }
             }
-            else NoOfFailures++;
-
-            //investment.TeamSkills; startup.TeamWeaknesses
-
             return matchFound;
         }
 
-        // GET: MatchMakings/Edit/5
-        //No Editing Allowed !!
-        //public ActionResult Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    MatchMaking matchMaking = db.Matchmakings.Find(id);
-        //    if (matchMaking == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    return View(matchMaking);
-        //}
+        private List<Investment> GetMatchableInvestmentProfiles(string Id = "")
+        {
+            if (!string.IsNullOrEmpty(Id))
+            {
+                if (Id.ToUpper().StartsWith("IV")) //InvestmentId
+                    return db.Investments.Where(i => i.InvestmentID == Id && i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID).ToList();
+                else //InvestorId
+                    return db.Investments.Where(i => i.UserId == Id && i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID).ToList();
+            }
+            return db.Investments.Where(i => i.Locked && i.Active && (!i.DueDate.HasValue || i.DueDate.HasValue && DateTime.Compare(i.DueDate.Value, DateTime.Now) > 0)).OrderBy(i => i.InvestmentID).ToList();    
+        }
 
-        //// POST: MatchMakings/Edit/5
-        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        //// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit([Bind(Include = "MatchMakingId,MatchMakingDate,Sent,InvestmentId,StartupId,ProjectDomainMatched,FundingAmountMatched")] MatchMaking matchMaking)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        db.Entry(matchMaking).State = EntityState.Modified;
-        //        db.SaveChanges();
-        //        return RedirectToAction("Index");
-        //    }
-        //    return View(matchMaking);
-        //}
+        private List<Models.IdeaCarrier.Startup> GetMatchableStartupProjects(string startupProjectId = "")
+        {
+            if (!string.IsNullOrEmpty(startupProjectId))
+                return db.Startups.Where(s => s.StartupID == startupProjectId && s.Locked && s.Approved && (DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).ToList();
+
+            return db.Startups.Where(s => s.Locked && s.Approved && (DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) > 0)).OrderBy(s => s.StartupID).ToList();
+        }
 
         // GET: MatchMakings/Delete/5
         public ActionResult Delete(int? id)
@@ -534,12 +629,28 @@ namespace EoS.Controllers
         }
 
         // GET: MatchMakings/DeleteAllResults
-        public ActionResult DeleteAll()
+        //DeleteResults", new { 
+        public ActionResult DeleteResults(string dateTime) //DateTime?
         {
-            List<MatchMaking> matchMakings = db.MatchMakings.ToList(); 
-            if (db.MatchMakings.Any())
+            List<MatchMaking> matchMakings = db.MatchMakings.ToList();
+
+            if (!string.IsNullOrEmpty(dateTime))
             {
-                foreach (var matchMaking in matchMakings) db.MatchMakings.Remove(matchMaking);
+                DateTime parsedDateTime = new DateTime();
+                if (DateTime.TryParse(dateTime, out parsedDateTime))
+                {
+                    matchMakings = matchMakings.Where(mm => mm.MatchMakingDate.Date.Equals(parsedDateTime.Date) &&
+                                    mm.MatchMakingDate.Hour.Equals(parsedDateTime.Hour) &&
+                                    mm.MatchMakingDate.Minute.Equals(parsedDateTime.Minute) &&
+                                    mm.MatchMakingDate.Second.Equals(parsedDateTime.Second)).ToList();
+                }
+            }
+
+            if (matchMakings.Any())
+            {
+                foreach (MatchMaking matchMaking in matchMakings)
+                    db.MatchMakings.Remove(matchMaking);
+
                 db.SaveChanges();
             }
             return RedirectToAction("Results");

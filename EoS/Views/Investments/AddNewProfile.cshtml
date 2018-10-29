@@ -6,16 +6,16 @@
 
 <h2>@ViewBag.Title</h2>
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
 
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-         
-        <div class="form-group">           
+
+        <div class="form-group">
             <div class="col-md-10 col-md-offset-1">
                 @*@Html.TextArea("myTextArea", Model.InvestorMessage, 10, 50, new { @class = "form-control" })*@
                 @Html.Raw(Model.InvestorMessage)
@@ -36,7 +36,7 @@
             <div class="col-md-offset-1">
                 @Html.LabelFor(model => model.CountryID, htmlAttributes: new { @class = "control-label col-md-3" })
                 <div class="col-md-9">
-                    @Html.DropDownListFor(model => model.CountryID, Model.CountryList, "Select:", new { @class = "form-control", @onchange = "toggleDIvDisplay(this.value, " + Model.SwedishCountryID + ")" }) 
+                    @Html.DropDownListFor(model => model.CountryID, Model.CountryList, "Select:", new { @class = "form-control", @onchange = "toggleDIvDisplay(this.value, " + Model.SwedishCountryID + ")" })
                     @Html.ValidationMessageFor(model => model.CountryID, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -50,7 +50,7 @@
                     @Html.ValidationMessageFor(model => model.SwedishRegionID, "", new { @class = "text-danger" })
                 </div>
             </div>
-        </div>               
+        </div>
 
         <div class="form-group">
             <div class="col-md-offset-5 col-md-10">
@@ -60,6 +60,8 @@
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to your Investment profiles", "Index")
+<div class="col-md-offset-4 hidden-print">
+    <br />
+    @Html.ActionLink("Cancel this new profile", "Index", null, new { @class = "btn btn-danger" })
 </div>
+

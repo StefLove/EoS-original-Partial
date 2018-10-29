@@ -150,7 +150,35 @@ namespace EoS.Controllers
         public ActionResult DeleteConfirmed(string id)
         {
             ApplicationUser user = db.Users.Find(id);
+
             if (user == null) return RedirectToAction("Details", "Account", new { accountType = Role.Admin.ToString() });
+
+            //if (user.Investments != null) user.Investments.Clear();  
+            if (user.Investments != null)
+            {
+                List<Models.Investor.Investment> investmentProfiles = user.Investments.ToList();
+                foreach (var investmentProfile in investmentProfiles)
+                {
+                   db.Investments.Remove(investmentProfile);
+                }
+            }
+
+            //if (user.Startups != null) user.Startups.Clear();
+            if (user.Startups != null)
+            {
+                List<Models.IdeaCarrier.Startup> startupProjects = user.Startups.ToList();
+                foreach (var startupProject in startupProjects)
+                {
+                    List<Models.IdeaCarrier.FundingDivisionStartup> projectFundingDivisions = startupProject.ProjectFundingDivisions.ToList();
+                    foreach (var projectFundingDivision in projectFundingDivisions)
+                    {
+                        db.FundingDivisionStartups.Remove(projectFundingDivision);
+                    }
+
+                    db.Startups.Remove(startupProject);
+                }
+            }
+
             db.Users.Remove(user);
             db.SaveChanges();
             return RedirectToAction("Index", "Manage");

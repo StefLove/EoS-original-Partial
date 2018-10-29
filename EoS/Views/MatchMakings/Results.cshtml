@@ -6,85 +6,120 @@
 
 <h2>@ViewBag.Title</h2>
 
-<p class="hidden-print">
-    @Html.ActionLink("Run MMM", "Motor", new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
-    @if (ViewBag.NoOfResults > 0 && ViewBag.NoOfResults < Model.Count())
-    {
-        @:&nbsp;
-        @Html.ActionLink("Show all results", "Results", new { @class = "btn btn-success", @style = "height:25px;padding:1px" })
-        @:&nbsp;
-        @Html.ActionLink("Delete all results", "DeleteAll", new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
-    }
-</p>
-
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.MatchMakingDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.InvestmentId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.StartupId)
-        </th>
-        @*<th>
-            @Html.DisplayNameFor(model => model.ProjectDomainMatched)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.FundingAmountMatched)
-        </th>*@
-        <th>
-            @Html.DisplayNameFor(model => model.NoOfMatches)
-        </th>
-        @*<th>
-            @Html.DisplayNameFor(model => model.MaxNoOfMatches)
-        </th>*@
-        <th>
-            @Html.DisplayNameFor(model => model.Sent)
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.MatchMakingDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.InvestmentId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.StartupId)
-        </td>
-        @*<td>
-            @Html.DisplayFor(modelItem => item.ProjectDomainMatched)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.FundingAmountMatched)
-        </td>*@
-        <td>
-            @Html.DisplayFor(modelItem => item.NoOfMatches) @*(of @Html.DisplayFor(modelItem => item.MaxNoOfMatches))*@
-        </td>
-        @*<th>
-            @Html.DisplayNameFor(model => model.MaxNoOfMatches)
-        </th>*@
-        <td>
-            @Html.DisplayFor(modelItem => item.Sent)
-        </td>
-
-        @if (!item.Sent)
+    <p class="hidden-print">
+        @Html.ActionLink("MMM", "Motor", null, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
+        @if (ViewBag.DateTime != null)  //ViewBag.NoOfResults < Model.Count())
         {
-            <td class="hidden-print">
-                @Html.ActionLink("Send", "Details", "MatchMakings", new { id = item.MatchMakingId, sendReport = true }, new { @class = "btn btn-primary" })
-            </td>
+            <text>&nbsp;&nbsp;</text>
+            @Html.ActionLink("Show all results", "Results", null, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
+            if (Model.Any())
+            {
+                <text>&nbsp;</text>
+                if (Model.Count() > 1)
+                {
+                    @Html.ActionLink("Delete these results", "DeleteResults", new { dateTime = ViewBag.DateTime }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px", onclick = "return onDeleteResults(false)" })
+                }
+            }
+        }
+    </p>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.MatchMakingDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InvestmentId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartupId)
+            </th>
+            @*<th>
+                    @Html.DisplayNameFor(model => model.ProjectDomainMatched)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FundingAmountMatched)
+                </th>*@
+            <th>
+                @Html.DisplayNameFor(model => model.NoOfMatches)
+            </th>
+            @*<th>
+                    @Html.DisplayNameFor(model => model.MaxNoOfMatches)
+                </th>*@
+            <th>
+                @Html.DisplayNameFor(model => model.Sent)
+            </th>
+            <th class="hidden-print">
+                @if (ViewBag.DateTime == null && Model.Count() > 1)
+                {
+                    @Html.ActionLink("Delete all results", "DeleteResults", null, new { @class = "btn btn-danger", @style = "height:25px;padding:1px", onclick = "return onDeleteResults(true)" })
+               }
+            </th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @if (Model.Count() == 1)
+                    {
+                        @Html.DisplayFor(modelItem => item.MatchMakingDate)
+                    }
+                    else
+                    {
+                        <span class="visible-print">@item.MatchMakingDate.ToString()</span>
+                        @Html.ActionLink(item.MatchMakingDate.ToString(), "Results", new { dateTime = item.MatchMakingDate }, new { @class = "hidden-print" })
+                    }
+                </td>
+                <td>
+                    <span class="visible-print">@item.InvestmentId</span>
+                    @Html.ActionLink(item.InvestmentId, "ProfileDetails", "Investments", new { id = item.InvestmentId }, new { @class = "hidden-print", target = "_blank" })
+                </td>
+                <td>
+                    <span class="visible-print">@item.StartupId</span>
+                    @Html.ActionLink(item.StartupId, "ProjectDetails", "Startups", new { id = item.StartupId }, new { @class = "hidden-print", target = "_blank" })
+                </td>
+                @*<td>
+                        @Html.DisplayFor(modelItem => item.ProjectDomainMatched)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FundingAmountMatched)
+                    </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.NoOfMatches) (of @Html.DisplayFor(modelItem => item.MaxNoOfMatches))
+                </td>
+                @*<th>
+                        @Html.DisplayNameFor(model => model.MaxNoOfMatches)
+                    </th>*@
+                <td>
+                    @(item.Sent ? "Yes" : "No")&nbsp;
+                    @*@Html.DisplayFor(modelItem => item.Sent)*@
+                    @if (!item.Sent)
+                    {
+                        @Html.ActionLink("Send", "Details", "MatchMakings", new { id = item.MatchMakingId, sendReport = true }, new { @class = "btn btn-primary hidden-print", @style = "height:25px;padding:1px" })
+                    }
+                </td>
+
+                <td class="hidden-print">
+                    @Html.ActionLink("Details", "Details", new { id = item.MatchMakingId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.MatchMakingId }, new { @style = "color:red" })
+                </td>
+            </tr>
         }
 
-            <td class="hidden-print">
-                @Html.ActionLink("Details", "Details", new { id = item.MatchMakingId }) |
-                @Html.ActionLink("Delete", "Delete", new { id=item.MatchMakingId }, new { @style = "color:red" })
-            </td>
-    </tr>
+    </table>
+}
+else
+{
+    @Html.Raw("<br /><h3>No results</h3>")
 }
 
-</table>
+<script type="text/javascript">
+
+    function onDeleteResults(allOrThese) {
+        return confirm('Do you really wish to delete' + (allOrThese === true ? ' all' : ' these')  +' results?');
+    }
+
+</script>

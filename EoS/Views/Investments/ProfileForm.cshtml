@@ -5,8 +5,8 @@
 }
 
 <h3>@ViewBag.Title</h3>
-
-@*@if (!string.IsNullOrEmpty(ViewBag.Message))
+@*
+    @if (!string.IsNullOrEmpty(ViewBag.Message))
 {
     <br />
     <span class="text-danger" style="font-size:larger">@Html.Raw(ViewBag.Message)</span>
@@ -127,7 +127,7 @@
                         <input type="button" name="previous" value="Previous" class="btn button-previous btn-info" onclick="SaveData()" />
                     </div>
                     <div style="float:unset" class="col-md-offset-5">
-                        @Html.ActionLink("Submit & lock the form", "SubmitProfileForm", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @id = "profileFormSubmission", @class = "btn btn-primary", onclick = "submitProfileForm()" })
+                        @Html.ActionLink("Submit & lock the form", "SubmitProfileForm", new { id = Model.InvestmentID, redirect = "ProfileDetails" }, new { @id = "profileFormSubmission", @class = "btn btn-primary", onclick = "return onSubmitProfileForm()" })
                     </div>
                     <div style="float:right">
                         <input type="button" name="next" value="Next" class="btn button-next btn-info" onclick="SaveData()" />
@@ -143,7 +143,7 @@
     <div style="position:absolute;">
         @*style="background-color:black; width:300px; border-radius:25px; border: 10px solid red;*@
         @*<h1>SAVING <br />YOUR DATA<br />IN PROGRESS</h1>*@
-        <img src="~/img/ajax_loader.gif" />
+        <img src="~/img/saving.gif" />
     </div>
 </div>
 
@@ -169,11 +169,18 @@
         location.reload(true);
     }
 
-    function submitProfileForm() {
+    function onSubmitProfileForm() {
+        //if (!AllQuestionsAreAnswered())
+        //else
         SaveData();
         return confirm('Do you really wish to submit this form? (It will be locked for editing');
     }
 
+    //function AllQuestionsAreAnswered() {
+    //    return $("input[name='ProfileName']")[0].value !== '' &&
+    //        $("input[name='ProfileDomain']")[0].value !== '' &&
+    //     //...
+    //}
     @*
     function submitProfileForm() {
         SaveData();
@@ -205,13 +212,14 @@
     //}*@
 
     function OnSuccess(response) { //(data, textStatus, jqXHR)
-
         @*if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
         $("#Progress").hide();
 
         if (' Model.Updated' === 'True') { //'ViewBag.Tab'.replace('_', ' ') + ' || '
             var successMessage = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.'; // $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.';
             var message = '@Model.Message';  + (message !== '' ? '<br />' + message : '')*@
+
+        var successMessage = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.'; 
          $('#Message').html(successMessage);
         @*//}
         //else {

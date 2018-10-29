@@ -27,15 +27,28 @@ else
     <p class="hidden-print">
         @if (ViewBag.Matchable == null)
         {
-            @Html.ActionLink("Show matchable", "Index", new { id = ViewBag.IdeaCarrierId, matchable = true }, new { @class = "btn btn-success", @style = "height:25px;padding:1px" })
+            @Html.ActionLink("Show matchable projects", "Index", new { id = ViewBag.IdeaCarrierId, matchable = true }, new { @class = "btn btn-success", @style = "height:25px;padding:1px" })
         }
         else if (ViewBag.Matchable)
         {
-            @Html.ActionLink("Show unmatchable", "Index", new { id = ViewBag.IdeaCarrierId, matchable = false }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
+            @Html.ActionLink("Show unmatchable projects", "Index", new { id = ViewBag.IdeaCarrierId, matchable = false }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
         }
-        else if (!ViewBag.Matchable)
+        else
         {
-            @Html.ActionLink("Show all", "Index", new { id = ViewBag.IdeaCarrierId }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
+            if (!string.IsNullOrEmpty(ViewBag.IdeaCarrierId))
+            {
+                //if (ViewBag.Matchable != null)
+                //{
+                    @Html.ActionLink("Show all projects for this idea carrier", "Index", new { id = ViewBag.IdeaCarrierId }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
+                    <text>&nbsp;</text>
+                //}
+                @Html.ActionLink("Show all projects", "Index", new { id = "" }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
+            }
+            else if(string.IsNullOrEmpty(ViewBag.IdeaCarrierId))
+            {
+                <text>&nbsp;</text>
+                @Html.ActionLink("Show all projects", "Index", new { id = "" }, new { @class = "btn btn-primary", @style = "height:25px;padding:1px" })
+            }
         }
     </p>
 }
@@ -78,10 +91,10 @@ else
             @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.ProjectDomainID)@Html.Raw("</span>")
             @Html.ActionLink(Html.DisplayNameFor(model => model.ProjectDomainID).ToString(), "Index", new { orderBy = "ProjectDomainName" }, htmlAttributes: new { title = "Order by Project domain", @class = "hidden-print" })
         </th>
-        <th>
+        @*<th>
             @Html.Raw("<span class=\"visible-print\">")@Html.DisplayNameFor(model => model.FundingAmountID)@Html.Raw("</span>")
             @Html.ActionLink(Html.DisplayNameFor(model => model.FundingAmountID).ToString(), "Index", new { orderBy = "FundingAmountValue" }, htmlAttributes: new { title = "Order by Funding need", @class = "hidden-print" })
-        </th>
+        </th>*@
         <th>
             @Html.Raw("<span class=\"visible-print\">#Matches</span>")
             @Html.ActionLink("#Matches", "Index", new { orderBy = "MatchMakingCount" }, htmlAttributes: new { title = "Order by Match making count", @class = "hidden-print" })
@@ -101,7 +114,8 @@ else
         @*<th class="hidden-print">
             @Html.Raw("Documents")
         </th>*@
-        <th class="hidden-print"></th>
+        <th class="hidden-print">
+        </th>
     </tr>
 
     @foreach (var item in Model)
@@ -109,9 +123,10 @@ else
         <tr>
             @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && string.IsNullOrEmpty(ViewBag.IdeaCarrierUserName))
             {
-                <td>
-                    @Html.DisplayFor(modelItem => item.User.UserName)
-                </td>
+            <td>
+                <span class="visible-print">@Html.DisplayFor(modelItem => item.User.UserName)</span>
+                @Html.ActionLink(item.User.UserName, "Index", new { id = item.UserID }, new { @class = "hidden-print", title = "This Idea carrier's startup projects"})
+            </td>
             }
             <td>
                 @Html.DisplayFor(modelItem => item.StartupID)
@@ -133,9 +148,9 @@ else
                 <td>
                     @Html.DisplayFor(modelItem => item.ProjectDomain.ProjectDomainName)
                 </td>
-                <td>
+                @*<td>
                     @Html.DisplayFor(modelItem => item.FundingAmount.FundingAmountValue)
-                </td>
+                </td>*@
                 <td>
                     @item.MatchMakings.Count()
                 </td>
@@ -166,9 +181,9 @@ else
                 <td>
                     @Html.DisplayFor(modelItem => item.ProjectDomain.ProjectDomainName)
                 </td>
-                <td>
+                @*<td>
                     @Html.DisplayFor(modelItem => item.FundingAmount.FundingAmountValue)
-                </td>
+                </td>*@
                 <td>
                     @item.MatchMakings.Count()
                 </td>
@@ -264,18 +279,18 @@ else
                 }
                 @if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString() && item.Locked)
                 {
-                    <text>|</text>
-                    @Html.ActionLink("Case Preview", "GeneratePDF", new { id = item.StartupID }, new { target = "_blank" })
+                    @*<text>|</text>
+                    @Html.ActionLink("Case Preview", "GeneratePDF", new { id = item.StartupID }, new { target = "_blank" })*@
 
                     if (item.Approved)
                     {
                         <text>|</text>
-                        @Html.ActionLink("Disapprove", "ChangeApproval", new { id = item.StartupID }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
+                        @Html.ActionLink("Disapprove", "ChangeApproval", new { id = item.StartupID }, new { @class = "btn btn-success", @style = "height:25px;padding:1px" })
                     }
                     else
                     {
                         <text>|</text>
-                        @Html.ActionLink("Approve", "ChangeApproval", new { id = item.StartupID }, new { @class = "btn btn-success", @style = "height:25px;padding:1px" })
+                        @Html.ActionLink("Approve", "ChangeApproval", new { id = item.StartupID }, new { @class = "btn btn-danger", @style = "height:25px;padding:1px" })
                     }
                 }
             </td>

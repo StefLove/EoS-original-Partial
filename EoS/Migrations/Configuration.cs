@@ -19,7 +19,7 @@ namespace EoS.Migrations
         {
             AutomaticMigrationsEnabled = true;
         }
-
+        
         protected override void Seed(EoS.Models.ApplicationDbContext context)
         {
             //  This method will be called after migrating to the latest version.
@@ -286,7 +286,7 @@ namespace EoS.Migrations
                 );
             context.SaveChanges();
 
-            context.TeamSkills.AddOrUpdate( //Sequence contains more than one element
+            context.TeamSkills.AddOrUpdate( //<----------------Sequence contains more than one element
                 ts => ts.SkillName,
                 new TeamSkill { SkillName = "M & A" },
                 new TeamSkill { SkillName = "R & D" },
@@ -299,6 +299,7 @@ namespace EoS.Migrations
                 new TeamSkill { SkillName = "Team members" },
                 new TeamSkill { SkillName = "Other" }
                 );
+            context.SaveChanges();
 
             context.Outcomes.AddOrUpdate(
                 o => o.OutcomeName,
@@ -378,33 +379,21 @@ namespace EoS.Migrations
               });
             context.SaveChanges();
 
-            List<FundingDivision> fundingDivisions = context.FundingDivisions.ToList(); //<---------------------------
+            List<FundingDivision> fundingDivisions = context.FundingDivisions.ToList();
 
             foreach (var fundingDivision in fundingDivisions)
             {
-                //var fundingDivisionStartup = context.FundingDivisionStartups.Where(fds => fds.StartupID == "ICSE12345" && fds.FundingDivisionID == fundingDivision.FundingDivisionID);
-
-                //if (fundingDivisionStartup == null || !fundingDivisionStartup.Any())
-
                 context.FundingDivisionStartups.AddOrUpdate(
-                    fds => fds.FundingDivisionID, //<--------------------!!!
+                    fds => fds.FundingDivisionID,
                     new FundingDivisionStartup
                     {
                         FundingDivisionID = fundingDivision.FundingDivisionID,
                         Percentage = 0,
                         StartupID = "ICSE12345"
                     });
-            }
-            context.SaveChanges();
-
-            foreach (var fundingDivision in fundingDivisions)
-            {
-                //var fundingDivisionStartup = context.FundingDivisionStartups.Where(fds => fds.StartupID == "ICSE12345" && fds.FundingDivisionID == fundingDivision.FundingDivisionID);
-
-                //if (fundingDivisionStartup == null || !fundingDivisionStartup.Any())
 
                 context.FundingDivisionStartups.AddOrUpdate(
-                    fds => fds.FundingDivisionID, //<--------------------!!!
+                    fds => fds.FundingDivisionID,
                     new FundingDivisionStartup
                     {
                         FundingDivisionID = fundingDivision.FundingDivisionID,
@@ -414,13 +403,18 @@ namespace EoS.Migrations
             }
             context.SaveChanges();
 
-            //if (context.IdeaCarrierMessages.Any())
+            //foreach (var fundingDivision in fundingDivisions)
             //{
-            //    context.IdeaCarrierMessages.FirstOrDefault().Text = "";
-            //    context.IdeaCarrierMessages.FirstOrDefault().AllowSharing_DisplayName = "Hej";
+            //    context.FundingDivisionStartups.AddOrUpdate(
+            //        fds => fds.FundingDivisionID,
+            //        new FundingDivisionStartup
+            //        {
+            //            FundingDivisionID = fundingDivision.FundingDivisionID,
+            //            Percentage = 0,
+            //            StartupID = "ICSE12346"
+            //        });
             //}
-            //else
-            //{
+            //context.SaveChanges();
 
             context.IdeaCarrierMessages.AddOrUpdate(
             icm => icm.Id,

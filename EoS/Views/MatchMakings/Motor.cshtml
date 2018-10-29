@@ -12,6 +12,8 @@
 {
     @Html.AntiForgeryToken()
 
+    @Html.HiddenFor(model => model.Id)
+
     @*if (!string.IsNullOrEmpty(ViewBag.Message))
         {
             <div class="text-danger" style="font-size:22px">@Html.Raw(ViewBag.Message)</div>
@@ -41,22 +43,26 @@
                 </div>
             </div>*@
 
-        @if (Model.InvestmentProfileList.Any())
+        @if (Model.MatchableInvestmentProfileList.Any())
         {
             <div class="form-group">
-                @Html.LabelFor(model => model.InvestmentProfileId, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.MatchableInvestmentProfileId, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @if (Model.InvestmentProfileList.Any())
+                    @if (Model.MatchableInvestmentProfileList.Any() && Model.MatchableInvestmentProfileList.Count() > 1)
                     {
-                        @Html.DropDownListFor(model => model.InvestmentProfileId, Model.InvestmentProfileList,@*"All",*@                                                                                                                               
-                        new { @class = "form-control" }) @*"All"*@
+                        @Html.DropDownListFor(model => model.MatchableInvestmentProfileId, Model.MatchableInvestmentProfileList, "All", new { @class = "form-control" })
+                    }
+                    else if (Model.MatchableInvestmentProfileList.Count() == 1)
+                    {
+                        @Html.Raw(Model.MatchableInvestmentProfileList.FirstOrDefault().Text + "\n")
+                        <input type="hidden" id="MatchableInvestmentProfileId" name="MatchableInvestmentProfileId" value="@Model.MatchableInvestmentProfileList.FirstOrDefault().Text" class="form-control" />
                     }
                     else
                     {
-                        @Html.Raw("No Investment profiles")
+                        @Html.Raw("None")
                         @*@Html.DropDownListFor(model => model.InvestmentProfileId, Model.InvestmentProfileList, new { @class = "form-control" })*@
                     }
-                    @Html.ValidationMessageFor(model => model.InvestmentProfileId, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.MatchableInvestmentProfileId, "", new { @class = "text-danger" })
                 </div>
             </div>
         }
@@ -65,21 +71,25 @@
             @Html.Raw("<h4 class=\"text-danger\">There are no Investment profiles to be matched with.</h4>")
         }
 
-        @if (Model.StartupProjectList.Any())
+        @if (Model.MatchableStartupProjectList.Any())
         {
             <div class="form-group">
-                @Html.LabelFor(model => model.StartupProjectId, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.MatchableStartupProjectId, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @if (Model.StartupProjectList.Any())
+                    @if (Model.MatchableStartupProjectList.Any() && Model.MatchableStartupProjectList.Count() > 1)
                     {
-                        @Html.DropDownListFor(model => model.StartupProjectId, Model.StartupProjectList, "All", new { @class = "form-control" })
+                        @Html.DropDownListFor(model => model.MatchableStartupProjectId, Model.MatchableStartupProjectList, "All", new { @class = "form-control" })
+                    }
+                    else if (Model.MatchableStartupProjectList.Count() == 1)
+                    {
+                        @Html.Raw(Model.MatchableStartupProjectList.FirstOrDefault().Text)
                     }
                     else
                     {
-                        @Html.Raw("No Startup projects")
+                        @Html.Raw("None")
                         @*@Html.DropDownListFor(model => model.StartupProjectId, Model.StartupProjectList, new { @class = "form-control" })*@
                     }
-                    @Html.ValidationMessageFor(model => model.StartupProjectId, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.MatchableStartupProjectId, "", new { @class = "text-danger" })
                 </div>
             </div>
         }
@@ -134,10 +144,10 @@
 
         <div class="form-group">
             @*5*@
-            @Html.LabelFor(model => model.TeamSkillsSelected, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.TeamSkillsSelected, htmlAttributes: new { @class = "control-label col-md-2"@*, @style = "color:lightgray"*@ })
             <div class="col-md-10">
                 <div class="checkbox">
-                    @Html.CheckBoxFor(model => model.TeamSkillsSelected)
+                    @Html.CheckBoxFor(model => model.TeamSkillsSelected@*, new { disabled = "disabled" }*@)
                     @Html.ValidationMessageFor(model => model.TeamSkillsSelected, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -153,7 +163,6 @@
                 </div>
             </div>
         </div>
-
 
         <div class="form-group">
             @*7*@
@@ -177,20 +186,23 @@
             </div>
         </div>
 
-        <hr />
-        <div class="form-group">
-            Select all
+        <div class="form-group hidden-print">
+            <hr />
+            <label class="control-label col-md-2" for="selectAll">&nbsp;</label>
             <div class="col-md-10">
-                @*<input type="button" value="Select all" onclick="selectAll()" class="btn btn-primary" style="height:25px;padding:1px" />&nbsp;
-                <input type="button" value="Deselect all" onclick="deselectAll()" class="btn btn-primary" style="height:25px;padding:1px" />*@
+                <input type="button" value="Select all" onclick="selectAll(true)" class="btn btn-primary" style="height:25px;padding:1px" />&nbsp;
+                <input type="button" value="Deselect all" onclick="selectAll(false)" class="btn btn-danger" style="height:25px;padding:1px" />&nbsp;
+                <input type="button" value="Default selected" onclick="selectAll(null)" class="btn btn-success" style="height:25px;padding:1px" />
+                @*<div class="checkbox">
                 <input type="checkbox" id="selectAll" value="SelectAll" onclick="selectAll()" />
+            </div>*@
             </div>
         </div>
 
-        <hr />
-        @if (Model.InvestmentProfileList.Any() && Model.StartupProjectList.Any())
+        @if (Model.MatchableInvestmentProfileList.Any() && Model.MatchableStartupProjectList.Any())
         {
-            <div class="form-group">
+            <div class="form-group hidden-print">
+                <hr />
                 <div class="col-md-offset-2 col-md-10">
                     <input type="submit" value="Run" class="btn btn-primary" />
                 </div>
@@ -199,21 +211,28 @@
     </div>
 }
 
-<br />&nbsp;<br />
-
 <div class="hidden-print">
+    <br />&nbsp;<br />
     @Html.ActionLink("To Result list", "Results") |
     @Html.ActionLink("To matchable Investment profiles", "Index", "Investments", new { matchable = true }, null)
 </div>
 
 <script type="text/javascript">
 
-    function selectAll() {
-        if (document.getElementById("selectAll").checked) selectAll2(true);
-        else selectAll2(false);
-    }
-    function selectAll2(allSelected) {
-        if (allSelected) {
+    //function selectAll() {
+        //if (document.getElementById("selectAll").checked) selectAll2(true);
+        //if (document.getElementById("ProjectDomainSelected").checked === true) selectAll2(true);
+        //else selectAll2(false);
+        //alert(document.getElementById("selectAll").checked);
+    //}
+    function selectAll(allSelected) {
+        if (allSelected === null)
+        {
+            deselectAll();
+            document.getElementById("ProjectDomainSelected").checked = true;
+            document.getElementById("FundingAmountSelected").checked = true;
+        }
+        else if (allSelected) {
             document.getElementById("ProjectDomainSelected").checked = true;
             document.getElementById("FundingPhaseSelected").checked = true;
             document.getElementById("FundingAmountSelected").checked = true;
@@ -223,16 +242,18 @@
             document.getElementById("InnovationLevelSelected").checked = true;
             document.getElementById("ScalabilitySelected").checked = true;
         }
-        else {
-            document.getElementById("ProjectDomainSelected").checked = false;
-            document.getElementById("FundingPhaseSelected").checked = false;
-            document.getElementById("FundingAmountSelected").checked = false;
-            document.getElementById("EstimatedExitPlanSelected").checked = false;
-            document.getElementById("TeamSkillsSelected").checked = false;
-            document.getElementById("OutcomesSelected").checked = false;
-            document.getElementById("InnovationLevelSelected").checked = false;
-            document.getElementById("ScalabilitySelected").checked = false;
-        }
+        else deselectAll();
+    }
+
+    function deselectAll() {
+        document.getElementById("ProjectDomainSelected").checked = false;
+        document.getElementById("FundingPhaseSelected").checked = false;
+        document.getElementById("FundingAmountSelected").checked = false;
+        document.getElementById("EstimatedExitPlanSelected").checked = false;
+        document.getElementById("TeamSkillsSelected").checked = false;
+        document.getElementById("OutcomesSelected").checked = false;
+        document.getElementById("InnovationLevelSelected").checked = false;
+        document.getElementById("ScalabilitySelected").checked = false;
     }
 
 </script>

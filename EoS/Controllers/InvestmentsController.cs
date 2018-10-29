@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using EoS.Models;
 using EoS.Models.Shared;
 using EoS.Models.Investor;
+using EoS.Models.MMM;
 using Microsoft.AspNet.Identity;
 using System.Threading.Tasks;
 using System.Net.Mail;
@@ -91,10 +92,10 @@ namespace EoS.Controllers
             }
             else if (User.IsInRole(Role.Investor.ToString()))
             {
-                string investorID = User.Identity.GetUserId();
-                ApplicationUser investor = db.Users.Find(investorID);
+                string investorId = User.Identity.GetUserId();
+                ApplicationUser investor = db.Users.Find(investorId);
                 investmentProfiles = investor.Investments.ToList(); //db.Investments.Where(u => u.UserId == currentUser.Id).ToList(); //<---------!!!
-                ViewBag.InvestorID = investorID;
+                ViewBag.InvestorId = investorId;
                 ViewBag.UserRole = Role.Investor.ToString();
                 ViewBag.InvestorExternalId = investor.ExternalId;
                 ViewBag.ActiveInvestor = true; //if investor.ActiveInvestor.HasValue <-------to be implemented
@@ -118,7 +119,7 @@ namespace EoS.Controllers
                     case "LASTSAVEDDATE": return View(investmentProfiles.OrderByDescending(iv => iv.LastSavedDate));
                     case "DUEDATE": return View(investmentProfiles.OrderByDescending(iv => iv.DueDate));
                     case "CREATEDDATE": return View(investmentProfiles.OrderByDescending(iv => iv.CreatedDate));
-                    case "LASTLOCKEDDATE": return View(investmentProfiles.OrderByDescending(iv => iv.LastLockedDate));
+                    //case "LASTLOCKEDDATE": return View(investmentProfiles.OrderByDescending(iv => iv.LastLockedDate));
                     case "ACTIVE": return View(investmentProfiles.OrderByDescending(iv => iv.Active));
                 }
 
@@ -143,6 +144,8 @@ namespace EoS.Controllers
             ViewBag.SwedishRegionName = "";
             if (investmentProfile.SwedishRegionID.HasValue) ViewBag.SwedishRegionName = db.SwedishRegions.Where(sr => sr.RegionID == investmentProfile.SwedishRegionID).FirstOrDefault().RegionName;
 
+            ViewBag.FormIsFinished = IsFormFinished(investmentProfile);
+
             ViewBag.UserRole = Role.Investor.ToString();
 
             if (User.IsInRole(Role.Admin.ToString()))
@@ -153,6 +156,31 @@ namespace EoS.Controllers
             }
             
             return View(investmentProfile);
+        }
+
+        private bool IsFormFinished(Investment investmentProfile)
+        {
+            return
+                //Profile
+                !string.IsNullOrEmpty(investmentProfile.ProfileName) &&
+                investmentProfile.ProjectDomainID.HasValue &&
+                //Funding
+                investmentProfile.FundingPhases != null && investmentProfile.FundingPhases.Any() &&
+                investmentProfile.FundingAmounts != null && investmentProfile.FundingAmounts.Any() &&
+                //investmentProfile.FutureFundingNeeded.HasValue && <------
+                //Budget
+                investmentProfile.EstimatedExitPlans != null && investmentProfile.EstimatedExitPlans.Any() &&
+                investmentProfile.EstimatedBreakEven.HasValue &&
+                investmentProfile.PossibleIncomeStreams.HasValue &&
+                //Team
+                //investmentProfile.TeamMemberSizeMoreThanOne <-----
+                //investmentProfile.TeamHasExperience <-----
+                //investmentProfile.ActiveInvestor <------
+                investmentProfile.TeamSkills != null && investmentProfile.TeamSkills.Any() &&
+                //Outcome
+                investmentProfile.Outcomes != null && investmentProfile.Outcomes.Any() &&
+                investmentProfile.InnovationLevels != null && investmentProfile.InnovationLevels.Any() &&
+                investmentProfile.Scalabilities != null && investmentProfile.Scalabilities.Any();
         }
 
         // GET: Investments/AddNewProfile
@@ -337,7 +365,7 @@ namespace EoS.Controllers
                     {
                         db.SaveChanges();
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) //invalid data
                     {
                         ViewBag.Message = ex.Message;
                         updated = false;
@@ -1326,7 +1354,7 @@ namespace EoS.Controllers
         //}
 
         [Authorize(Roles = "Admin")]
-        public ActionResult Unlock(string id, string redirect = "")
+        public ActionResult Unlock(string id, string redirect = "", bool isSingleUser = false)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -1341,7 +1369,11 @@ namespace EoS.Controllers
             }
             //try
             investmentProfile.Locked = false;
-            
+
+            List<MatchMaking> investmentProfileMatchMakings = investmentProfile.MatchMakings.ToList();
+            foreach (MatchMaking startupProjectMatchMaking in investmentProfileMatchMakings)
+                db.MatchMakings.Remove(startupProjectMatchMaking);
+
             db.Entry(investmentProfile).State = EntityState.Modified;
             db.SaveChanges();
 
@@ -1352,7 +1384,7 @@ namespace EoS.Controllers
             }
 
             if (string.IsNullOrWhiteSpace(redirect) || redirect.ToUpper() == "INDEX")
-                return RedirectToAction("Index", new { id });
+                return RedirectToAction("Index", new { id = (isSingleUser ? investmentProfile.UserId : "") });
 
             return RedirectToAction("ProfileDetails", new { id });
         }
