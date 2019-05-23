@@ -82,19 +82,19 @@ namespace EoS.Models
         
         /*...*/
 
-        public DbSet<Shared.FundingAmount> FundingAmounts { get; set; }
-        public DbSet<Shared.FundingPhase> FundingPhases { get; set; }
+        /*...*/
+        /*...*/
 
         public DbSet<IdeaCarrier.FundingDivision> FundingDivisions { get; set; }
         public DbSet<IdeaCarrier.FundingDivisionStartup> FundingDivisionStartups { get; set; }
-        public DbSet<Shared.EstimatedExitPlan> EstimatedExitPlans { get; set; }
+        /*...*/
 
         public DbSet<IdeaCarrier.TeamWeakness> TeamWeaknesses { get; set; }
         /*...*/
 
-        public DbSet<Shared.Outcome> Outcomes { get; set; }
-        public DbSet<Shared.InnovationLevel> InnovationLevels { get; set; }
-        public DbSet<Shared.Scalability> Scalabilities { get; set; }
+        /*...*/
+        /*...*/
+        /*...*/
 
         public DbSet<IdeaCarrier.Document> Documents { get; set; }
 
