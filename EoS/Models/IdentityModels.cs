@@ -9,15 +9,11 @@ using System.Collections.Generic;
 
 namespace EoS.Models
 {
-    // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
         public string UserFirstName { get; set; }
         public string UserLastName { get; set; }
         public string UserFullName { get { return UserFirstName + " " + UserLastName; } }
-
-        [Editable(false)]
-        public string ExternalId { get; internal set; } //for Investors
 
         [Editable(false)]
         [DataType(DataType.DateTime)]
@@ -33,21 +29,17 @@ namespace EoS.Models
 
         public string CountryName { get; set; }
 
-        public virtual ICollection<IdeaCarrier.Startup> Startups { get; set; } //for IdeaCarriers
+        public virtual ICollection<IdeaCarrier.Startup> StartupProjects { get; set; } //for IdeaCarriers
 
-        public virtual ICollection<Investor.Investment> Investments { get; set; } //for Investors
+        /*...*/
 
         public virtual ICollection<Admin.Blog> Blogs { get; set; } //for Admins
 
-        public virtual ICollection<Shared.BlogComment> BlogComments { get; set; } //for Investors and IdeaCarriers
-
-        //public bool? ActiveInvestor { get; set; } //for Investors <----to be implemented?
+        public virtual ICollection<Shared.BlogComment> BlogComments { get; set; } //for IdeaCarriers and others
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
-            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
-            // Add custom user claims here
             return userIdentity;
         }
     }
@@ -57,23 +49,21 @@ namespace EoS.Models
         [Display(Name = "Admin")]
         Admin,
         [Display(Name = "Idea Carrier")]
-        IdeaCarrier,
-        [Display(Name = "Investor")]
-        Investor,
+        IdeaCarrier
+        /*...*/
     }
 
     public enum RegisterRole
     {
         [Display(Name = "Idea Carrier")]
         IdeaCarrier,
-        [Display(Name = "Investor")]
-        Investor,
+        /*...*/
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("MMM", throwIfV1Schema: false)
+            : base("FS", throwIfV1Schema: false)
         {
         }
 
@@ -82,17 +72,15 @@ namespace EoS.Models
             return new ApplicationDbContext();
         }
 
-        //Add tables to the MMM DB
+        //Add tables to the DB named FS
 
         public DbSet<Admin.Blog> Blogs { get; set; }
         public DbSet<Admin.IdeaCarrierMessage> IdeaCarrierMessages { get; set; }
-        public DbSet<Admin.InvestorMessage> InvestorMessages { get; set; }
+        /*...*/
 
-        public DbSet<Investor.Investment> Investments { get; set; }
         public DbSet<IdeaCarrier.Startup> Startups { get; set; }
-
-        public DbSet<Shared.ProjectDomain> ProjectDomains { get; set; } //<-----DbSet<Shared.Domain> Domains { get; set; }
-        public DbSet<IdeaCarrier.AllowedInvestor> AllowedInvestors { get; set; }
+        
+        /*...*/
 
         public DbSet<Shared.FundingAmount> FundingAmounts { get; set; }
         public DbSet<Shared.FundingPhase> FundingPhases { get; set; }
@@ -101,8 +89,8 @@ namespace EoS.Models
         public DbSet<IdeaCarrier.FundingDivisionStartup> FundingDivisionStartups { get; set; }
         public DbSet<Shared.EstimatedExitPlan> EstimatedExitPlans { get; set; }
 
-        public DbSet<Investor.TeamSkill> TeamSkills { get; set; }
         public DbSet<IdeaCarrier.TeamWeakness> TeamWeaknesses { get; set; }
+        /*...*/
 
         public DbSet<Shared.Outcome> Outcomes { get; set; }
         public DbSet<Shared.InnovationLevel> InnovationLevels { get; set; }
@@ -117,17 +105,6 @@ namespace EoS.Models
         public DbSet<Home.HomeInfo> HomeInfos { get; set; }
         public DbSet<SMTP.SmtpClient> SmtpClients { get; set; }
 
-        public DbSet<MMM.MatchMaking> MatchMakings { get; set; }
-
-        //protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        //{
-            // Configure Code First to ignore PluralizingTableName convention
-            // If you keep this convention then the generated tables will have pluralized names.
-            //modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-
-            //modelBuilder.Entity<IdeaCarrier.Startup>().HasRequired(mb => mb.User).WithMany(mb => mb.Startups).WillCascadeOnDelete(true);
-            //modelBuilder.Entity<IdeaCarrier.FundingDivisionStartup>().HasRequired(mb => mb.Startup).WithMany(mb => mb.ProjectFundingDivisions).WillCascadeOnDelete(true);
-            //modelBuilder.Entity<Investor.Investment>().HasRequired(mb => mb.User).WithMany(mb => mb.Investments).WillCascadeOnDelete(true);
-        //}
+        /*Table for the main service here*/
     }
 }
