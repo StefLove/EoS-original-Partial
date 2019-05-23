@@ -15,29 +15,17 @@ namespace EoS.Migrations
 
     internal sealed class Configuration : DbMigrationsConfiguration<EoS.Models.ApplicationDbContext>
     {
-        public Configuration()
+        public Configuration() 
         {
             AutomaticMigrationsEnabled = true;
         }
         
         protected override void Seed(EoS.Models.ApplicationDbContext context)
         {
-            //  This method will be called after migrating to the latest version.
-
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
-            //  to avoid creating duplicate seed data. E.g.
-            //
-            //    context.People.AddOrUpdate(
-            //      p => p.FullName,
-            //      new Person { FullName = "Andrew Peters" },
-            //      new Person { FullName = "Brice Lambson" },
-            //      new Person { FullName = "Rowan Miller" }
-            //    );
-            //
             var roleStore = new RoleStore<IdentityRole>(context);
             var roleManager = new RoleManager<IdentityRole>(roleStore);
 
-            var roleNames = new[] { Role.Admin.ToString(), Role.IdeaCarrier.ToString(), Role.Investor.ToString() };
+            var roleNames = new[] { Role.Admin.ToString(), Role.IdeaCarrier.ToString() /*, ....more roles here*/ };
             foreach (var roleName in roleNames)
             {
                 if (!context.Roles.Any(r => r.Name == roleName))
@@ -56,7 +44,7 @@ namespace EoS.Migrations
             var userStore = new UserStore<ApplicationUser>(context);
             var userManager = new UserManager<ApplicationUser>(userStore);
 
-            var emails = new[] { "mmm@enablersofsweden.com", "ideaCarrier1@enablersofsweden.com", "ideaCarrier2@enablersofsweden.com", "pr.stfn@gmail.com", "stefanlovefors@hotmail.com" }; //"aalhinai83@gmail.com",
+            var emails = new[] { "admin@enablers.se", "ideaCarrier1@enablers.se", "ideaCarrier2@enablers.se " /*...more addresses here*/ };
 
             foreach (var email in emails)
             {
@@ -70,7 +58,7 @@ namespace EoS.Migrations
                         UserStartDate = DateTime.Now,
                     };
 
-                    var result = userManager.Create(user, "_123Abc");
+                    var result = userManager.Create(user, "_123Xyz");
                     if (!result.Succeeded)
                     {
                         throw new Exception(string.Join("\n", result.Errors));
@@ -78,33 +66,22 @@ namespace EoS.Migrations
                 }
             }
 
-            var adminUser = userManager.FindByName("mmm@enablersofsweden.com");
+            var adminUser = userManager.FindByName("admin@enablers.se");
             userManager.AddToRole(adminUser.Id, Role.Admin.ToString());
-            adminUser.UserFirstName = "MMM";
-            adminUser.UserLastName = "Admin";
+            adminUser.UserFirstName = "Admin";
             adminUser.EmailConfirmed = true;
 
-            var ideaCarrierUser1 = userManager.FindByName("ideaCarrier1@enablersofsweden.com");
+            var ideaCarrierUser1 = userManager.FindByName("ideaCarrier1@enablers.se");
             userManager.AddToRole(ideaCarrierUser1.Id, Role.IdeaCarrier.ToString());
             ideaCarrierUser1.UserFirstName = "IdeaCarrier1";
             ideaCarrierUser1.EmailConfirmed = true;
 
-            var ideaCarrierUser2 = userManager.FindByName("ideaCarrier2@enablersofsweden.com");
+            var ideaCarrierUser2 = userManager.FindByName("ideaCarrier2@enablers.se");
             userManager.AddToRole(ideaCarrierUser2.Id, Role.IdeaCarrier.ToString());
             ideaCarrierUser2.UserFirstName = "IdeaCarrier2";
             ideaCarrierUser2.EmailConfirmed = true;
-
-            var investor1 = userManager.FindByName("pr.stfn@gmail.com");
-            userManager.AddToRole(investor1.Id, Role.Investor.ToString());
-            investor1.UserFirstName = "Investor1";
-            investor1.EmailConfirmed = true;
-            investor1.ExternalId = "Investor1";
-
-            var investor2 = userManager.FindByName("stefanlovefors@hotmail.com");
-            userManager.AddToRole(investor2.Id, Role.Investor.ToString());
-            investor2.UserFirstName = "Investor2";
-            investor2.EmailConfirmed = true;
-            investor1.ExternalId = "Investor2";
+            
+            /*...more users here*/
 
             context.Countries.AddOrUpdate(
                 c => c.CountryName,
@@ -152,24 +129,24 @@ namespace EoS.Migrations
                 new SwedishRegion { RegionName = "Blekinge" },
                 new SwedishRegion { RegionName = "Dalarna" },
                 new SwedishRegion { RegionName = "Gotland" },
-                new SwedishRegion { RegionName = "Gävleborg" },
+                new SwedishRegion { RegionName = "GÃ¤vleborg" },
                 new SwedishRegion { RegionName = "Halland" },
-                new SwedishRegion { RegionName = "Jämtland" },
-                new SwedishRegion { RegionName = "Jönköping" },
+                new SwedishRegion { RegionName = "JÃ¤mtland" },
+                new SwedishRegion { RegionName = "JÃ¶nkÃ¶ping" },
                 new SwedishRegion { RegionName = "Kalmar" },
                 new SwedishRegion { RegionName = "Kronoberg" },
                 new SwedishRegion { RegionName = "Norrbotten" },
-                new SwedishRegion { RegionName = "Skåne" },
+                new SwedishRegion { RegionName = "SkÃ¥ne" },
                 new SwedishRegion { RegionName = "Stockholm" },
-                new SwedishRegion { RegionName = "Södermanland" },
+                new SwedishRegion { RegionName = "SÃ¶dermanland" },
                 new SwedishRegion { RegionName = "Uppsala" },
-                new SwedishRegion { RegionName = "Värmland" },
-                new SwedishRegion { RegionName = "Västerbotten" },
-                new SwedishRegion { RegionName = "Västernorrland" },
-                new SwedishRegion { RegionName = "Västmanland" },
-                new SwedishRegion { RegionName = "Västra Götaland" },
-                new SwedishRegion { RegionName = "Örebro" },
-                new SwedishRegion { RegionName = "Östergötland" }
+                new SwedishRegion { RegionName = "VÃ¤rmland" },
+                new SwedishRegion { RegionName = "VÃ¤sterbotten" },
+                new SwedishRegion { RegionName = "VÃ¤sternorrland" },
+                new SwedishRegion { RegionName = "VÃ¤stmanland" },
+                new SwedishRegion { RegionName = "VÃ¤stra GÃ¶taland" },
+                new SwedishRegion { RegionName = "Ã–rebro" },
+                new SwedishRegion { RegionName = "Ã–stergÃ¶tland" }
                 );
             context.SaveChanges();
 
@@ -286,7 +263,7 @@ namespace EoS.Migrations
                 );
             context.SaveChanges();
 
-            context.TeamSkills.AddOrUpdate( //<----------------Sequence contains more than one element
+            context.TeamSkills.AddOrUpdate(
                 ts => ts.SkillName,
                 new TeamSkill { SkillName = "M & A" },
                 new TeamSkill { SkillName = "R & D" },
@@ -333,49 +310,43 @@ namespace EoS.Migrations
               new Startup
               {
                   StartupID = "ICSE12345",
-                  UserID = userManager.FindByName("ideaCarrier1@enablersofsweden.com").Id,
+                  UserID = userManager.FindByName("ideaCarrier1@enabler.se").Id,
                   StartupName = "Idea1",
                   CountryID = 1,
                   SwedishRegionID = 1,
                   ProjectDomainID = 1,
-                  ProjectSummary = " Summary for Idea",
+                  ProjectSummary = " Summary",
                   FundingPhaseID = 1,
                   FundingAmountID = 1,
                   EstimatedExitPlanID = 1,
-                  //TeamWeaknesses = new List<Weaknesses> { new Weaknesses() { WeaknessID = 1 } },
                   EstimatedBreakEven = 1,
                   TeamMemberSize = 4,
-                  //GoalTeamSize = 6,
                   TeamExperience = 8,
                   PossibleIncomeStreams = 2,
                   InnovationLevelID = 1,
                   DeadlineDate = DateTime.Now.AddMonths(1),
                   LastSavedDate = DateTime.Now,
                   CreatedDate = DateTime.Now
-                  //AllowSharingDisplayName = "(Admin) We allow Enablers of Sweden to share this project information given,<br /> to at least one type of investor mention below:"
               },
               new Startup
               {
                   StartupID = "ICSE12346",
-                  UserID = userManager.FindByName("ideaCarrier2@enablersofsweden.com").Id,
+                  UserID = userManager.FindByName("ideaCarrier2@enablers.se").Id,
                   StartupName = "Idea3",
                   CountryID = 3,
                   ProjectDomainID = 2,
-                  ProjectSummary = "Summary for Idea",
+                  ProjectSummary = "Summary",
                   FundingPhaseID = 1,
                   FundingAmountID = 2,
                   EstimatedExitPlanID = 1,
-                  //TeamWeaknesses = new List<Weaknesses> { new Weaknesses() { WeaknessID = 1 } },
                   EstimatedBreakEven = 1,
                   TeamMemberSize = 4,
-                  //GoalTeamSize = 6,
                   TeamExperience = 4,
                   PossibleIncomeStreams = 2,
                   InnovationLevelID = 1,
                   DeadlineDate = DateTime.Now.AddMonths(1),
                   LastSavedDate = DateTime.Now,
                   CreatedDate = DateTime.Now
-                  //AllowSharingDisplayName = "(Admin) We allow Enablers of Sweden to share this project information given,<br /> to at least one type of investor mention below:"
               });
             context.SaveChanges();
 
@@ -403,84 +374,20 @@ namespace EoS.Migrations
             }
             context.SaveChanges();
 
-            //foreach (var fundingDivision in fundingDivisions)
-            //{
-            //    context.FundingDivisionStartups.AddOrUpdate(
-            //        fds => fds.FundingDivisionID,
-            //        new FundingDivisionStartup
-            //        {
-            //            FundingDivisionID = fundingDivision.FundingDivisionID,
-            //            Percentage = 0,
-            //            StartupID = "ICSE12346"
-            //        });
-            //}
-            //context.SaveChanges();
-
             context.IdeaCarrierMessages.AddOrUpdate(
             icm => icm.Id,
             new IdeaCarrierMessage
             {
                 Text =
-                "Kul att ha dig här. Vi brinner för att möjliggöra så att fler svenska startups skall förverkligas och få möjligheten.<br />" +
-                "Tips: Det går bra att lägga upp flera olika projekt i din användarprofil.<br />&nbsp;</br />" +
+                "Kul att ha dig hÃ¤r. Vi brinner fÃ¶r att mÃ¶jliggÃ¶ra sÃ¥ att fler svenska startups skall fÃ¶rverkligas och fÃ¥ mÃ¶jligheten.<br />" +
+                "Tips: Det gÃ¥r bra att lÃ¤gga upp flera olika projekt i din anvÃ¤ndarprofil.<br />&nbsp;</br />" +
                 "Fun to have you here. We are burning to enable more Swedish startups to be implemented and get the opportunity.<br />" +
                 "Tips It is helpful to post several projects in your user profile.",
                 AllowSharing_DisplayName = ""
             });
-            //}
+            
             context.SaveChanges();
 
-            context.Investments.AddOrUpdate(
-              i => i.InvestmentID,
-              new Investment
-              {
-                  InvestmentID = "IVSE54321",
-                  UserId = userManager.FindByName("pr.stfn@gmail.com").Id,
-                  ProfileName = "Profile1",
-                  CountryID = 2,
-                  ProjectDomainID = 2,
-                  TeamMemberSizeMoreThanOne = true,
-                  TeamHasExperience = false,
-                  LastSavedDate = DateTime.Now,
-                  CreatedDate = DateTime.Now,
-                  Active = true
-              },
-              new Investment
-              {
-                  InvestmentID = "IVSE64321",
-                  UserId = userManager.FindByName("stefanlovefors@hotmail.com").Id,
-                  ProfileName = "Profile2",
-                  CountryID = 1,
-                  SwedishRegionID = 1,
-                  ProjectDomainID = 1,
-                  TeamMemberSizeMoreThanOne = false,
-                  TeamHasExperience = true,
-                  LastSavedDate = DateTime.Now,
-                  CreatedDate = DateTime.Now,
-                  Active = true
-              });
-            context.SaveChanges();
-
-            //if (context.InvestorMessages.Any())
-            //{
-            //    context.InvestorMessages.FirstOrDefault().Text = "";
-            //}
-            //else
-            //{
-
-            context.InvestorMessages.AddOrUpdate(
-            im => im.Id,
-            new InvestorMessage
-            {
-                Text =
-                "Please create a profile to test our service. If you want, you can also be completely anonymous initially.<br />" +
-                "We will send you your matches in a case preview document that always has the same format and aggregate data for each bootup.<br />" +
-                "If you like our approach, contact us to gain access to multiple profiles to broaden your search.<br />" +
-                "Tip: Try to be as precise as you can in your choices to minimize the number of startups presented to you.<br />" +
-                "Our goal is to give you as few spreads as possible, so that all you get is potential investment."
-            });
-            //}         
-            context.SaveChanges();
         }
     }
 }
