@@ -65,7 +65,7 @@ namespace EoS.Models
         public bool RememberMe { get; set; }
     }
 
-    public class RegisterViewModel //: IValidatableObject
+    public class RegisterViewModel
     {
         //[Required] not when Admin account
         [Display(Name = "Role")]
@@ -118,15 +118,6 @@ namespace EoS.Models
         [Display(Name = "Confirm password")]
         [System.ComponentModel.DataAnnotations.Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
-
-        //public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        //{
-        //    //throw new NotImplementedException();
-        //    if (Role == RegisterRole.IdeaCarrier && string.IsNullOrEmpty(UserFirstName))
-        //    {
-        //        yield return new ValidationResult("First Name is required!", new List<string> { "UserFirstName" });
-        //    }
-        //}
     }
 
     public class ResetPasswordViewModel
@@ -181,16 +172,6 @@ namespace EoS.Models
         [Display(Name = "Email Confirmed")]
         public bool EmailConfirmed { get; set; }
 
-        //[Phone]
-        //[Display(Name = "PhoneNumber")]
-        //public string PhoneNumber { get; set; } //<------------
-
-        //[Display(Name = "Phone Number Confirmed")]
-        //public bool PhoneNumberConfirmed { get; set; } //<-----------
-
-        //[Display(Name = "Organisation")]
-        //public string Organisation { get; set; } //<---------------
-
         [Display(Name = "Account Expiry Date")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? ExpiryDate { get; set; }
@@ -213,21 +194,12 @@ namespace EoS.Models
 
         [Display(Name = "#Blog Comments")]
         public int NumberOfBlogComments { get; set; }
-
-        //[Display(Name = "Blogs")]
-        //public ICollection<Admin.Blog> Blogs { get; set; }
-        //[Display(Name = "Blog Comments")]
-        //public ICollection<Shared.BlogComment> BlogComments { get; set; }
     }
 
     public class EditUserViewModel
     {
         [Key]
         public string Id { get; set; }
-
-        //[Display(Name = "Type")]
-        //[EnumDataType(typeof(RegisterRole))]
-        //public Role Role { get; set; }
 
         [Display(Name = "Role")]
         public string Role { get; set; }
@@ -238,26 +210,12 @@ namespace EoS.Models
         [Display(Name = "Last Name")]
         public string UserLastName { get; set; }
 
-        //[Display(Name = "User Name")]
-        //[System.ComponentModel.DataAnnotations.Compare("Email", ErrorMessage = "The user name and email must be the same.")]
-        //public string UserName { get; set; }
-
         [EmailAddress]
         [Display(Name = "Email (= User Name)")]
         public string Email { get; set; }
 
         [Display(Name = "Email Confirmed")]
         public bool EmailConfirmed { get; set; }
-
-        //[Phone]
-        //[Display(Name = "Phone")]
-        //public string PhoneNumber { get; set; }
-
-        //[Display(Name = "Phone Number Confirmed")]
-        //public bool PhoneNumberConfirmed { get; set; }
-
-        //[Display(Name = "Organisation")]
-        //public string Organisation { get; set; }
 
         [Display(Name = "Country")]
         public int CountryId { get; set; }
@@ -273,10 +231,6 @@ namespace EoS.Models
 
         [Display(Name = "Lockout Enabled")]
         public bool LockoutEnabled { get; set; }
-
-        //[Display(Name = "Last Login Date")]
-        //[DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
-        //public DateTime LastLoginDate { get; set; }
 
         [Display(Name = "Two Factor Enabled")]
         public bool TwoFactorEnabled { get; set; }
