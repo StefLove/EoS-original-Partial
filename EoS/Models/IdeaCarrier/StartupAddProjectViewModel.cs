@@ -10,10 +10,6 @@ namespace EoS.Models.IdeaCarrier
 {
     public class StartupAddProjectViewModel
     {
-        //[Key]
-        //[Display(Name = "Startup Project Code")]
-        //public string StartupID { get; set; }
-
         [Required]
         [Display(Name = "Startup project name")]
         public string StartupName { get; set; }
@@ -23,7 +19,6 @@ namespace EoS.Models.IdeaCarrier
         public int CountryID { get; set; }
         public SelectList Countries { get; set; }
 
-        //[ForeignKey("SwedishRegion")]
         [Display(Name = "Swedish region (Län)")]
         public int? SwedishRegionID { get; set; }
         public SelectList SwedishRegions { get; set; }
