@@ -69,7 +69,7 @@ namespace EoS.Models.IdeaCarrier
         public virtual FundingAmount FundingAmount { get; set; }
 
         [Display(Name = "Future funding needed?")]
-        public bool FutureFundingNeeded { get; set; } //<--------bool?
+        public bool FutureFundingNeeded { get; set; }
 
         [Display(Name = "Already spent time")]
         public int? AlreadySpentTime { get; set; }
@@ -78,7 +78,7 @@ namespace EoS.Models.IdeaCarrier
         public int? AlreadySpentMoney { get; set; }
 
         [Display(Name = "Will spend own money?")]
-        public bool WillSpendOwnMoney { get; set; } //<--------bool?
+        public bool WillSpendOwnMoney { get; set; }
 
         //Budget-----------------------------------------------------------
 
@@ -259,7 +259,7 @@ namespace EoS.Models.IdeaCarrier
         //[Required]
         [Display(Name = "Are you looking for active investors?")]
         public bool LookingForActiveInvestors { get; set; }
-
+        
         //Outcome-------------------------------------------------------------
         
         public List<StartupOutcomeViewModel> Outcomes { get; internal set; }
@@ -306,7 +306,7 @@ namespace EoS.Models.IdeaCarrier
     public class AddNewProjectViewModel
     {
         [AllowHtml]
-        [Display(Name = "Message for Idea carrier")]
+        [Display(Name = "Message for the Idea carrier")]
         public string IdeaCarrierMessage { get; set; }
 
         [Required]
