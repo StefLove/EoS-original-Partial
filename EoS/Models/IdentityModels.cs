@@ -29,7 +29,7 @@ namespace EoS.Models
 
         public string CountryName { get; set; }
 
-        public virtual ICollection<IdeaCarrier.Startup> StartupProjects { get; set; } //for IdeaCarriers
+        public virtual ICollection<IdeaCarrier.Startup> Startups { get; set; } //StartupProjects for IdeaCarriers
 
         /*...*/
 
@@ -72,7 +72,7 @@ namespace EoS.Models
             return new ApplicationDbContext();
         }
 
-        //Add tables to the DB named FS
+        //Add tables to the database named FS
 
         public DbSet<Admin.Blog> Blogs { get; set; }
         public DbSet<Admin.IdeaCarrierMessage> IdeaCarrierMessages { get; set; }
@@ -96,7 +96,7 @@ namespace EoS.Models
         /*...*/
         /*...*/
 
-        public DbSet<IdeaCarrier.Document> Documents { get; set; }
+        /*...*/
 
         public DbSet<Shared.BlogComment> BlogComments { get; set; }
         public DbSet<Shared.Country> Countries { get; set; }
