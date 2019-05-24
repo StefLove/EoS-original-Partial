@@ -80,7 +80,8 @@ namespace EoS.Models
 
         public DbSet<IdeaCarrier.Startup> Startups { get; set; }
         
-        /*...*/
+        public DbSet<Shared.ProjectDomain> ProjectDomains { get; set; }
+        public DbSet<IdeaCarrier.AllowedInvestor> AllowedInvestors { get; set; }
 
         /*...*/
         /*...*/
