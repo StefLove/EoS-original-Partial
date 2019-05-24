@@ -12,6 +12,6 @@ namespace EoS.Models.IdeaCarrier
         [Display(Name = "Allowed investor name")]
         public string AllowedInvestorName { get; set; }
 
-        public virtual ICollection<Startup> Startups { get; set; } //<---necessary??
+        public virtual ICollection<Startup> Startups { get; set; }
     }
 }
