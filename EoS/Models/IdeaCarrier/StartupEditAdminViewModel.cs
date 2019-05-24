@@ -27,11 +27,5 @@ namespace EoS.Models.IdeaCarrier
 
         [Display(Name = "Locked")]
         public bool Locked { get; set; }
-
-        //[Display(Name = "Approved")]
-        //public bool Approved { get; set; }
-
-        //[Display(Name = "Approved by")]
-        //public string ApprovedBy { get; internal set; }
     }
 }
