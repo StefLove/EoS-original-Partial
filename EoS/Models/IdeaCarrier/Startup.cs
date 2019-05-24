@@ -15,7 +15,7 @@ namespace EoS.Models.IdeaCarrier
 
         [Key]
         [Display(Name = "Project ID")]
-        public string StartupID { get; set; } //ProjectID
+        public string StartupID { get; set; }
 
         [Display(Name = "Idea carrier")]
         public string UserID { get; set; }
@@ -160,11 +160,10 @@ namespace EoS.Models.IdeaCarrier
         [Display(Name = "Approved by")]
         public string ApprovedByID { get; set; }
 
-        [Display(Name = "Matched Investment profiles")]
-        public virtual ICollection<MMM.MatchMaking> MatchMakings { get; set; }
+        /*public virtual ICollection<Service> Services { get; set; }*/
     }
 
-    public class StartupProjectViewModel //: StartupProject
+    public class StartupProjectViewModel
     {
         //[Key]
         [Display(Name = "Project ID")]
@@ -202,13 +201,11 @@ namespace EoS.Models.IdeaCarrier
 
         [Display(Name = "Funding phase")]
         public int? FundingPhaseID { get; set; }
-        //public virtual Shared.FundingPhase FundingPhase { get; set; }
         public SelectList FundingPhaseList { get; set; }
 
         [Display(Name = "Funding need")]
-        public int? FundingAmountID { get; set; } //==>FundingNeedID
-        //public virtual Shared.FundingAmount FundingAmount { get; set; }
-        public SelectList FundingAmountList { get; set; } //==>FundingNeedList
+        public int? FundingAmountID { get; set; } //FundingNeedID
+        public SelectList FundingAmountList { get; set; } //FundingNeedList
 
         [Display(Name = "Do you see a need of more funding in the future?")]
         public bool FutureFundingNeeded { get; set; }
@@ -228,7 +225,6 @@ namespace EoS.Models.IdeaCarrier
 
         [Display(Name = "Estimated exit plan")]
         public int? EstimatedExitPlanID { get; set; }
-        //public virtual Shared.EstimatedExitPlan EstimatedExitPlan { get; set; }
         public SelectList EstimatedExitPlanList { get; set; }
 
         [Range(1, 10, ErrorMessage = "Please enter a number between 0 and 10 for estimated break even")]
