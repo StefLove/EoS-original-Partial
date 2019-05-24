@@ -7,7 +7,7 @@ using System.Web;
 
 namespace EoS.Models.IdeaCarrier
 {
-    /*This class is the old one, it has been replaced by StartupProjectViewModel, se code in Startup.cs*/
+    /*This class is the old one, it has been replaced by StartupProjectViewModel, se code in Startup.cs: rows 167-286*/
     
     public class StartupProjectFormViewModel : IValidatableObject /*this does not work in AJAX!*/
     {
