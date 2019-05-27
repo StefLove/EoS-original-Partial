@@ -20,10 +20,8 @@
     @Html.LabelFor(model => model.FutureFundingNeeded, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-9">
         <div class="checkbox col-md-10">
-            @*@Html.EditorFor(model => model.FutureFundingNeeded)*@
-            @Html.RadioButton("FutureFundingNeeded", "Yes", Model.FutureFundingNeeded) Yes&nbsp;&nbsp; @*Model.FutureFundingNeeded.HasValue ? Model.FutureFundingNeeded.Value : false*@
-            @Html.RadioButton("FutureFundingNeeded", "No", !Model.FutureFundingNeeded) No              @*Model.FutureFundingNeeded.HasValue ? !Model.FutureFundingNeeded.Value : false*@
-            @*@Html.ValidationMessageFor(model => model.FutureFundingNeeded, "", new { @class = "text-danger" })*@
+            @Html.RadioButton("FutureFundingNeeded", "Yes", Model.FutureFundingNeeded) Yes&nbsp;&nbsp;
+            @Html.RadioButton("FutureFundingNeeded", "No", !Model.FutureFundingNeeded) No
         </div>
     </div>
 </div>
@@ -48,10 +46,8 @@
     @Html.LabelFor(model => model.WillSpendOwnMoney, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" })
     <div class="col-md-9">
         <div class="checkbox col-md-10">
-            @*@Html.EditorFor(model => model.WillSpendOwnMoney)*@
-            @Html.RadioButton("WillSpendOwnMoney", "Yes", Model.WillSpendOwnMoney) Yes&nbsp;&nbsp; @*Model.WillSpendOwnMoney.HasValue ? Model.WillSpendOwnMoney.Value : false*@
-            @Html.RadioButton("WillSpendOwnMoney", "No", !Model.WillSpendOwnMoney) No              @*Model.WillSpendOwnMoney.HasValue ? !Model.WillSpendOwnMoney.Value : false*@
-            @*@Html.ValidationMessageFor(model => model.WillSpendOwnMoney, "", new { @class = "text-danger" })*@
+            @Html.RadioButton("WillSpendOwnMoney", "Yes", Model.WillSpendOwnMoney) Yes&nbsp;&nbsp;
+            @Html.RadioButton("WillSpendOwnMoney", "No", !Model.WillSpendOwnMoney) No
         </div>
     </div>
 </div>
