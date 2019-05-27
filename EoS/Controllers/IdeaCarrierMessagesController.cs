@@ -49,7 +49,7 @@ namespace EoS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         //[ValidateInput(false)]
-        public ActionResult Create([Bind(Include = "Id,Text,AllowSharing_DisplayName")] IdeaCarrierMessage ideaCarrierMessage) /*Id,Text,AllowSharing_DisplayName*/
+        public ActionResult Create([Bind(Include = "Id,Text,AllowSharing_DisplayName")] IdeaCarrierMessage ideaCarrierMessage) 
         {
             if (ModelState.IsValid && !db.IdeaCarrierMessages.Any())
             {
@@ -83,7 +83,7 @@ namespace EoS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        public ActionResult Edit([Bind(Include = "Id,Text,AllowSharing_DisplayName")] IdeaCarrierMessage ideaCarrierMessage) /*Id,Text,AllowSharing_DisplayName*/
+        public ActionResult Edit([Bind(Include = "Id,Text,AllowSharing_DisplayName")] IdeaCarrierMessage ideaCarrierMessage)
         {
             if (ModelState.IsValid)
             {
