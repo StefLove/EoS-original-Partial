@@ -46,10 +46,9 @@
     }
     <div class="checkbox col-md-10">
         @*@Html.EditorFor(model => model.AllowSharing)*@
-        @Html.RadioButton("AllowSharing", "Yes", Model.AllowSharing) Yes&nbsp;&nbsp; @*Model.AllowSharing.HasValue ? Model.AllowSharing.Value : false*@
-        @Html.RadioButton("AllowSharing", "No", !Model.AllowSharing) No              @*Model.AllowSharing.HasValue ? !Model.AllowSharing.Value : false*@
+        @Html.RadioButton("AllowSharing", "Yes", Model.AllowSharing) Yes&nbsp;&nbsp;
+        @Html.RadioButton("AllowSharing", "No", !Model.AllowSharing) No
     </div>
-    @*@Html.ValidationMessageFor(model => model.AllowSharing, "", new { @class = "text-danger col-md-9 col-md-offset-2" })*@
 </div>
 
 <div class="@(Model.UnansweredQuestion == "AllowedInvestors" ? "form-group warning" : "form-group")">
