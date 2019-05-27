@@ -11,12 +11,10 @@
                         foreach (var fundingDivision in Model.FundingDivisions)
                         {
                             string fundingDivisionPercentageID = "fundingDivisionPercentage" + fundingDivision.FundingDivisionID.ToString();
-                            //string fundingDivisionPercentageMessageID = "fundingDivisionPercentageMessage" + fundingDivision.FundingDivisionID.ToString();
 
                             <td>@fundingDivision.FundingDivision.FundingDivisionName</td>
                             <td><input type="number" id="@fundingDivisionPercentageID" name="FundingDivisionPercentages" value="@fundingDivision.Percentage" onchange="checkPercentage('@fundingDivisionPercentageID')" class="form-control" style="width:70px" /></td>
                             <td>%</td>
-                            @*<td><div id="@fundingDivisionPercentageMessageID" name="fundingDivisionPercentageMessages" class="text-danger"></div></td>*@
                         @:</tr><tr>
                         }
                     }
@@ -63,12 +61,8 @@
 <div class="form-group">
     @Html.LabelFor(model => model.HavePayingCustomers, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:left" }) @*width:220px"*@
     <div class="checkbox col-md-10">
-        @*<div class="radio">*@
-        @*@Html.EditorFor(model => model.HavePayingCustomers)*@
-        @Html.RadioButton("HavePayingCustomers", "Yes", Model.HavePayingCustomers) Yes&nbsp;&nbsp; @*Model.HavePayingCustomers.HasValue ? Model.HavePayingCustomers.Value : false*@
-        @Html.RadioButton("HavePayingCustomers", "No", !Model.HavePayingCustomers) No              @*Model.HavePayingCustomers.HasValue ? !Model.HavePayingCustomers.Value : false*@
-        @*@Html.ValidationMessageFor(model => model.HavePayingCustomers, "", new { @class = "text-danger" })*@
-        @*</div>*@
+        @Html.RadioButton("HavePayingCustomers", "Yes", Model.HavePayingCustomers) Yes&nbsp;&nbsp;
+        @Html.RadioButton("HavePayingCustomers", "No", !Model.HavePayingCustomers) No
     </div>
 </div>
 
