@@ -2,7 +2,6 @@
 
 @{
     ViewBag.Title = "New Startup project";
-    @*//HtmlHelper.ClientValidationEnabled = false;*@
 }
 
 <h2>@ViewBag.Title</h2>
@@ -17,7 +16,6 @@
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
     <div class="form-group">
-        @*@Html.LabelFor(model => model.ProjectSummary, htmlAttributes: new { @class = "control-label col-md-2" })*@
         <div class="col-md-10 col-md-offset-1">
             @Html.Raw(Model.IdeaCarrierMessage)
         </div>
@@ -63,11 +61,6 @@
             <input type="submit" value="Proceed to the project form" class="btn btn-primary" name="submit_command" />
         </div>
     </div>
-
-    @*<div class="col-md-offset-4 col-md-10 hidden-print">
-        <br>
-        @Html.ActionLink("Cancel this new project", "Index", null, new { @class = "btn btn-danger" })
-    </div>*@
 
 </div>
 }
