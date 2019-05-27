@@ -25,17 +25,6 @@
             @Html.DisplayFor(model => model.Country.CountryName)
         </dd>
 
-        @*@if (Model.SwedishRegionID != null)
-        {
-        <dt>
-            @Html.DisplayNameFor(model => model.SwedishRegionID)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.SwedishRegion.RegionName)
-        </dd>
-        }*@
-
         <dt>
             @Html.DisplayNameFor(model => model.ProjectDomainID)
         </dt>
@@ -54,119 +43,10 @@
             @Html.Raw(Model.ProjectSummary.Replace("\n", "<br />"))
             <hr style="border-color:darkgrey; background-color:darkgrey;" />
         </dd>
-
-        @*<dt>
-            @Html.DisplayNameFor(model => model.FundingPhase.FundingPhaseName)
-        </dt>
-        <dd>
-            @if (Model.FundingPhase != null)
-            {
-                @Html.DisplayFor(model => model.FundingPhase.FundingPhaseName)
-            }
-            else
-            {
-                @Html.Raw("None")
-            }
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.FundingAmount.FundingAmountValue)
-        </dt>
-        <dd>
-            @if (Model.FundingAmount != null)
-            {
-                @Html.DisplayFor(model => model.FundingAmount.FundingAmountValue)
-            }
-            else
-            {
-                @Html.Raw("None")
-            }
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.FutureFundingNeeded)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.FutureFundingNeeded)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.EstimatedExitPlanID)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.EstimatedExitPlan.EstimatedExitPlanName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.EstimatedBreakEven)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.EstimatedBreakEven)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.TeamMemberSize)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TeamMemberSize)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.TeamExperience)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TeamExperience)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.TeamVisionShared)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TeamVisionShared)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.HaveFixedRoles)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.HaveFixedRoles)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.PossibleIncomeStreams)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.PossibleIncomeStreams)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.InnovationLevelID)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.InnovationLevel.InnovationLevelName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ScalabilityID)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Scalability.ScalabilityName)
-        </dd>*@
-
+        
         <dt>
             @Html.DisplayNameFor(model => model.DeadlineDate)
         </dt>
-
         <dd>
             @Html.DisplayFor(model => model.DeadlineDate)
         </dd>
@@ -174,7 +54,6 @@
         <dt>
             @Html.DisplayNameFor(model => model.LastSavedDate)
         </dt>
-
         <dd>
             @Html.DisplayFor(model => model.LastSavedDate)
         </dd>
@@ -182,7 +61,6 @@
         <dt>
             @Html.DisplayNameFor(model => model.CreatedDate)
         </dt>
-
         <dd>
             @Html.DisplayFor(model => model.CreatedDate)
         </dd>
@@ -214,7 +92,6 @@
         </dt>
         <dd>
             @(Model.Approved ? "Yes" : "No")
-            @*@Html.DisplayFor(model => model.Approved)*@
         </dd>
 
     </dl>
