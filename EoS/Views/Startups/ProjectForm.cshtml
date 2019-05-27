@@ -5,28 +5,17 @@
 }
 
 <h3>@ViewBag.Title</h3>
-@*
-        @if (!string.IsNullOrEmpty(ViewBag.Message))
-    {
-        <br />
-        <span class="text-danger" style="font-size:larger">@Html.Raw(ViewBag.Message)</span>
-        <hr />
-    }*@
 
 @using (Ajax.BeginForm("ProjectForm", "Startups",
     new AjaxOptions
     {
         HttpMethod = "POST",
-@*//UpdateTargetId = "StartupProjectForm",
-    //OnBegin = "OnBegin",
-    //OnComplete = "OnComplete",*@
-            OnSuccess = "OnSuccess",
-            OnFailure = "OnFailure",
-            LoadingElementId = "Progress",
-            InsertionMode = InsertionMode.Replace,
-@*//Confirm = "...",
-    //AllowCache = false*@
-        }, new { @id = "StartupProjectForm" }))
+        OnSuccess = "OnSuccess",
+        OnFailure = "OnFailure",
+        LoadingElementId = "Progress",
+        InsertionMode = InsertionMode.Replace,
+    }, new { @id = "StartupProjectForm" }))
+
     {
         @Html.AntiForgeryToken()
 
@@ -53,7 +42,7 @@
                 @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
                 {
                     <div class="alert alert-danger">
-                        <a href="#" class="close" data-dismiss="alert">×</a>
+                        <a href="#" class="close" data-dismiss="alert">Ã—</a>
                         <h4>Validation Errors</h4>
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                     </div>
@@ -78,10 +67,6 @@
                         <a href="#Outcome" role="tab" data-toggle="tab" onclick="SaveData()">Outcome</a>
                     </li>
 
-
-                    @*<li role="presentation" id="tab_RelatedFiles">
-                            <a href="#RelatedFiles" role="tab" data-toggle="tab" onclick="SaveData()">Related Files</a>
-                        </li>*@
                 </ul>
 
                 <br />&nbsp;<br />
@@ -165,6 +150,7 @@
         //$("ProgessImage").src = '~/img/saving.gif';
         document.getElementById('ProgressImage').src = '/../img/saving.gif';
     };
+    
     //window.onbeforeunload = function (evt) { SaveData(); };
 
     function setNewStartTab() {
@@ -180,21 +166,6 @@
         SaveData();
         return confirm('Do you really wish to submit this form? (It will be locked for editing)');
     }
-@*
-    //function submitProjectForm() {
-    //    SaveData();
-    //    if (confirm('Do you really wish to submit this form? (It will not be editable any more)')) {
-            //SaveData(); //$('#StartupProjectForm').submit();
-    //        location.href = '/Startups/SubmitProjectForm/ Model.StartupID'; // + '?redirect=ProjectDetails';
-    //    }
-        //else SaveData();
-    //}
-
-    //$('a#projectFormSubmission').click(function () {
-    //    SaveData();
-    //    if (!confirm('Do you really wish to submit this form? (It will not be editable any more)')) return false;
-    //    return true;
-    //});*@
 
     function SaveData() {
         activateTab($('.active')[0].id);
@@ -202,20 +173,10 @@
     }
 
     function OnSuccess(response) {
-         @*//$("#Progress").hide();
-        if ('@Model.Updated' === 'True') $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.<br />');
-        else $('#Message').html('There were nothing that needed to be updated in ') + $("input[name='activeTab']")[0].value.replace('_', ' ') + '.';*@
-         @*if ('@Model.Updated' === 'True') {*@
-
-            var successMessage = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.'; // $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.';
-            var message = '@Model.Message';
-            $('#Message').html(successMessage + (message !== '' ? '<br />' + message : ''));
-        @*
-        //}
-        //else {
-        //    message = 'There were nothing that needed to be updated in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + '.'; //+ $("input[name='ActiveTab']")[0].value.replace('_', ' ') + '.';
-        //    $('#Message').html(message);
-        //}*@
+        
+        var successMessage = 'Your answers in ' + $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.'; // $("input[name='ActiveTab']")[0].value.replace('_', ' ') + ' have been saved.';
+        var message = '@Model.Message';
+        $('#Message').html(successMessage + (message !== '' ? '<br />' + message : ''));
     }
 
     function OnFailure(response) {
@@ -223,20 +184,6 @@
         var message = '@Model.Message';
         $('#Message').html(failureMessage + (message !== '' ? '<br />' + message : ''));
     }
-    @*
-    //function OnSuccess(response) { //(data, textStatus, jqXHR)
-    //    //document.getElementById("Message").innerHTML = "Data saved and updated";
-    //    if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
-    //        $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' have been saved.');
-    //    else $('#Message').html('');
-    //}
-
-    //function OnFailure(response) {
-    //    //document.getElementById("Message").innerHTML = "Data could not be saved and updated!";
-    //    if ($("input[name='activeTab']")[0].value != 'tab_RelatedFiles')
-    //        $('#Message').html('Your answers in ' + $("input[name='activeTab']")[0].value.replace('_', ' ') + ' could not be saved!');
-    //    else $('#Message').html('');
-    //}*@
 
     function activateTab(activeTabId) {
         $("input[name='ActiveTab']")[0].value = activeTabId;
