@@ -16,20 +16,6 @@ namespace EoS.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        //private ApplicationUserManager _userManager;
-
-        //public ApplicationUserManager UserManager
-        //{
-        //    get
-        //    {
-        //        return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-        //    }
-        //    private set
-        //    {
-        //        _userManager = value;
-        //    }
-        //}
-
         public ActionResult Index()
         {
             ViewBag.HomeInfo = "";
@@ -46,11 +32,7 @@ namespace EoS.Controllers
                     //ViewBag.UserRole = Models.Role.IdeaCarrier.ToString();
                     return RedirectToAction("Index", "StartUps");
                 }
-                else if (User.IsInRole(Role.Investor.ToString()))
-                {
-                    //ViewBag.UserRole = Models.Role.Investor.ToString();
-                    return RedirectToAction("Index", "Investments");
-                }
+                /*...*/
             }
 
             //var HomeInfos = db.HomeInfos.ToList();
@@ -105,10 +87,7 @@ namespace EoS.Controllers
                 {
                     userRole = Role.IdeaCarrier.ToString();
                 }
-                else if (User.IsInRole(Role.Investor.ToString()))
-                {
-                    userRole = Role.Investor.ToString();
-                }
+                /*...*/
 
                 var smtpClients = db.SmtpClients.ToList();
 
@@ -118,7 +97,6 @@ namespace EoS.Controllers
                     {
                         try
                         {
-                            //string bodyFormat = "\nAvsändare:\n{0} ({1})\n{2}\n----------------------------------------\n{3}";
                             MailMessage message = new MailMessage
                             {
                                 //Sender = new MailAddress(User.Identity.Name),
@@ -128,8 +106,6 @@ namespace EoS.Controllers
                                 //string.Format(bodyFormat, User.Identity.Name, userRole, User.Identity.GetUserId(), model.Message),
                                 IsBodyHtml = false
                             };
-                            //message.To.Add(new MailAddress(smtpClient.MailRecipient));
-                            //message.Attachments.Add(new Attachment(HttpContext.Server.MapPath("~/App_Data/xyz.pdf")));C:\Users\stefa\Documents\Visual Studio 2017\Projects\EoS-master\EoS\Models\Account\
                             var Admins = db.Users.Where(u => u.Roles.Where(r1 => r1.RoleId == db.Roles.Where(r2 => r2.Name == Role.Admin.ToString()).FirstOrDefault().Id).Any()).ToList();
                             foreach (var admin in Admins)
                             {
