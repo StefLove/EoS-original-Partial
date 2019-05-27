@@ -1304,7 +1304,7 @@ namespace EoS.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [Authorize(Roles = ("Admin"))]
         [HttpPost]
-        [ValidateAntiForgeryToken] //[Bind(Include = "StartupId,InvestorEmail,Text")]
+        [ValidateAntiForgeryToken]
         [ValidateInput(false)]
         public async Task<ActionResult> Reminder(ReminderStartupViewModel model)
         {
