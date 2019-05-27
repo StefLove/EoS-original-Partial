@@ -58,13 +58,13 @@ namespace EoS.Controllers
             ViewBag.NoOfAccounts = db.Users.Count();
             ViewBag.NoOfOtherAdminAccounts = db.Users.Where(u => u.Roles.Where(r1 => r1.RoleId == db.Roles.Where(r2 => r2.Name == Role.Admin.ToString()).FirstOrDefault().Id).Any()).Count() - 1;
             ViewBag.NoOfIdeaCarrierAccounts = db.Users.Where(u => u.Roles.Where(r1 => r1.RoleId == db.Roles.Where(r2 => r2.Name == Role.IdeaCarrier.ToString()).FirstOrDefault().Id).Any()).Count();
-            ViewBag.NoOfInvestorAccounts = db.Users.Where(u => u.Roles.Where(r1 => r1.RoleId == db.Roles.Where(r2 => r2.Name == Role.Investor.ToString()).FirstOrDefault().Id).Any()).Count();
+            /*...*/
 
             ViewBag.NoOfBlogs = db.Blogs.Count();
             ViewBag.NoOfSmtpClients = db.SmtpClients.Count();
             ViewBag.NoOfCountries = db.Countries.Count();
             ViewBag.NoOfStartups = db.Startups.Count();
-            ViewBag.NoOfInvestments = db.Investments.Count();
+            /*...*/
 
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
@@ -96,15 +96,11 @@ namespace EoS.Controllers
             {
                 ViewBag.UserRole = Role.IdeaCarrier.ToString();
             }
-            else if (User.IsInRole(Role.Investor.ToString()))
-            {
-                ViewBag.UserRole = Role.Investor.ToString();
-            }
+            /*...*/
 
             return View(model);
         }
 
-        //
         // POST: /Manage/RemoveLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
