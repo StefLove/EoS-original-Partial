@@ -2,34 +2,6 @@
     ViewBag.Title = "Home Page";
 }
 
-@if (!string.IsNullOrEmpty(ViewBag.UserRole))
-{
-    @*<div class="form-group">
-        <div class="col-md-offset-2 col-md-10">*@
-            @*</div>
-                </div>*@
-
-            <br />
-
-            @*<div class="o-col" style="text-align:center">*@
-
-            @*@if (ViewBag.UserRole == EoS.Models.Role.Admin.ToString())
-                {
-                    @Html.ActionLink("Startups and Investments", "Index", "Admin", null, new { style = "font-size:24px" });<br />
-                    @Html.ActionLink("Manage the accounts", "Index", "Manage", null, new { style = "font-size:24px" });
-                    //@RedirectToAction("Index", "Admin")
-                }*@
-            @*else if (ViewBag.UserRole == EoS.Models.Role.IdeaCarrier.ToString())
-                {
-                    @Html.ActionLink("Your Start Page, Idea Carrier", "Index", "StartUps", null, new { style = "font-size:26px" });
-                }
-                else if (ViewBag.UserRole == EoS.Models.Role.Investor.ToString())
-                {
-                    @Html.ActionLink("Your Start Page, Investor", "Index", "Investments", null, new { style = "font-size:26px" });
-                }*@
-            @*</div>*@
-}
-
 <section id="whatwedo" style="margin: 48px auto;">
     <div class="o-col" id="HomeInfo">
 
@@ -43,49 +15,15 @@
 
         <noscript class="text-danger" style="font-size:20px"><br />Don't block JavaScript !!<hr /></noscript>
 
-        <!--
-
-        <h3>Enablers of Sweden (EoS)</h3><br />
+        <h3>Form System</h3><br />
         <p>
-            Den svenska Startup marknaden är superhet och översvämmas av bra affärsidéer och innovationer. Samtidigt har majoriteten av alla idébärare/Startups en mycket stor utmaning med att få tillgång till finansiering och riskvilligt kapital i tidiga skeden.
-            Detta är fullt förståeligt på grund av komplexiteten i att göra affärsidéer begripbara för rätt mottagare/investerare vid rätt tidpunkt.
+            A system for managing forms for the web developed by Stefan L&ouml;vefors in Sweden (northern Europe).
         </p>
-
-        <p>Vi hjälper investerare att baserat på individuell profil och önskemål bevaka investeringsmöjligheter bland svenska startupföretag i tidigt skede.</p>
-
-        -->
 
     </div>
 </section>
 
-@* <hr />
-
-       <article>
-       <header>
-           <h3>Blogs</h3>
-       </header>
-       (model ...AdminBlogViewModel)
-       if (ViewBag.UserRole == Eos.Models.Role.Admin.ToString()) @Html.ActionLink("Create new blog", "Create", "Blog", new { id = blog.BlogId })
-       foreach (var blog in Model.Blogs)
-       {
-           <div class="blogDiv">
-           blog.Date.ToString() + " " + blog.Creator.UserName
-           Html.TextFor(blog.BlogText);
-
-           if (string.IsNullOr(ViewBag.UserRole))
-           {
-               foreach (var blogComment in blog.BlogComments)
-               {
-                   blogComment.Date.ToString() + " " + Html.TextFor(blogComment.Creator.UserName);
-                   Html.TextFor(blogComment.BlogCommentText);
-                   @Html.ActionLink("Comment the blog", "Create", "BlogComment", new { id = blog.BlogId })
-               }
-           }
-           </div>
-       }
-    </article>*@
-
-@*<div class="jumbotron">
+<div class="jumbotron">
         <h1>ASP.NET</h1>
         <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
         <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
@@ -111,4 +49,4 @@
             <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
             <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
         </div>
-    </div>*@
+    </div>
