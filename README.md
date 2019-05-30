@@ -23,7 +23,7 @@ The code is a good example of the programming principles of<br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; Database method SaveChanges (rows 255,331,1073,1149,1191,1218,1255,1381) and<br />
 &nbsp;&nbsp;&nbsp; EntityState method Modified (rows 327,1072,1148,1217,1254,1380)<br />
-&nbsp;&nbsp;&nbsp; are only used when necessary !<br />
+&nbsp;&nbsp;&nbsp; are only used when really necessary !<br />
 5) <b>Code easier to read:</b><br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; using the pattern X = GetX(/*parameters*/). Rows 363,388,392.<br />
