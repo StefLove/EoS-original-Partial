@@ -29,7 +29,8 @@ The code is a good example of the programming principles of<br />
 &nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index files: using ViewModels and SelectLists instead.<br />
 &nbsp;&nbsp;&nbsp; Rows 202,204,267,269,358,367,369,378,394,396.
 <p />
-I have experienced that some developers write worse code than this, despite an education of 5 years of IT technology and programming!
+I have experienced that some developers write worse code than this,<br />
+despite an education of 5 years of IT technology and programming !
 
 
 Stefan
