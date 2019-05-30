@@ -31,8 +31,7 @@ The code is a good example of the programming principles of<br />
 <p />
 I have experienced that some developers write worse code than this,<br />
 despite an education of 5 years of IT technology and programming !
-
-
-Stefan
-Stockholm
+<p />
+Stefan<br />
+Stockholm<br />
 Sweden
