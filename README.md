@@ -6,9 +6,9 @@ If you want to view more code or buy the system, please contact me.<br />
 It is possible to convert this code to <b>C#.NET Core</b>, of course!<br />
 UI is in English.
 <p />
-The code is a good example of the programming principles of
+The code is a good example of the programming principles of<br />
 1) ViewModel
-   https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Models/IdeaCarrier/Startup.cs
-   see row 166 and below
-2) virtual
-3) Inheritence
+   https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Models/IdeaCarrier/Startup.cs<br />
+   see row 166 and below<br />
+2) virtual<br />
+3) Inheritence<br />
