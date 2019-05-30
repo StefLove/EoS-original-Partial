@@ -23,9 +23,9 @@ The code is a good example of the programming principles of<br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; Database method SaveChanges (rows 255,331,1073,1149,1191,1218,1255,1381) and<br />
 &nbsp;&nbsp;&nbsp; EntityState method Modified (rows 327,1072,1148,1217,1254,1380)<br />
-&nbsp;&nbsp;&nbsp; are only used when necessary !
-&nbsp;&nbsp;&nbsp; 6) Code easier to read:
+&nbsp;&nbsp;&nbsp; are only used when necessary !<br />
+&nbsp;&nbsp;&nbsp; 6) Code easier to read:<br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
-&nbsp;&nbsp;&nbsp; using the pattern X = GetX(/*parameters*/). Rows 363,388,392.
+&nbsp;&nbsp;&nbsp; using the pattern X = GetX(/*parameters*/). Rows 363,388,392.<br />
 &nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index files: using ViewModels and SelectLists instead.<b />
 &nbsp;&nbsp;&nbsp; rows 202,204,267,269,358,367,369,378,394,396.
