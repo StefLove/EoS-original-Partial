@@ -8,7 +8,7 @@ UI is in English.
 <p />
 The code is a good example of the programming principles of<br />
 1) <b>ViewModel:</b><br />
-&nbsp;&nbsp;&nbsp; see https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Models/IdeaCarrier/Startup.cs<br />
+&nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Models/IdeaCarrier/Startup.cs<br />
 &nbsp;&nbsp;&nbsp; row 166 and below.<br />
 2) <b>virtual:</b><br />
 &nbsp;&nbsp;&nbsp; see https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
@@ -24,8 +24,8 @@ The code is a good example of the programming principles of<br />
 &nbsp;&nbsp;&nbsp; Database method SaveChanges (rows 255,331,1073,1149,1191,1218,1255,1381) and<br />
 &nbsp;&nbsp;&nbsp; EntityState method Modified (rows 327,1072,1148,1217,1254,1380)<br />
 &nbsp;&nbsp;&nbsp; are only used when necessary !<br />
-&nbsp;&nbsp;&nbsp; 6) <b>Code easier to read:</b><br />
+5) <b>Code easier to read:</b><br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; using the pattern X = GetX(/*parameters*/). Rows 363,388,392.<br />
 &nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index files: using ViewModels and SelectLists instead.<br />
-&nbsp;&nbsp;&nbsp; rows 202,204,267,269,358,367,369,378,394,396.
+&nbsp;&nbsp;&nbsp; Rows 202,204,267,269,358,367,369,378,394,396.
