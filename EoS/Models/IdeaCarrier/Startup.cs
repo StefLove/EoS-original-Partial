@@ -159,7 +159,7 @@ namespace EoS.Models.IdeaCarrier
 
         [Display(Name = "Approved by")]
         public string ApprovedByID { get; set; }
-
+        
         /*public virtual ICollection<Service> Services { get; set; }*/
     }
 
@@ -210,10 +210,10 @@ namespace EoS.Models.IdeaCarrier
         [Display(Name = "Do you see a need of more funding in the future?")]
         public bool FutureFundingNeeded { get; set; }
 
-        [Display(Name = "How much time has already been spent?")]
+        [Display(Name = "How much time is already been spent?")]
         public int? AlreadySpentTime { get; set; }
 
-        [Display(Name = "How much money has already been spent?")]
+        [Display(Name = "How much money is already been spent?")]
         public int? AlreadySpentMoney { get; set; }
 
         [Display(Name = "Will the founder(s) spend more of their own money ahead?")]
