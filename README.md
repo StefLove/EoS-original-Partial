@@ -9,13 +9,18 @@ UI is in English.
 The code is a good example of the programming principles of<br />
 1) ViewModel<br />
 &nbsp;&nbsp;&nbsp; see https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Models/IdeaCarrier/Startup.cs<br />
-&nbsp;&nbsp;&nbsp; row 166 and below<br />
+&nbsp;&nbsp;&nbsp; row 166 and below.<br />
 2) virtual<br />
 &nbsp;&nbsp;&nbsp; see https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
-&nbsp;&nbsp;&nbsp; rows 719 and 720 (virtual takes of that modification) <br />
+&nbsp;&nbsp;&nbsp; rows 719 and 720 (virtual takes care of that modification in the database method SaveChanges). <br />
 3) Inheritence <br />
+&nbsp;&nbsp;&nbsp; Can also be used in ViewModels (and in Models of course !).<br />
 &nbsp;&nbsp;&nbsp; see https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Models/IdeaCarrier/Startup.cs<br />
 &nbsp;&nbsp;&nbsp; row 284 and below<br />
-&nbsp;&nbsp;&nbsp; Can be used in ViewModels (and in Models of course !)<br />
 &nbsp;&nbsp;&nbsp; What do you do if you want more than 1 database table fram the same model in ORM ?<br />
 &nbsp;&nbsp;&nbsp; Simply use inheretence !<br />
+4) No unnecessary updates of the database<br />
+&nbsp;&nbsp;&nbsp; see https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
+&nbsp;&nbsp;&nbsp; Database method SaveChanges (rows 255,331,1073,1149,1191,1218,1255,1381) and<br />
+&nbsp;&nbsp;&nbsp; EntityState method Modified (rows 327,1072,1148,1217,1254,1380)<br />
+&nbsp;&nbsp;&nbsp; are only used when necessary !
