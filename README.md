@@ -17,8 +17,7 @@ The code is a good example of the programming principles of<br />
 &nbsp;&nbsp;&nbsp; Can also be used in ViewModels (and in Models of course !).<br />
 &nbsp;&nbsp;&nbsp; In https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Models/IdeaCarrier/Startup.cs<br />
 &nbsp;&nbsp;&nbsp; row 284 and below.<br />
-&nbsp;&nbsp;&nbsp; What do you do if you want more than 1 database table fram the same model in ORM ?<br />
-&nbsp;&nbsp;&nbsp; Simply use inheretence !<br />
+&nbsp;&nbsp;&nbsp; (What do you do if you want more than 1 database table fram the same model in ORM ? Simply use inheretence !)<br />
 4) <b>No unnecessary updates of the database:</b><br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; Database method SaveChanges (rows 255,331,1073,1149,1191,1218,1255,1381) and<br />
@@ -29,3 +28,10 @@ The code is a good example of the programming principles of<br />
 &nbsp;&nbsp;&nbsp; using the pattern X = GetX(/*parameters*/). Rows 363,388,392.<br />
 &nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index files: using ViewModels and SelectLists instead.<br />
 &nbsp;&nbsp;&nbsp; Rows 202,204,267,269,358,367,369,378,394,396.
+<p />
+I have experienced that some developers write worse code than this, despite an education of 5 years of IT technology and programming!
+
+
+Stefan
+Stockholm
+Sweden
