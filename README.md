@@ -30,7 +30,8 @@ The code is a good example of the programming principles of<br />
 &nbsp;&nbsp;&nbsp; Rows 202,204,267,269,358,367,369,378,394,396.
 <p />
 I have experienced that some developers write worse code than this,<br />
-despite an education of 5 years in IT technology and programming !
+despite an education of 5 years in IT technology and programming !<br />
+You just can't be a plain developer, you must be an excellent developer who delivers code that works !
 <p />
 Stefan<br />
 Stockholm<br />
