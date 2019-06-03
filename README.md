@@ -32,7 +32,7 @@ The code is a good example of the programming principles of<br />
 6) <b>LINQ and ORM</b>:<br />
 &nbsp;&nbsp;&nbsp; e.g. in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; e.g. Rows 56,61,76,81,133,149.<br />
-7) <b>Razor</b><br />
+7) <b>Razor:</b><br />
 &nbsp;&nbsp;&nbsp; e.g. in the cshtml files: https://github.com/StefLove/FormSystem_Partial/tree/master/EoS/Views
 <p />
 I have experienced that some developers write worse code than this,<br />
