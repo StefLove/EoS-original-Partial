@@ -26,19 +26,19 @@ The code is a good example of the programming principles of<br />
 5) <b>Code easier to read:</b><br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; using the pattern: var X = GetX(/*parameters*/). Rows 363,388,392.<br />
-&nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index (rows 27-114) (and ProjectDetails (rows 117-156), but that can be easily changed):<br />
-&nbsp;&nbsp;&nbsp; using ViewModels and SelectLists instead.<br />
+&nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index (rows 27-114) (and ProjectDetails (rows 117-156),<br />
+&nbsp;&nbsp;&nbsp; but that can be easily changed): using ViewModels and SelectLists instead.<br />
 &nbsp;&nbsp;&nbsp; Rows 202,204,267,269,358,367,369,378,394,396.
 <p />
 I have experienced that some developers write worse code than this,<br />
 despite an education of 5 years in IT technology and programming !<br />
 You just can't be a plain developer, you must be an excellent developer who delivers code that works and looks nice !
 <p />
-6) LINQ and ORM is used:
+6) <b>LINQ and ORM</b> is used:<br />
 &nbsp;&nbsp;&nbsp; e.g. a lot in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; e.g. Rows 56,61,76,81,133,149.
 <p />
-7) Razor is used
+7) <b>Razor</b> is used<br />
 &nbsp;&nbsp;&nbsp; e.g. a lot in the cshtml files: https://github.com/StefLove/FormSystem_Partial/tree/master/EoS/Views
 <p />
 Stefan<br />
