@@ -21,21 +21,25 @@ The code is a good example of the programming principles of<br />
 4) <b>No unnecessary updates of the database:</b><br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; Database method SaveChanges (rows 255,331,1073,1149,1191,1218,1255,1381) and<br />
-&nbsp;&nbsp;&nbsp; EntityState method Modified (rows 327,1072,1148,1217,1254,1380)<br />
+&nbsp;&nbsp;&nbsp; EntityState method Modified (rows 327,1072,1148,1217,1254,1380).<br />
 &nbsp;&nbsp;&nbsp; are only used when really necessary !<br />
 5) <b>Code easier to read:</b><br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; using the pattern: var X = GetX(/*parameters*/). Rows 363,388,392.<br />
-&nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index (and ProjectDetails, but that can be changed) files: using ViewModels and SelectLists instead.<br />
+&nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index (rows 27-114) (and ProjectDetails (rows 117-156), but that can be easily changed):<br />
+&nbsp;&nbsp;&nbsp; using ViewModels and SelectLists instead.<br />
 &nbsp;&nbsp;&nbsp; Rows 202,204,267,269,358,367,369,378,394,396.
 <p />
 I have experienced that some developers write worse code than this,<br />
 despite an education of 5 years in IT technology and programming !<br />
-You just can't be a plain developer, you must be an excellent developer who delivers code that works !
+You just can't be a plain developer, you must be an excellent developer who delivers code that works and looks nice !
 <p />
-6) Linq and ORM is used:
-&nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
-&nbsp;&nbsp;&nbsp; Rows
+6) LINQ and ORM is used:
+&nbsp;&nbsp;&nbsp; e.g. a lot in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
+&nbsp;&nbsp;&nbsp; e.g. Rows 56,61,76,81,133,149.
+<p />
+7) Razor is used
+&nbsp;&nbsp;&nbsp; e.g. a lot in the cshtml files: https://github.com/StefLove/FormSystem_Partial/tree/master/EoS/Views
 <p />
 Stefan<br />
 Stockholm<br />
