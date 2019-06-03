@@ -29,11 +29,11 @@ The code is a good example of the programming principles of<br />
 &nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index (rows 27-114) (and ProjectDetails (rows 117-156),<br />
 &nbsp;&nbsp;&nbsp; but that can be easily changed): using ViewModels and SelectLists instead.<br />
 &nbsp;&nbsp;&nbsp; Rows 202,204,267,269,358,367,369,378,394,396.<br />
-6) <b>LINQ and ORM</b> is used:<br />
-&nbsp;&nbsp;&nbsp; e.g. a lot in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
+6) <b>LINQ and ORM</b>:<br />
+&nbsp;&nbsp;&nbsp; e.g. in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; e.g. Rows 56,61,76,81,133,149.<br />
-7) <b>Razor</b> is used<br />
-&nbsp;&nbsp;&nbsp; e.g. a lot in the cshtml files: https://github.com/StefLove/FormSystem_Partial/tree/master/EoS/Views
+7) <b>Razor</b><br />
+&nbsp;&nbsp;&nbsp; e.g. in the cshtml files: https://github.com/StefLove/FormSystem_Partial/tree/master/EoS/Views
 <p />
 I have experienced that some developers write worse code than this,<br />
 despite an education of 5 years in IT technology and programming !<br />
