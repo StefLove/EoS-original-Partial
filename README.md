@@ -25,13 +25,17 @@ The code is a good example of the programming principles of<br />
 &nbsp;&nbsp;&nbsp; are only used when really necessary !<br />
 5) <b>Code easier to read:</b><br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
-&nbsp;&nbsp;&nbsp; using the pattern X = GetX(/*parameters*/). Rows 363,388,392.<br />
-&nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index files: using ViewModels and SelectLists instead.<br />
+&nbsp;&nbsp;&nbsp; using the pattern: var X = GetX(/*parameters*/). Rows 363,388,392.<br />
+&nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index (and ProjectDetails, but that can be changed) files: using ViewModels and SelectLists instead.<br />
 &nbsp;&nbsp;&nbsp; Rows 202,204,267,269,358,367,369,378,394,396.
 <p />
 I have experienced that some developers write worse code than this,<br />
 despite an education of 5 years in IT technology and programming !<br />
 You just can't be a plain developer, you must be an excellent developer who delivers code that works !
+<p />
+6) Linq and ORM is used:
+&nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
+&nbsp;&nbsp;&nbsp; Rows
 <p />
 Stefan<br />
 Stockholm<br />
