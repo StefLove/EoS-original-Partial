@@ -10,10 +10,12 @@ using EoS.Models;
 using EoS.Models.IdeaCarrier;
 using Microsoft.AspNet.Identity;
 using System.IO;
-//using EoS.ViewModels;
 using EoS.Models.Shared;
-using System.Threading.Tasks;
-using System.Net.Mail;
+/*...*/
+/*...*/
+/*...*/
+/*...*/
+/*...*/
 
 namespace EoS.Controllers
 {
