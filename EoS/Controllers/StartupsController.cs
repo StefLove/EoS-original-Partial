@@ -11,7 +11,7 @@ using EoS.Models.IdeaCarrier;
 using Microsoft.AspNet.Identity;
 using System.IO;
 using EoS.Models.Shared;
-using EoS.Models.MMM;
+/* ... */
 using System.Threading.Tasks;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
@@ -1265,101 +1265,9 @@ namespace EoS.Controllers
 
             return RedirectToAction("ProjectDetails", new { id });
         }
-
-        // GET: Startups/Reminder
-        [Authorize(Roles = ("Admin"))]
-        public ActionResult Reminder(string id, string subject = "", string message = "", string redirect = "") //id==startupId
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            Models.IdeaCarrier.Startup StartupProject = db.Startups.Find(id);
-
-            if (StartupProject == null)
-            {
-                return HttpNotFound();
-            }
-            else
-            {
-                ReminderStartupViewModel model = new ReminderStartupViewModel
-                {
-                    StartupId = id, //==Startup.StartupID,
-                    StartupName = StartupProject.StartupName,
-                    IdeaCarrierEmail = StartupProject.User.Email,
-                    IdeaCarrierId = StartupProject.UserID,
-                    Subject = subject,
-                    Message = message,
-                    Redirect = redirect
-                };
-                return View(model);
-            }
-
-            //return View();
-        }
-
-        // POST: Startups/Reminder
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = ("Admin"))]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [ValidateInput(false)]
-        public async Task<ActionResult> Reminder(ReminderStartupViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var smtpClients = db.SmtpClients.ToList();
-
-                foreach (Models.SMTP.SmtpClient smtpClient in smtpClients)
-                {
-                    if (smtpClient.Active)
-                    {
-                        try
-                        {
-                            MailMessage message = new MailMessage
-                            {
-                                From = new MailAddress(User.Identity.Name),
-                                Subject = model.Subject,
-                                Body = model.StartupId + (string.IsNullOrEmpty(model.StartupName) ? "" : " (" + model.StartupName + ")") + "\n\n"+ model.Message,
-                                IsBodyHtml = false
-                            };
-
-                            message.To.Add(new MailAddress(model.IdeaCarrierEmail));
-                            message.Bcc.Add(new MailAddress(smtpClient.MailRecipient));
-                            message.Bcc.Add(new MailAddress(User.Identity.GetUserName()));
-
-                            using (var smtp = new System.Net.Mail.SmtpClient())
-                            {
-                                var credential = new NetworkCredential
-                                {
-                                    UserName = smtpClient.CredentialUserName,
-                                    Password = smtpClient.CredentialPassword
-                                };
-                                smtp.Credentials = credential;
-                                smtp.Host = smtpClient.Host;
-                                smtp.Port = smtpClient.Port;
-                                smtp.EnableSsl = smtpClient.EnableSsl;
-                                await smtp.SendMailAsync(message);
-
-                                ModelState.AddModelError("", "The reminder about " + model.StartupId + " (" + model.StartupName + ") has been sent to " + model.IdeaCarrierEmail);
-                                return View(model);
-                            }
-                        }
-                        catch
-                        {
-                            ModelState.AddModelError("", "The reminder could not be sent (Email recipient probably non-existent).");
-                        }
-                    }
-                }
-                ModelState.AddModelError("", "The reminder could not be sent (Smtp Client probably not set).");
-            }
-            else ModelState.AddModelError("", "The Model State is invalid.");
-
-            return View(model);
-        }
-
+        
+        /*...*/
+        
         [Authorize(Roles = "IdeaCarrier")]
         public ActionResult ProlongDeadlineDate(string id, int months = 6, string redirect = "")
         {
