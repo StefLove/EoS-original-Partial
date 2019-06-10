@@ -61,7 +61,7 @@ namespace EoS.Controllers
                             startupProjects = ideaCarrier.Startups.Where(s => !s.Locked || !s.Approved || (s.DeadlineDate.HasValue && DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) <= 0)).OrderBy(s => s.StartupID).ToList();
                         }
 
-                        //return View(startups);
+                        /*...*/
                     }
                 }
                 else //Show all Startup projects
@@ -80,8 +80,8 @@ namespace EoS.Controllers
                         ViewBag.Matchable = false;
                         startupProjects = db.Startups.Where(s => !s.Locked || !s.Approved || (s.DeadlineDate.HasValue && DateTime.Compare(s.DeadlineDate.Value, DateTime.Now) <= 0)).OrderBy(s => s.StartupID).ToList();
                     }
-                    //ViewBag.UserRole = Role.Admin.ToString();
-                    //return View(startups);
+                    /*...*/
+                    /*...*/
                 }
             }
             else //if (User.IsInRole("IdeaCarrier"))
@@ -101,9 +101,9 @@ namespace EoS.Controllers
                     case "USERNAME": return View(startupProjects.OrderBy(su => su.User.UserName)); //break;
                     case "STARTUPID": return View(startupProjects.OrderBy(su => su.StartupID));
                     case "COUNTRY": return View(startupProjects.OrderBy(su => su.Country.CountryName));
-                    //case "SWEDISHREGION": return View(startupProjects.OrderBy(su => su.SwedishRegion.RegionName));
+                    /*...*/
                     case "PROJECTDOMAINNAME": return View(startupProjects.OrderBy(su => su.ProjectDomain?.ProjectDomainName));
-                    //case "FUNDINGAMOUNTVALUE": return View(startupProjects.OrderBy(su => su.FundingAmount?.FundingAmountValue));
+                    /*...*/
                     /*...*/
                     case "LASTSAVEDDATE": return View(startupProjects.OrderByDescending(su => su.LastSavedDate));
                     case "DEADLINEDDATE": return View(startupProjects.OrderByDescending(su => su.DeadlineDate));
@@ -164,27 +164,27 @@ namespace EoS.Controllers
                 startupProject.DeadlineDate.HasValue &&
                 !string.IsNullOrEmpty(startupProject.ProjectSummary) &&
                 (startupProject.AllowedInvestors != null && startupProject.AllowedInvestors.Any()) &&
-                //startupProject.AllowSharing.HasValue && <-------
+                //startupProject.AllowSharing.HasValue &&
                 //Funding
                 startupProject.FundingPhaseID.HasValue &&
                 startupProject.FundingAmountID.HasValue &&
-                //startupProject.FutureFundingNeeded.HasValue && <-------
+                //startupProject.FutureFundingNeeded.HasValue &&
                 startupProject.AlreadySpentTime.HasValue &&
                 startupProject.AlreadySpentMoney.HasValue &&
-                //startupProject.WillSpendOwnMoney.HasValue && <--------
+                //startupProject.WillSpendOwnMoney.HasValue &&
                 //Budget
                 (startupProject.ProjectFundingDivisions != null && startupProject.ProjectFundingDivisions.Sum(pfd => pfd.Percentage) == 100) &&
                 startupProject.EstimatedExitPlanID.HasValue &&
                 startupProject.EstimatedBreakEven.HasValue &&
                 startupProject.PossibleIncomeStreams.HasValue &&
-                //startupProject.HavePayingCustomers.HasValue && <--------
+                //startupProject.HavePayingCustomers.HasValue &&
                 //Team
                 startupProject.TeamMemberSize.HasValue &&
                 startupProject.TeamExperience.HasValue &&
-                //startupProject.TeamVisionShared.HasValue && <---------
-                //startupProject.HaveFixedRoles.HasValue && <-------
+                //startupProject.TeamVisionShared.HasValue &&
+                //startupProject.HaveFixedRoles.HasValue &&
                 (startupProject.TeamWeaknesses != null && startupProject.TeamWeaknesses.Any()) &&
-                //startupProject.LookingForActiveInvestors.HasValue && <------
+                //startupProject.LookingForActiveInvestors.HasValue &&
                 //Outcome
                 (startupProject.Outcomes != null && startupProject.Outcomes.Any()) &&
                 startupProject.InnovationLevelID.HasValue &&
@@ -256,7 +256,7 @@ namespace EoS.Controllers
 
                 if (!string.IsNullOrEmpty(submit_command) && submit_command.StartsWith("Proceed")) //"Proceed to the Project form"
                 {
-                    //TempData["is_new_project"] = true;
+                    /*...*/
                     return RedirectToAction("ProjectForm", new { id = newStartupProjectID });
                 }
                 else return RedirectToAction("Index");
@@ -293,13 +293,13 @@ namespace EoS.Controllers
 
             string message = "";
             string unansweredQuestion = "";
-            //bool isNewProject = false;
+            /*...*/
 
             if (TempData.Any())
             {
                 if (TempData.ContainsKey("message")) message = TempData["message"] as string;
                 if (TempData.ContainsKey("unanswered")) unansweredQuestion = TempData["unanswered"] as string;
-                //if (TempData.ContainsKey("is_new_project")) isNewProject = TempData["is_new_project"] as bool? ?? false;
+                /*...*/
                 TempData.Clear();
             }
 
@@ -723,7 +723,7 @@ namespace EoS.Controllers
                     }
                 } 
                 
-                //wrongAnswer = true; return false;
+                /*...*/
             }
             else //if (fundingDivisionPercentages == null)
             {
@@ -769,11 +769,6 @@ namespace EoS.Controllers
                 startupProject.TeamVisionShared = false; //profilePostModel.TeamVisionShared = null;
                 updated = true;
             }
-            //if (startupProject.TeamVisionShared != projectPostModel.TeamVisionShared)
-            //{
-            //    startupProject.TeamVisionShared = projectPostModel.TeamVisionShared;
-            //    updated = true;
-            //}
 
             if (!string.IsNullOrEmpty(projectPostModel.HaveFixedRoles))
             {
@@ -928,8 +923,6 @@ namespace EoS.Controllers
         {
             if (cancel)
             {
-                //TempData["message"] = "Submission of form cancelled!";
-                //TempData["tab"] = redirectTab;
                 if (string.IsNullOrEmpty(redirectTab)) return RedirectToAction("ProjectForm", new { id });
                 else return Redirect(Url.Action("ProjectForm", new { id }) + "#" + redirectTab);
             }
@@ -950,7 +943,7 @@ namespace EoS.Controllers
             if (string.IsNullOrEmpty(startupProject.StartupName))
             {
                 TempData["message"] = "Project name can't be empty!";
-                TempData["unanswered"] = "ProjectName"; //"no_answer"
+                TempData["unanswered"] = "ProjectName";
                 return Redirect(Url.Action("ProjectForm", new { id }) + "#Project");
             }
             if (!startupProject.ProjectDomainID.HasValue)
@@ -1099,8 +1092,6 @@ namespace EoS.Controllers
                 IdeaCarrierUserID = startupProject.UserID,
                 IdeaCarrierUserName = startupProject.User.UserName,
                 ProjectSummary = startupProject.ProjectSummary,
-                //Approved = startupProject.Approved,
-                //ApprovedBy = approvedBy,
                 Locked = startupProject.Locked
             };
 
@@ -1135,13 +1126,6 @@ namespace EoS.Controllers
                     startupProject.Locked = model.Locked;
                     updated = true;
                 }
-
-                //if (model.Approved.HasValue && startupProject.Approved != model.Approved.Value)
-                //{
-                //    startupProject.Approved = model.Approved.Value;
-                //    startupProject.ApprovedByID = User.Identity.GetUserId();
-                //    updated = true;
-                //}
 
                 if (updated)
                 {
