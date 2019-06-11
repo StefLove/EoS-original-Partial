@@ -54,6 +54,8 @@ Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master
 &nbsp;&nbsp;&nbsp; Create (old code rows 137, 162)  to AddNewProject (rows 196, 216)<br />
 &nbsp;&nbsp;&nbsp; Edit (old code rows 214, 254) is renamed to ProjectForm (rows 277, 316)<br />
 &nbsp;&nbsp;&nbsp; Delete (old code row 362) to RemoveProject (row 1144)<br />
+4) This new code is more effective and thus runs faster mainly due to the splitting of the ProjectForm into 5 parts.<br />
+&nbsp;&nbsp;&nbsp; https://github.com/StefLove/FormSystem_Partial/tree/master/EoS/Views/Startups
 <p />
 I have experienced that some developers write worse code than this,<br />
 despite an education of 5 years in IT technology and programming !<br />
