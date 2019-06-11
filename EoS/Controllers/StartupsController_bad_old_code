@@ -254,9 +254,9 @@ namespace EoS.Controllers
         public ActionResult Edit([Bind(Include = "StartupID,UserId,CountryID,SwedishRegionID,StartupName,ProjectDomainID,DeadlineDate,ProjectSummary,AllowSharing,AllowSharingDisplayName,FundingPhaseID,FundingAmountID,FutureFundingNeeded,AlreadySpentTime,AlreadySpentMoney,WillSpendOwnMoney,EstimatedExitPlanID,EstimatedBreakEven,PossibleIncomeStreams,HavePayingCustomers,TeamMemberSize,TeamExperience,TeamVision,HaveFixedRoles,,LookingForActiveInvestors,InnovationLevelID,ScalabilityID,LastSavedDate,CreatedDate,Locked")] Models.IdeaCarrier.Startup model, string[] selectedSharedToInvestors, string[] selectedWeaknesses, string[] selectedOutcomes, string activeTab, string submitCommand)
         {
             if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Submit"))
-            {   //if user submit the form, lock it for editable
+            {   //if user submits the form, lock it for editable
                 //this must be before ModelState.IsValid
-                model.Locked = true; //<----------------------IsBeeingSubmitted
+                model.Locked = true;
                 if (selectedOutcomes == null)
                 {
                     ModelState.AddModelError("Outcomes", "Select at least one Outcome");
