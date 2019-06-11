@@ -37,7 +37,7 @@ namespace EoS.Controllers
 
             if (User.IsInRole(Role.Admin.ToString()))
             {
-                if (!string.IsNullOrEmpty(id)) //The Admin looks at a special IdeaCarrier's startup projectss
+                if (!string.IsNullOrEmpty(id)) //The Admin takes a look at a special IdeaCarrier's startup projects
                 {
                     if (!matchable.HasValue)
                     {
