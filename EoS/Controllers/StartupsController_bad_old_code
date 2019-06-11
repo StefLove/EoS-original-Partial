@@ -184,7 +184,7 @@ namespace EoS.Controllers
                 model.LastSavedDate = DateTime.Now;
                 db.Startups.Add(model);
                 db.SaveChanges();
-                if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Start")) //<-----------"Proceed to the Form"
+                if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Start")) //"Proceed to the Form"
                 {
                     //return Content(startup.StartupID.ToString());
                     return RedirectToAction("Edit", "Startups", new { id = model.StartupID });
