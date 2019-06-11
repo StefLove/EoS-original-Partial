@@ -220,7 +220,7 @@ namespace EoS.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            //These viewBags to handel the current values of the startup properies if exist and provide by other selections
+            //These ViewBags handel the current values of the startup properties if they exist and are derived from SelectLists
             Models.IdeaCarrier.Startup currentStartup = db.Startups.Find(id);
             ViewBag.projectDomainIdEdit = new SelectList(db.ProjectDomains, "ProjectDomainID", "ProjectDomainName", currentStartup.ProjectDomainID != null ? currentStartup.ProjectDomainID : null);
             ViewBag.FundingPhaseIdEdit = new SelectList(db.FundingPhases, "FundingPhaseID", "FundingPhaseName", currentStartup.FundingPhaseID != null ? currentStartup.FundingPhaseID : null);
@@ -270,9 +270,7 @@ namespace EoS.Controllers
 
             if (ModelState.IsValid)
             {
-                //if &&!model.Locked {
                 model.LastSavedDate = DateTime.Now;
-                //model.Locked
                 db.Entry(model).State = EntityState.Modified;
 
                 //UpdateStartupWeaknesses(selectedWeaknesses, startup);
@@ -281,13 +279,12 @@ namespace EoS.Controllers
                 db.SaveChanges();
                 
                 if (!string.IsNullOrEmpty(submitCommand) && submitCommand.StartsWith("Upload"))
-                {   //save the data of the form before upload the file to prevent lost of data
+                {   //save the data of the form before uploading the file to prevent loss of data
                     return RedirectToAction("UploadFile", "Startups", new { StartupID = model.StartupID });
                     
                 }
-                    return RedirectToAction("Index");
-                //}
-                //else ModelState.AddModelError("Locked", "Form locked, not possible to change anything in it, please contact Admin by the contact form.");
+                    
+                return RedirectToAction("Index");
             }
             else ModelState.AddModelError("", "Validation Error !!");
 
@@ -299,8 +296,6 @@ namespace EoS.Controllers
             ViewBag.EstimatedExitPlanIdEdit = new SelectList(db.EstimatedExitPlans, "EstimatedExitPlanID", "EstimatedExitPlanName", currentStartup.EstimatedExitPlanID != null ? currentStartup.EstimatedExitPlanID : null);
             ViewBag.InnovationLevelIdEdit = new SelectList(db.InnovationLevels, "InnovationLevelID", "InnovationLevelName", currentStartup.InnovationLevelID != null ? currentStartup.InnovationLevelID : null); //<--------------------!!
             ViewBag.ScalabilityIdEdit = new SelectList(db.Scalabilities, "ScalabilityID", "ScalabilityName", currentStartup.ScalabilityID != null ? currentStartup.ScalabilityID : null);
-            //Get the uploaded files size
-            ViewBag.AllowedToUploadMore = AllowedToUploadMore(model.StartupID);
 
             PopulateAssignedCheckBoxsData(model, selectedWeaknesses, selectedOutcomes, selectedSharedToInvestors);
 
@@ -381,12 +376,6 @@ namespace EoS.Controllers
         {   
 
             Models.IdeaCarrier.Startup startup = db.Startups.Find(id);
-            //Find all Associated files and delete them
-            var documents = db.Documents.Where(d => d.StartupID == id).ToList();
-            foreach (var document in documents)
-            {
-                DeleteDocument(document.DocId, document.DocURL, null);
-            }
 
             db.Startups.Remove(startup);
             db.SaveChanges();
