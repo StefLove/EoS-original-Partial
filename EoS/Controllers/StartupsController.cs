@@ -38,7 +38,7 @@ namespace EoS.Controllers
             {
                 ViewBag.UserRole = Role.Admin.ToString();
 
-                if (!string.IsNullOrEmpty(id)) //The Admin looks at a special IdeaCarrier's startup projects
+                if (!string.IsNullOrEmpty(id)) //The Admin takes a look at a special IdeaCarrier's startup projects
                 {
                     ApplicationUser ideaCarrier = db.Users.Find(id);
                     if (ideaCarrier != null)
