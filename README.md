@@ -20,13 +20,13 @@ The code is a good example of the programming principles of<br />
 &nbsp;&nbsp;&nbsp; (What do you do if you want more than 1 database table fram the same model in ORM ? Simply use inheretence !)<br />
 4) <b>No unnecessary updates of the database:</b><br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
-&nbsp;&nbsp;&nbsp; Database method SaveChanges (rows 255,331,1073,1149,1191,1218,1255,1381) and<br />
-&nbsp;&nbsp;&nbsp; EntityState method Modified (rows 327,1072,1148,1217,1254,1380).<br />
+&nbsp;&nbsp;&nbsp; Database method SaveChanges (rows 255,331,1066,1133,1175,1202,1239,1273) and<br />
+&nbsp;&nbsp;&nbsp; EntityState method Modified (rows 327,1065,1132,1201,1238,1272).<br />
 &nbsp;&nbsp;&nbsp; are only used when really necessary !<br />
 5) <b>Code easier to read:</b><br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; using the pattern: var X = GetX(/*parameters*/). Rows 363,388,392.<br />
-&nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index (rows 27-114) (and ProjectDetails (rows 117-156),<br />
+&nbsp;&nbsp;&nbsp; no use of Viewbags (or ViewData), except in Index (rows 28-114) (and ProjectDetails (rows 118-156),<br />
 &nbsp;&nbsp;&nbsp; but that can be easily changed): using ViewModels and SelectLists instead.<br />
 &nbsp;&nbsp;&nbsp; Rows 202,204,267,269,358,367,369,378,394,396.<br />
 6) <b>LINQ and ORM</b>:<br />
@@ -35,9 +35,29 @@ The code is a good example of the programming principles of<br />
 7) <b>Razor:</b><br />
 &nbsp;&nbsp;&nbsp; e.g. in the cshtml files: https://github.com/StefLove/FormSystem_Partial/tree/master/EoS/Views
 <p />
+Major differences between the old and the new code<br />
+Look at https://github.com/StefLove/FormSystem_Partial/edit/master/EoS/Controllers/StartupsController_bad_old_code<br />
+1) That horrible [Bind(Include = "...")] (which makes the code less readable and has that problem with overposting attacks)<br />
+&nbsp;&nbsp;&nbsp; rows 162, 254.<br />
+&nbsp;&nbsp;&nbsp; The code gets much better with ViewModels as in rows 325-332 and 340-358.<br />
+2) ViewBag after ViewBag (horrible too)<br />
+&nbsp;&nbsp;&nbsp; 139-151, 197-207, 223-233, 294-303<br />
+Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
+Some of the improvements:<br />
+1) Instead of [Bind(Include = "...")] ViewModels are used (overposting attacks are no problem with those):<br />
+&nbsp;&nbsp;&nbsp; The code is much more readable now.<br />
+&nbsp;&nbsp;&nbsp; Rows 216, 316<br />
+2) Viewbags are only used in Index (and in ProjectDetails, but that is easy to change):<br />
+&nbsp;&nbsp;&nbsp; Rows 28-114, 118-156<br />
+3) Names has been renamed and is now easier to understand because they follow a logic:<br />
+&nbsp;&nbsp;&nbsp; Details (old code row 110) to ProjectDetails (row 118)<br />
+&nbsp;&nbsp;&nbsp; Create (old code rows 137, 162)  to AddNewProject (rows 196, 216)<br />
+&nbsp;&nbsp;&nbsp; Edit (old code rows 214, 254) is renamed to ProjectForm (rows 277, 316)<br />
+&nbsp;&nbsp;&nbsp; Delete (old code row 362) to RemoveProject (row 1144)<br />
+<p />
 I have experienced that some developers write worse code than this,<br />
 despite an education of 5 years in IT technology and programming !<br />
-You just can't be a plain developer, you must be an excellent developer who delivers code that works and looks nice !
+You just can't be a plain developer, you must be an excellent developer who delivers code that works and looks nice !<br />
 Stefan<br />
 Stockholm<br />
 Sweden
