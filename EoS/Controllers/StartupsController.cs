@@ -303,7 +303,7 @@ namespace EoS.Controllers
                 TempData.Clear();
             }
 
-            return View(GetStartupProjectViewModel(startupProject, false, message, unansweredQuestion/*, isNewProject*/));
+            return View(GetStartupProjectViewModel(startupProject, false, message, unansweredQuestion));
         }
 
         // POST: Startups/ProjectForm/5
@@ -346,7 +346,7 @@ namespace EoS.Controllers
             return View(GetStartupProjectViewModel(startupProject, updated));
         }
 
-        private StartupProjectViewModel GetStartupProjectViewModel(Models.IdeaCarrier.Startup startupProject, bool updated = false, string message = "", string unansweredQuestion = ""/*, bool isNewProject = false*/)
+        private StartupProjectViewModel GetStartupProjectViewModel(Models.IdeaCarrier.Startup startupProject, bool updated = false, string message = "", string unansweredQuestion = "")
         {
             return new StartupProjectViewModel()
             {
@@ -367,10 +367,10 @@ namespace EoS.Controllers
                 FundingPhaseList = new SelectList(db.FundingPhases, "FundingPhaseID", "FundingPhaseName"),
                 FundingAmountID = startupProject.FundingAmountID,
                 FundingAmountList = new SelectList(db.FundingAmounts, "FundingAmountID", "FundingAmountValue"),
-                FutureFundingNeeded = startupProject.FutureFundingNeeded, //!isNewProject ? startupProject.FutureFundingNeeded : null,
+                FutureFundingNeeded = startupProject.FutureFundingNeeded,
                 AlreadySpentTime = startupProject.AlreadySpentTime,
                 AlreadySpentMoney = startupProject.AlreadySpentMoney,
-                WillSpendOwnMoney = startupProject.WillSpendOwnMoney, //!isNewProject ? startupProject.WillSpendOwnMoney : null,
+                WillSpendOwnMoney = startupProject.WillSpendOwnMoney, 
 
                 //Budget
                 FundingDivisions = startupProject.ProjectFundingDivisions.Distinct().ToList(),
@@ -378,15 +378,15 @@ namespace EoS.Controllers
                 EstimatedExitPlanList = new SelectList(db.EstimatedExitPlans, "EstimatedExitPlanID", "EstimatedExitPlanName"),
                 EstimatedBreakEven = startupProject.EstimatedBreakEven,
                 PossibleIncomeStreams = startupProject.PossibleIncomeStreams,
-                HavePayingCustomers = startupProject.HavePayingCustomers, //!isNewProject ? startupProject.HavePayingCustomers : null,
+                HavePayingCustomers = startupProject.HavePayingCustomers,
 
                 //Team
                 TeamMemberSize = startupProject.TeamMemberSize,
                 TeamExperience = startupProject.TeamExperience,
-                TeamVisionShared = startupProject.TeamVisionShared, //!isNewProject ? startupProject.TeamVisionShared : null,
-                HaveFixedRoles = startupProject.HaveFixedRoles, //!isNewProject ? startupProject.HaveFixedRoles : null,
+                TeamVisionShared = startupProject.TeamVisionShared,
+                HaveFixedRoles = startupProject.HaveFixedRoles,
                 TeamWeaknesses = GetTeamWeaknesses(startupProject),
-                LookingForActiveInvestors = startupProject.LookingForActiveInvestors, //!isNewProject ? startupProject.LookingForActiveInvestors : null,
+                LookingForActiveInvestors = startupProject.LookingForActiveInvestors,
 
                 //Outcome
                 Outcomes = GetOutcomes(startupProject),
@@ -463,7 +463,7 @@ namespace EoS.Controllers
             return outcomeViewModels;
         }
 
-        private bool UpdateActiveTab(Models.IdeaCarrier.Startup startupProject, StartupProjectPostViewModel projectPostModel) //, ref bool wrongAnswerInFundingDivisionPercentages
+        private bool UpdateActiveTab(Models.IdeaCarrier.Startup startupProject, StartupProjectPostViewModel projectPostModel)
         {
             bool updated = false;
 
@@ -644,7 +644,7 @@ namespace EoS.Controllers
             return updated;
         }
 
-        private bool UpdateTabBudget(Models.IdeaCarrier.Startup startupProject, StartupProjectPostViewModel projectPostModel) //, ref bool wrongAnswerInFundingDivisionPercentages)
+        private bool UpdateTabBudget(Models.IdeaCarrier.Startup startupProject, StartupProjectPostViewModel projectPostModel)
         {
             bool updated = false;
 
@@ -691,7 +691,7 @@ namespace EoS.Controllers
             return updated;
         }
 
-        private bool UpdateFundingDivisionPercentages(string[] fundingDivisionPercentages, Models.IdeaCarrier.Startup startupProject) //, ref bool wrongAnswer)
+        private bool UpdateFundingDivisionPercentages(string[] fundingDivisionPercentages, Models.IdeaCarrier.Startup startupProject)
         {
             bool updated = false;
             
