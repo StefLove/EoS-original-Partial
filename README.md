@@ -6,7 +6,7 @@ If you want to view more code or buy the system, please contact me.<br />
 It is possible to convert this code to <b>C#.NET Core</b>, of course !<br />
 UI is in English.
 <p />
-The code is a good example of the programming principles of<br />
+<b>The code is a good example of the programming principles of</b><br />
 1) <b>ViewModel:</b><br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Models/IdeaCarrier/Startup.cs<br />
 &nbsp;&nbsp;&nbsp; row 166 and below.<br />
@@ -35,7 +35,7 @@ The code is a good example of the programming principles of<br />
 7) <b>Razor:</b><br />
 &nbsp;&nbsp;&nbsp; e.g. in the cshtml files: https://github.com/StefLove/FormSystem_Partial/tree/master/EoS/Views
 <p />
-Major differences between the old and the new code<br />
+<b>Major differences between the old and the new code</b><br />
 Look at https://github.com/StefLove/FormSystem_Partial/edit/master/EoS/Controllers/StartupsController_bad_old_code<br />
 1) That horrible [Bind(Include = "...")] (which makes the code less readable and has that problem with overposting attacks)<br />
 &nbsp;&nbsp;&nbsp; rows 162, 254.<br />
@@ -43,12 +43,12 @@ Look at https://github.com/StefLove/FormSystem_Partial/edit/master/EoS/Controlle
 2) ViewBag after ViewBag (horrible too)<br />
 &nbsp;&nbsp;&nbsp; 139-151, 197-207, 223-233, 294-303<br />
 Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
-Some of the improvements:<br />
+<b>Some of the improvements:</b><br />
 1) Instead of [Bind(Include = "...")] ViewModels are used (overposting attacks are no problem with those):<br />
 &nbsp;&nbsp;&nbsp; The code is much more readable now.<br />
 &nbsp;&nbsp;&nbsp; Rows 216, 316<br />
 2) Viewbags are only used in Index (and in ProjectDetails, but that is easy to change):<br />
-&nbsp;&nbsp;&nbsp; Rows 28-114, 118-156<br />
+&nbsp;&nbsp;&nbsp; Rows 28-114, 118-156 (see also above under 5)).<br />
 3) Names has been renamed and is now easier to understand because they follow a logic:<br />
 &nbsp;&nbsp;&nbsp; Details (old code row 110) to ProjectDetails (row 118)<br />
 &nbsp;&nbsp;&nbsp; Create (old code rows 137, 162)  to AddNewProject (rows 196, 216)<br />
