@@ -61,8 +61,9 @@ Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master
 <b>5)</b> Unnessary code deleted:<br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController_bad_old_code<br />
 &nbsp;&nbsp;&nbsp; rows<br />
-<b>6)</b> Simpification: e.g. using only Lists (very easy to use), in the old code even HashSets were used (without motivation).<br />
-&nbsp;&nbsp;&nbsp; 
+<b>6)</b> Simpification:<br />
+&nbsp;&nbsp;&nbsp; e.g. using only Lists (very easy to use), in the old code even HashSets were used (without motivation).<br />
+&nbsp;&nbsp;&nbsp; rows
 <p />
 I have experienced that some developers write worse code than this,<br />
 despite an education of 5 years in IT technology and programming !<br />
