@@ -36,7 +36,7 @@ UI is in English.
 &nbsp;&nbsp;&nbsp; e.g. in the cshtml files: https://github.com/StefLove/FormSystem_Partial/tree/master/EoS/Views
 <p />
 <b>Major differences between the old and the new code</b><br />
-Look at https://github.com/StefLove/FormSystem_Partial/edit/master/EoS/Controllers/StartupsController_bad_old_code<br />
+Have a look at https://github.com/StefLove/FormSystem_Partial/edit/master/EoS/Controllers/StartupsController_bad_old_code<br />
 <b>1)</b> That horrible [Bind(Include = "...")] (which makes the code less readable and has that problem with overposting attacks)<br />
 &nbsp;&nbsp;&nbsp; rows 162, 254.<br />
 &nbsp;&nbsp;&nbsp; The code gets much better with ViewModels as in rows 325-332 and 340-358.<br />
