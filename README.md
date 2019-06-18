@@ -62,11 +62,13 @@ Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master
 &nbsp;&nbsp;&nbsp; e.g. PopulateAssignedCheckBoxsData rows 300,585-647.<br />
 <b>6)</b> Simpification:<br />
 &nbsp;&nbsp;&nbsp; e.g. using only Lists (very easy to use), in the old code even HashSets were used (without motivation).<br />
-&nbsp;&nbsp;&nbsp; rows 400-438 and 547-556 in the old code, replaced with better code: rows 818-856 and 425-443 in the new code.
+&nbsp;&nbsp;&nbsp; Rows 400-438 in the old code, replaced with better code: rows 818-856 in the new code. <br />
+&nbsp;&nbsp;&nbsp; Rows 525-528,547-556 in the old code, replaced with better code: rows 425-443 in the new code.
 <p />
 I have experienced that some developers write worse code than this,<br />
 despite an education of 5 years in IT technology and programming !<br />
-You just can't be a plain developer, you must be an excellent developer who delivers code that works and looks nice !<p />
+You just can't be a plain developer, you must be an excellent developer who delivers code that works and looks nice !
+<p />
 Stefan<br />
 Stockholm<br />
 Sweden
