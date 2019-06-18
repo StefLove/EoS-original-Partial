@@ -7,7 +7,7 @@ It is possible to convert this code to <b>C#.NET Core</b>, of course !<br />
 UI is in English.
 <p />
 <b>The code is a good example of the programming principles of</b><br />
-<b>1)<7b> <b>ViewModel:</b><br />
+<b>1)</b> <b>ViewModel:</b><br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Models/IdeaCarrier/Startup.cs<br />
 &nbsp;&nbsp;&nbsp; row 166 and below.<br />
 <b>2)</b> <b>virtual:</b><br />
