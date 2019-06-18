@@ -200,7 +200,7 @@ namespace EoS.Controllers
             ViewBag.FundingPhaseId = new SelectList(db.FundingPhases, "FundingPhaseID", "FundingPhaseName");
             ViewBag.FundingNeedId = new SelectList(db.FundingAmounts, "FundingAmountID", "FundingAmountValue");
             ViewBag.EstimatedExitPlanId = new SelectList(db.EstimatedExitPlans, "EstimatedExitPlanID", "EstimatedExitPlanName");
-            ViewBag.InnovationLevelId = new SelectList(db.InnovationLevels, "InnovationLevelID", "InnovationLevelName"); //<-------------------------!!!
+            ViewBag.InnovationLevelId = new SelectList(db.InnovationLevels, "InnovationLevelID", "InnovationLevelName");
             ViewBag.ScalabilityId = new SelectList(db.Scalabilities, "ScalabilityID", "ScalabilityName");
             ViewBag.RegionsId = new SelectList(db.SwedishRegions, "RegionID", "RegionName");
             ViewBag.SwedishCountryId = db.Countries.Where(c => c.CountryName == "Sweden").Select(u => u.CountryID).Single();
