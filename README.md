@@ -43,7 +43,7 @@ Look at https://github.com/StefLove/FormSystem_Partial/edit/master/EoS/Controlle
 <b>2)</b> ViewBag after ViewBag (horrible too)<br />
 &nbsp;&nbsp;&nbsp; 139-151, 197-207, 223-233, 294-303<br />
 Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
-<b>Some of the improvements:</b><br />
+<b>Most of the improvements:</b><br />
 <b>1)</b> Instead of [Bind(Include = "...")] ViewModels are used (overposting attacks are no problem with those):<br />
 &nbsp;&nbsp;&nbsp; The code is much easier to read now.<br />
 &nbsp;&nbsp;&nbsp; Rows 216, 316<br />
@@ -55,7 +55,9 @@ Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master
 &nbsp;&nbsp;&nbsp; Edit (old code rows 214, 254) is renamed to ProjectForm (rows 277, 316)<br />
 &nbsp;&nbsp;&nbsp; Delete (old code row 362) to RemoveProject (row 1144)<br />
 <b>4)</b> This new code is more effective and thus runs faster mainly due to the splitting of the ProjectForm into 5 parts:<br />
-&nbsp;&nbsp;&nbsp; https://github.com/StefLove/FormSystem_Partial/tree/master/EoS/Views/Startups
+&nbsp;&nbsp;&nbsp; Have a look at the files containing the word ProjectForm in<br />
+&nbsp;&nbsp;&nbsp; https://github.com/StefLove/FormSystem_Partial/tree/master/EoS/Views/Startups<br />
+&nbsp;&nbsp;&nbsp;<br />
 <b>5)</b> Unnessary code deleted:<br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController_bad_old_code<br />
 &nbsp;&nbsp;&nbsp; rows 
