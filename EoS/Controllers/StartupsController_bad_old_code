@@ -537,9 +537,7 @@ namespace EoS.Controllers
             var startupAllowedInvestors = new HashSet<int>(currentStartupAllowedInvestors.AllowedInvestors.Select(a => a.AllowedInvestorID));
             var AllowedInvestorsViewModel = new List<AllowedInvestorViewModel>();
 
-            //this for Funding Divisions
             var allFundingDivisions = db.FundingDivisions;
-            //var currentStartupFundingDivisions = db.Startups.Include(f => f.FundingDivisionStartups).Where(s => s.StartupID == startup.StartupID).Single();
             var currentStartupFundingDivisions = db.Startups.Include(f => f.ProjectFundingDivisions).Where(s => s.StartupID == startup.StartupID).Single();
             var startupFundingDivisions = new HashSet<int>(currentStartupFundingDivisions.ProjectFundingDivisions.Select(f => f.FundingDivisionID));
             var FundingDivisionsList = new List<FundingDivisionStartup>();
