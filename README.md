@@ -60,11 +60,13 @@ Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master
 &nbsp;&nbsp;&nbsp;<br />
 <b>5)</b> Unnessary code deleted:<br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController_bad_old_code<br />
-&nbsp;&nbsp;&nbsp; rows 
+&nbsp;&nbsp;&nbsp; rows<br />
+<b><6/b> Simpification using only Lists, in the old code HashSets were used (without motivation).<br />
+&nbsp;&nbsp;&nbsp; 
 <p />
 I have experienced that some developers write worse code than this,<br />
 despite an education of 5 years in IT technology and programming !<br />
-You just can't be a plain developer, you must be an excellent developer who delivers code that works and looks nice !<br />
+You just can't be a plain developer, you must be an excellent developer who delivers code that works and looks nice !<p />
 Stefan<br />
 Stockholm<br />
 Sweden
