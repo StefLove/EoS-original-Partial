@@ -57,7 +57,6 @@ Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master
 <b>4)</b> This new code is more effective and thus runs faster mainly due to the splitting of the ProjectForm into 5 parts:<br />
 &nbsp;&nbsp;&nbsp; Have a look at the files containing the word ProjectForm in<br />
 &nbsp;&nbsp;&nbsp; https://github.com/StefLove/FormSystem_Partial/tree/master/EoS/Views/Startups<br />
-&nbsp;&nbsp;&nbsp;<br />
 <b>5)</b> Unnessary code deleted:<br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController_bad_old_code<br />
 &nbsp;&nbsp;&nbsp; rows<br />
