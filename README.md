@@ -60,8 +60,8 @@ Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master
 <b>5)</b> Unnessary code deleted:<br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController_bad_old_code<br />
 &nbsp;&nbsp;&nbsp; e.g. PopulateAssignedCheckBoxsData rows 300,585-647.<br />
-<b>6)</b> Simpification:<br />
-&nbsp;&nbsp;&nbsp; e.g. using only Lists (very easy to use), in the old code even HashSets were used (without motivation).<br />
+<b>6)</b> Make the code easier to find (and read):<br />
+<!--&nbsp;&nbsp;&nbsp; e.g. using only Lists (very easy to use), in the old code even HashSets were used (without motivation).<br />-->
 &nbsp;&nbsp;&nbsp; Rows 400-438 in the old code, replaced with better code: rows 818-856 in the new code. <br />
 &nbsp;&nbsp;&nbsp; Rows 525-528,547-556 in the old code, replaced with better code: rows 425-443 in the new code.
 <p />
