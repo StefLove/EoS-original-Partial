@@ -833,11 +833,11 @@ namespace EoS.Controllers
                     }
                 }
 
-                List<TeamWeakness> teamSkills = db.TeamWeaknesses.ToList();
+                List<TeamWeakness> teamWeaknesses = db.TeamWeaknesses.ToList();
                 TeamWeakness teamWeakness = null;
                 foreach (int postedTeamWeaknessID in postedTeamWeaknessIDList)
                 {
-                    teamWeakness = teamSkills.Where(tw => tw.TeamWeaknessID == postedTeamWeaknessID).FirstOrDefault();
+                    teamWeakness = teamWeaknesses.Where(tw => tw.TeamWeaknessID == postedTeamWeaknessID).FirstOrDefault();
 
                     if (!startupProject.TeamWeaknesses.Contains(teamWeakness))
                     {
