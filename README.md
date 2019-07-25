@@ -17,7 +17,7 @@ UI is in English.
 &nbsp;&nbsp;&nbsp; Can also be used in ViewModels (and in Models of course !).<br />
 &nbsp;&nbsp;&nbsp; In https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Models/IdeaCarrier/Startup.cs<br />
 &nbsp;&nbsp;&nbsp; row 284 and below.<br />
-&nbsp;&nbsp;&nbsp; (What do you do if you want more than 1 database table fram the same model in ORM ? Simply use inheretence !)<br />
+&nbsp;&nbsp;&nbsp; (What do you do if you want more than 1 database table of the same model in ORM ? Simply use inheretence !)<br />
 <b>4)</b> <b>No unnecessary updates of the database:</b><br />
 &nbsp;&nbsp;&nbsp; in https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 &nbsp;&nbsp;&nbsp; Database method SaveChanges (rows 255,331,1066,1133,1175,1202,1239,1273) and<br />
