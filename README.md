@@ -62,7 +62,7 @@ Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master
 <b>6)</b> The code is made easier to find (and thus to read):<br />
 <!--&nbsp;&nbsp;&nbsp; e.g. using only Lists (very easy to use), in the old code even HashSets were used (without motivation).<br />-->
 &nbsp;&nbsp;&nbsp; Rows 400-438 in the old code, replaced with better code: rows 818-856 in the new code. <br />
-&nbsp;&nbsp;&nbsp; Rows 525-528,547-556 in the old code, replaced with better code: rows 425-443 in the new code.
+&nbsp;&nbsp;&nbsp; Rows 525-528,547-556 in the old code, replaced with better code: rows 425-443 in the new code.<br />
 &nbsp;&nbsp;&nbsp; The result of these improvements of mine is that my code is faster and more dynamic than the old one.
 <p />
 Now you see that the developer who wrote the bad code was'nt that very skilled,<br />
