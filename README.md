@@ -37,16 +37,15 @@ UI is in English.
 <p />
 <b>Major differences between the old and the new code</b><br />
 Have a look at https://github.com/StefLove/FormSystem_Partial/edit/master/EoS/Controllers/StartupsController_bad_old_code<br />
-<b>1)</b> That horrible [Bind(Include = "...")] (which makes the code less readable and has that problem with overposting attacks)<br />
-&nbsp;&nbsp;&nbsp; rows 162, 254.<br />
-&nbsp;&nbsp;&nbsp; The code gets much better with ViewModels as in rows 325-332 and 340-358.<br />
+<b>1)</b> That horrible &#91;Bind(Include = "...")&#93; (which makes the code less readable and has that problem with overposting attacks)<br />
+&nbsp;&nbsp;&nbsp; rows 162, 254 (really awful!).<br />
 <b>2)</b> ViewBag after ViewBag (horrible too)<br />
 &nbsp;&nbsp;&nbsp; 139-151, 197-207, 223-233, 294-303<br />
 Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master/EoS/Controllers/StartupsController.cs<br />
 <b>Most of the improvements:</b><br />
-<b>1)</b> Instead of [Bind(Include = "...")] ViewModels are used (overposting attacks are no problem with those):<br />
-&nbsp;&nbsp;&nbsp; The code is much easier to read now.<br />
-&nbsp;&nbsp;&nbsp; Rows 216, 316<br />
+<b>1)</b> Instead of &#91;Bind(Include = "...")&#93; ViewModels are used:<br />
+&nbsp;&nbsp;&nbsp; The code is much easier to read and follow now.<br />
+&nbsp;&nbsp;&nbsp; Rows 216-272, 316-347, 349-403<br />
 <b>2)</b> Viewbags are only used in Index (and in ProjectDetails, but that is easy to change):<br />
 &nbsp;&nbsp;&nbsp; Rows 28-114, 118-156 (see also above under 5)).<br />
 <b>3)</b> Names has been renamed and is now easier to understand because they follow a logic:<br />
@@ -64,6 +63,7 @@ Compare with new code https://github.com/StefLove/FormSystem_Partial/blob/master
 <!--&nbsp;&nbsp;&nbsp; e.g. using only Lists (very easy to use), in the old code even HashSets were used (without motivation).<br />-->
 &nbsp;&nbsp;&nbsp; Rows 400-438 in the old code, replaced with better code: rows 818-856 in the new code. <br />
 &nbsp;&nbsp;&nbsp; Rows 525-528,547-556 in the old code, replaced with better code: rows 425-443 in the new code.
+&nbsp;&nbsp;&nbsp; The result of these improvements of mine is that my code is faster and more dynamic than the old one.
 <p />
 Now you see that the developer who wrote the bad code was'nt that very skilled,<br />
 despite an education of 5 years in IT technology and programming !<br />
