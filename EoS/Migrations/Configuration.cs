@@ -25,7 +25,7 @@ namespace EoS.Migrations
             var roleStore = new RoleStore<IdentityRole>(context);
             var roleManager = new RoleManager<IdentityRole>(roleStore);
 
-            var roleNames = new[] { Role.Admin.ToString(), Role.IdeaCarrier.ToString() /*, ....more roles here*/ };
+            var roleNames = new[] { Role.Admin.ToString(), Role.IdeaCarrier.ToString() /*...and so on*/ };
             foreach (var roleName in roleNames)
             {
                 if (!context.Roles.Any(r => r.Name == roleName))
@@ -44,7 +44,7 @@ namespace EoS.Migrations
             var userStore = new UserStore<ApplicationUser>(context);
             var userManager = new UserManager<ApplicationUser>(userStore);
 
-            var emails = new[] { "admin@enablers.se", "ideaCarrier1@enablers.se", "ideaCarrier2@enablers.se " /*...more addresses here*/ };
+            var emails = new[] { "admin@fs.se", "ideacarrier@ideacarrier.se" /*...and so on*/ };
 
             foreach (var email in emails)
             {
@@ -58,7 +58,7 @@ namespace EoS.Migrations
                         UserStartDate = DateTime.Now,
                     };
 
-                    var result = userManager.Create(user, "_123Xyz");
+                    var result = userManager.Create(user, "_Xyz09tr&r9%pf");
                     if (!result.Succeeded)
                     {
                         throw new Exception(string.Join("\n", result.Errors));
@@ -66,27 +66,22 @@ namespace EoS.Migrations
                 }
             }
 
-            var adminUser = userManager.FindByName("admin@enablers.se");
+            var adminUser = userManager.FindByName("admin@fs.se");
             userManager.AddToRole(adminUser.Id, Role.Admin.ToString());
             adminUser.UserFirstName = "Admin";
             adminUser.EmailConfirmed = true;
 
-            var ideaCarrierUser1 = userManager.FindByName("ideaCarrier1@enablers.se");
-            userManager.AddToRole(ideaCarrierUser1.Id, Role.IdeaCarrier.ToString());
-            ideaCarrierUser1.UserFirstName = "IdeaCarrier1";
-            ideaCarrierUser1.EmailConfirmed = true;
-
-            var ideaCarrierUser2 = userManager.FindByName("ideaCarrier2@enablers.se");
-            userManager.AddToRole(ideaCarrierUser2.Id, Role.IdeaCarrier.ToString());
-            ideaCarrierUser2.UserFirstName = "IdeaCarrier2";
-            ideaCarrierUser2.EmailConfirmed = true;
+            var ideacarrierUser = userManager.FindByName("ideacarrier@ideacarrier.se");
+            userManager.AddToRole(ideaCarrierUser.Id, Role.IdeaCarrier.ToString());
+            ideaCarrierUser.UserFirstName = "IdeaCarrier";
+            ideaCarrierUser.EmailConfirmed = true;
             
             /*...more users here*/
 
             context.Countries.AddOrUpdate(
                 c => c.CountryName,
-                new Country { CountryName = "Sweden", CountryAbbreviation = "SE" },
-                new Country { CountryName = "Austria", CountryAbbreviation = "AT" },
+                new Country { CountryName = "Sweden", CountryAbbreviation = "SE" }, //CountryID = 1 is better
+                new Country { CountryName = "Austria", CountryAbbreviation = "AT" }, //CountryID = 2 ...and so on
                 new Country { CountryName = "Belgium", CountryAbbreviation = "BE" },
                 new Country { CountryName = "Brazil", CountryAbbreviation = "BR" },
                 new Country { CountryName = "Bulgaria", CountryAbbreviation = "BG" },
@@ -121,8 +116,8 @@ namespace EoS.Migrations
                 new Country { CountryName = "Spain", CountryAbbreviation = "ES" },
                 new Country { CountryName = "Switzerland", CountryAbbreviation = "CH" },
                 new Country { CountryName = "United Kingdom", CountryAbbreviation = "UK" },
-                new Country { CountryName = "United States of America", CountryAbbreviation = "US" });
-            context.SaveChanges();
+                new Country { CountryName = "United States of America", CountryAbbreviation = "US" }
+                );
 
             context.SwedishRegions.AddOrUpdate(
                 sr => sr.RegionName,
@@ -148,9 +143,8 @@ namespace EoS.Migrations
                 new SwedishRegion { RegionName = "Örebro" },
                 new SwedishRegion { RegionName = "Östergötland" }
                 );
-            context.SaveChanges();
 
-            context.ProjectDomains.AddOrUpdate(
+            context.ProjectDomains.AddOrUpdate( //Domains is a better name
                  pd => pd.ProjectDomainName,
                  new ProjectDomain { ProjectDomainName = "Agriculture" },
                  new ProjectDomain { ProjectDomainName = "Advertising" },
@@ -185,21 +179,20 @@ namespace EoS.Migrations
                  new ProjectDomain { ProjectDomainName = "Staffing & Employment" },
                  new ProjectDomain { ProjectDomainName = "Telecommunications" },
                  new ProjectDomain { ProjectDomainName = "Travel Agency & Tourism" },
-                 new ProjectDomain { ProjectDomainName = "Technical Consultancy" },
+                 new ProjectDomain { ProjectDomainName = "Technical consultancy" },
                  new ProjectDomain { ProjectDomainName = "Transport" },
                  new ProjectDomain { ProjectDomainName = "Wholesale" },
                  new ProjectDomain { ProjectDomainName = "Warehousing" },
                  new ProjectDomain { ProjectDomainName = "Water" },
-                 new ProjectDomain { ProjectDomainName = "Waste Water" },
+                 new ProjectDomain { ProjectDomainName = "Waste water" },
                  new ProjectDomain { ProjectDomainName = "Other" }
                  );
-            context.SaveChanges();
 
             context.AllowedInvestors.AddOrUpdate(
               ai => ai.AllowedInvestorName,
               new AllowedInvestor { AllowedInvestorName = "Within Sweden" },
-              new AllowedInvestor { AllowedInvestorName = "Globally" });
-            context.SaveChanges();
+              new AllowedInvestor { AllowedInvestorName = "Globally" }
+              );
 
             context.EstimatedExitPlans.AddOrUpdate(
               eep => eep.EstimatedExitPlanName,
@@ -210,8 +203,8 @@ namespace EoS.Migrations
                 new EstimatedExitPlan { EstimatedExitPlanName = "< 3 years" },
                 new EstimatedExitPlan { EstimatedExitPlanName = "3 - 5 years" },
                 new EstimatedExitPlan { EstimatedExitPlanName = "5 - 10 years" },
-                new EstimatedExitPlan { EstimatedExitPlanName = "Long Term Involvement" });
-            context.SaveChanges();
+                new EstimatedExitPlan { EstimatedExitPlanName = "Long Term Involvement" }
+                );
 
             context.FundingAmounts.AddOrUpdate(
                     fa => fa.FundingAmountValue,
@@ -223,8 +216,8 @@ namespace EoS.Migrations
                     new FundingAmount { FundingAmountValue = "8,000,000 - 16,000,000" },
                     new FundingAmount { FundingAmountValue = "16,000,000 - 32,000,000" },
                     new FundingAmount { FundingAmountValue = "32,000,000 - 64,000,000" },
-                    new FundingAmount { FundingAmountValue = "64 000 000 and above" });
-            context.SaveChanges();
+                    new FundingAmount { FundingAmountValue = "64 000 000 and above" }
+                    );
 
             context.FundingPhases.AddOrUpdate(
                   fp => fp.FundingPhaseName,
@@ -235,8 +228,8 @@ namespace EoS.Migrations
                   new FundingPhase { FundingPhaseName = "Round A" },
                   new FundingPhase { FundingPhaseName = "Round B" },
                   new FundingPhase { FundingPhaseName = "Round C" },
-                  new FundingPhase { FundingPhaseName = "Round D" });
-            context.SaveChanges();
+                  new FundingPhase { FundingPhaseName = "Round D" }
+                  );
 
             context.FundingDivisions.AddOrUpdate(
                     fd => fd.FundingDivisionName,
@@ -245,8 +238,8 @@ namespace EoS.Migrations
                     new FundingDivision { FundingDivisionName = "Sales" },
                     new FundingDivision { FundingDivisionName = "Marketing" },
                     new FundingDivision { FundingDivisionName = "Administration" },
-                    new FundingDivision { FundingDivisionName = "Other" });
-            context.SaveChanges();
+                    new FundingDivision { FundingDivisionName = "Other" }
+                    );
 
             context.TeamWeaknesses.AddOrUpdate(
                tw => tw.TeamWeaknessName,
@@ -261,7 +254,6 @@ namespace EoS.Migrations
                 new TeamWeakness { TeamWeaknessName = "Team" },
                 new TeamWeakness { TeamWeaknessName = "Other" }
                 );
-            context.SaveChanges();
 
             context.TeamSkills.AddOrUpdate(
                 ts => ts.SkillName,
@@ -270,13 +262,12 @@ namespace EoS.Migrations
                 new TeamSkill { SkillName = "Sales" },
                 new TeamSkill { SkillName = "Marketing" },
                 new TeamSkill { SkillName = "Administration" },
+                new TeamSkill { SkillName = "Investment readiness" },
                 new TeamSkill { SkillName = "Manufacturing" },
                 new TeamSkill { SkillName = "Distribution" },
-                new TeamSkill { SkillName = "Investment readiness" },
                 new TeamSkill { SkillName = "Team members" },
                 new TeamSkill { SkillName = "Other" }
                 );
-            context.SaveChanges();
 
             context.Outcomes.AddOrUpdate(
                 o => o.OutcomeName,
@@ -285,8 +276,8 @@ namespace EoS.Migrations
                   new Outcome { OutcomeName = "Process" },
                   new Outcome { OutcomeName = "Software" },
                   new Outcome { OutcomeName = "Hardware" },
-                  new Outcome { OutcomeName = "Other" });
-            context.SaveChanges();
+                  new Outcome { OutcomeName = "Other" }
+                  );
 
             context.InnovationLevels.AddOrUpdate(
               il => il.InnovationLevelName,
@@ -294,8 +285,8 @@ namespace EoS.Migrations
                new InnovationLevel { InnovationLevelName = "4-6 innovation that could lead to a fair market share" },
                new InnovationLevel { InnovationLevelName = "7-8 this will for sure make a change" },
                new InnovationLevel { InnovationLevelName = "9 disruptive change" },
-               new InnovationLevel { InnovationLevelName = "10 gamechanger \"It is nothing like it out there\"" });
-            context.SaveChanges();
+               new InnovationLevel { InnovationLevelName = "10 gamechanger \"It is nothing like it out there\"" }
+               );
 
             context.Scalabilities.AddOrUpdate(
                 sc => sc.ScalabilityName,
@@ -303,36 +294,14 @@ namespace EoS.Migrations
                 new Scalability { ScalabilityName = "Continental" },
                 new Scalability { ScalabilityName = "Global" }
                 );
-            context.SaveChanges();
 
             context.Startups.AddOrUpdate(
               su => su.StartupID,
               new Startup
               {
-                  StartupID = "ICSE12345",
-                  UserID = userManager.FindByName("ideaCarrier1@enabler.se").Id,
-                  StartupName = "Idea1",
-                  CountryID = 1,
-                  SwedishRegionID = 1,
-                  ProjectDomainID = 1,
-                  ProjectSummary = " Summary",
-                  FundingPhaseID = 1,
-                  FundingAmountID = 1,
-                  EstimatedExitPlanID = 1,
-                  EstimatedBreakEven = 1,
-                  TeamMemberSize = 4,
-                  TeamExperience = 8,
-                  PossibleIncomeStreams = 2,
-                  InnovationLevelID = 1,
-                  DeadlineDate = DateTime.Now.AddMonths(1),
-                  LastSavedDate = DateTime.Now,
-                  CreatedDate = DateTime.Now
-              },
-              new Startup
-              {
                   StartupID = "ICSE12346",
-                  UserID = userManager.FindByName("ideaCarrier2@enablers.se").Id,
-                  StartupName = "Idea3",
+                  UserID = userManager.FindByName("ideacarrier@ideacarrier.se").Id,
+                  StartupName = "Project1",
                   CountryID = 3,
                   ProjectDomainID = 2,
                   ProjectSummary = "Summary",
@@ -348,7 +317,6 @@ namespace EoS.Migrations
                   LastSavedDate = DateTime.Now,
                   CreatedDate = DateTime.Now
               });
-            context.SaveChanges();
 
             List<FundingDivision> fundingDivisions = context.FundingDivisions.ToList();
 
@@ -358,21 +326,11 @@ namespace EoS.Migrations
                     fds => fds.FundingDivisionID,
                     new FundingDivisionStartup
                     {
-                        FundingDivisionID = fundingDivision.FundingDivisionID,
-                        Percentage = 0,
-                        StartupID = "ICSE12345"
-                    });
-
-                context.FundingDivisionStartups.AddOrUpdate(
-                    fds => fds.FundingDivisionID,
-                    new FundingDivisionStartup
-                    {
-                        FundingDivisionID = fundingDivision.FundingDivisionID,
+                        FundingDivisionID = fundingDivision.FundingDivisionID, //fundingDivision.FundingDivisionName is better, makes the code simpler
                         Percentage = 0,
                         StartupID = "ICSE12346"
                     });
             }
-            context.SaveChanges();
 
             context.IdeaCarrierMessages.AddOrUpdate(
             icm => icm.Id,
