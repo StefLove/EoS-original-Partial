@@ -6,14 +6,14 @@ using System.Web;
 
 namespace EoS.Models.IdeaCarrier
 {
-    public class FundingDivisionStartup
+    public class FundingDivisionStartup //ProjectFundingDivision is a better name
     {
         [Key]
         public int Id { get; set; }
 
         [Display(Name = "Funding division ID")]
-        public int FundingDivisionID { get; set; }
-        public virtual FundingDivision FundingDivision { get; set; }
+        public int FundingDivisionID { get; set; } //public string FundingDivisionName { get; set; } // is better to use
+        public virtual FundingDivision FundingDivision { get; set; } //ought to be removed
 
         [Display(Name = "Startup project ID")]
         public string StartupID { get; set; }
