@@ -84,6 +84,7 @@ namespace EoS.Models.IdeaCarrier
 
         [Display(Name = "Funding divisions")]
         public virtual ICollection<FundingDivisionStartup> ProjectFundingDivisions { get; set; }
+        //public virtual ICollection<ProjectFundingDivision> FundingDivisions { get; set; } //is better names
 
         [Display(Name = "Estimated exit plan")]
         public int? EstimatedExitPlanID { get; set; }
