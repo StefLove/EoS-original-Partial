@@ -243,9 +243,9 @@ namespace EoS.Controllers
                 List<FundingDivision> fundingDivisions = db.FundingDivisions.ToList();
                 foreach (FundingDivision fundingDivision in fundingDivisions)
                 {
-                    db.FundingDivisionStartups.Add(new FundingDivisionStartup
+                    db.FundingDivisionStartups.Add(new FundingDivisionStartup //db.ProjectFundingDivisions is a better name
                     {
-                         FundingDivisionID = fundingDivision.FundingDivisionID,
+                         FundingDivisionID = fundingDivision.FundingDivisionID, //fundingDivision.FundingDivisionName is better, makes the code simpler
                          Percentage = 0,
                          StartupID = newStartupProjectID
                     });
