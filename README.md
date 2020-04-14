@@ -3,8 +3,9 @@ A system for managing forms. Developed in <b>C#.NET MVC</b>.<br />
 <b>LINQ</b> is used to update (i.e. not <b>SQL</b>) the database which is a <b>MSSQL</b> one.<br />
 Only this part of the code is free to view.<br />
 If you want to view more code or buy the system, please contact me.<br />
-It is possible to convert this code to <b>C#.NET Core</b>, of course !<br />
-UI is in English.
+Now I have improved the system by simplifying the code, this code here is a little too bad.
+I am now converting this code to <b>C#.NET Core Razor Pages</b><br />
+UI in English.
 <p />
 <b>The code is a good example of the programming principles of</b><br />
 <b>1)</b> <b>ViewModel:</b><br />
