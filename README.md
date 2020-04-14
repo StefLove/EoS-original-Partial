@@ -3,8 +3,8 @@ A system for managing forms. Developed in <b>C#.NET MVC</b>.<br />
 <b>LINQ</b> is used to update (i.e. not <b>SQL</b>) the database which is a <b>MSSQL</b> one.<br />
 Only this part of the code is free to view.<br />
 If you want to view more code or buy the system, please contact me.<br />
-Now I have improved the system by simplifying the code, this code here is a little too bad.<br />
-I am now converting this code to <b>C#.NET Core Razor Pages</b> which makes the code much better.<br />
+Now I have improved the system by simplifying the code, this code here as You might see, needs more improvements.<br />
+I am now converting this improved code to <b>C#.NET Core Razor Pages</b> which makes the whole system much simpler.<br />
 UI in English.
 <p />
 <b>The code is a good example of the programming principles of</b><br />
@@ -71,6 +71,8 @@ Now you see that the developer who wrote the bad code was'nt that very skilled,<
 despite an education of 5 years in IT technology and programming !<br />
 You just can't be a plain developer, you must be an excellent developer who delivers code that works and looks nice !
 <p />
+This system will be hosted at http://enabling.se<br />
+
 Stefan<br />
 Stockholm<br />
 Sweden
