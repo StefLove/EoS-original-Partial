@@ -71,7 +71,7 @@ Now you see that the developer who wrote the bad code was'nt that very skilled (
 despite an education of 5 years in IT technology and programming !<br />
 You just can't just be a plain developer, you must be an excellent developer who delivers code that works and looks nice !
 <p />
-This system is published at http://eos.enabling.se<br />
+An improved version of this system is published at http://eos.enabling.se<br />
 
 Stefan<br />
 Stockholm<br />
